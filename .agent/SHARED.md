@@ -1,5 +1,7 @@
 ## En cours
 
+- [Codex] 2026-08-29 23:35 — je touche : implementation complete dans la branche codex/implement-events
+
 ## Decisions
 - 2026-08-29 — Projet GitHub Actions séparé du FCL ; nouveau canal ntfy et contrôle toutes les 15 minutes.
 - 2026-08-29 — Couverture hybride : agenda territorial et billetteries officielles des principales salles, avec déduplication.
