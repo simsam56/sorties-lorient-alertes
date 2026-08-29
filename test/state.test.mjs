@@ -83,7 +83,9 @@ test("initialise silencieusement une source et inscrit ses événements observé
     notifiedAt: null,
     sourceIds: ["hydrophone"],
   });
-  assert.deepEqual(transition.state.sources.hydrophone, {
+  const { lastResultFingerprint, ...sourceState } = transition.state.sources.hydrophone;
+  assert.match(lastResultFingerprint, /^sha256:[a-f0-9]{64}$/u);
+  assert.deepEqual(sourceState, {
     initializedAt: checkedAt,
     lastSuccessAt: checkedAt,
     lastCheckedAt: checkedAt,
@@ -316,6 +318,135 @@ test("un succès identique rejoué au même checkedAt est un no-op strict", () =
   assert.deepEqual(baseline.state, snapshot);
 });
 
+test("rejette à checkedAt égal un succès dont le contenu ou la provenance diffère", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const concertA = event();
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [concertA], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(baseline.state);
+  const concertB = event({
+    title: "Concert B",
+    startsOn: "2026-10-16",
+    bookingUrl: "https://www.hydrophone.fr/billetterie/concert-b",
+    sourceUrl: "https://www.hydrophone.fr/concert-b.html",
+  });
+  const changedProvenance = {
+    ...concertA,
+    sourceIds: ["hydrophone", "tourism"],
+    sourceUrls: [
+      concertA.sourceUrl,
+      "https://www.lorientbretagnesudtourisme.fr/fr/fiche/concert-a/",
+    ],
+  };
+
+  for (const replayedEvents of [[concertB], [changedProvenance]]) {
+    assert.throws(
+      () => planTransition({
+        state: baseline.state,
+        successes: [success(hydrophone, replayedEvents, checkedAt)],
+        failures: [],
+        now: "2026-08-30T10:05:00.000Z",
+      }),
+      /Résultat contradictoire.*hydrophone/u,
+    );
+    assert.deepEqual(baseline.state, snapshot);
+  }
+});
+
+test("normalise l'ordre des événements avant de comparer un replay de succès", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const concertA = event();
+  const concertB = event({
+    title: "Concert B",
+    startsOn: "2026-10-16",
+    bookingUrl: "https://www.hydrophone.fr/billetterie/concert-b",
+    sourceUrl: "https://www.hydrophone.fr/concert-b.html",
+  });
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [concertA, concertB], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(baseline.state);
+
+  const replay = planTransition({
+    state: baseline.state,
+    successes: [success(hydrophone, [concertB, concertA], checkedAt)],
+    failures: [],
+    now: "2026-08-30T10:05:00.000Z",
+  });
+
+  assert.deepEqual(replay.state, snapshot);
+});
+
+test("rejette un replay de succès invalide avant de consulter son fingerprint", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [event()], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(baseline.state);
+  const invalidEvent = {
+    ...event(),
+    bookingUrl: "http://www.hydrophone.fr/billetterie/concert-a",
+  };
+
+  assert.throws(
+    () => planTransition({
+      state: baseline.state,
+      successes: [success(hydrophone, [invalidEvent], checkedAt)],
+      failures: [],
+      now: "2026-08-30T10:05:00.000Z",
+    }),
+    /URL HTTPS/u,
+  );
+  assert.deepEqual(baseline.state, snapshot);
+});
+
+test("rejette à checkedAt égal un échec dont le message diffère", () => {
+  const checkedAt = "2026-08-30T11:00:00.000Z";
+  const first = planTransition({
+    state: emptyState(),
+    successes: [],
+    failures: [failure(tourism, checkedAt, "délai dépassé")],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(first.state);
+
+  assert.throws(
+    () => planTransition({
+      state: first.state,
+      successes: [],
+      failures: [failure(tourism, checkedAt, "signature absente")],
+      now: "2026-08-30T11:05:00.000Z",
+    }),
+    /Résultat contradictoire.*tourism/u,
+  );
+  assert.deepEqual(first.state, snapshot);
+});
+
+test("refuse explicitement un ancien sourceState sans fingerprint", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const current = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [event()], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  }).state;
+  const legacy = structuredClone(current);
+  delete legacy.sources.hydrophone.lastResultFingerprint;
+
+  assert.throws(() => validateState(legacy), /État invalide/u);
+  assert.notDeepEqual(validateState(undefined), legacy);
+});
+
 test("rejette un résultat égal contradictoire et un succès périmé après incident", () => {
   const firstAt = "2026-08-30T11:00:00.000Z";
   const oneFailure = planTransition({
@@ -475,7 +606,9 @@ test("l'échec d'une source ne l'initialise pas et ne vide pas les événements 
 
   assert.deepEqual(failed.initializedSources, []);
   assert.deepEqual(failed.state.seen, baseline.state.seen);
-  assert.deepEqual(failed.state.sources.tourism, {
+  const { lastResultFingerprint, ...sourceState } = failed.state.sources.tourism;
+  assert.match(lastResultFingerprint, /^sha256:[a-f0-9]{64}$/u);
+  assert.deepEqual(sourceState, {
     initializedAt: null,
     lastSuccessAt: null,
     lastCheckedAt: failedAt,

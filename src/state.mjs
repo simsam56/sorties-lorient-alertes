@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 
 import { canonicalEventId } from "./model.mjs";
@@ -10,6 +11,7 @@ const SOURCE_KEYS = [
   "lastCheckedAt",
   "consecutiveFailures",
   "incidentOpen",
+  "lastResultFingerprint",
 ];
 const SEEN_KEYS = ["title", "startsOn", "venue", "city", "bookingUrl", "notifiedAt", "sourceIds"];
 const CANDIDATE_KEYS = ["checkedAt", "event"];
@@ -100,6 +102,10 @@ function assertSourceRecord(record, id, stateUpdatedAt) {
     fail(`source ${id}.consecutiveFailures doit être un entier positif`);
   }
   if (typeof record.incidentOpen !== "boolean") fail(`source ${id}.incidentOpen doit être booléen`);
+  if (typeof record.lastResultFingerprint !== "string" ||
+      !/^sha256:[a-f0-9]{64}$/u.test(record.lastResultFingerprint)) {
+    fail(`source ${id}.lastResultFingerprint est absent ou invalide`);
+  }
   if ((record.initializedAt === null) !== (record.lastSuccessAt === null)) {
     fail(`source ${id} a une initialisation incohérente`);
   }
@@ -245,7 +251,10 @@ function observedSourceIds(observed, sourceId) {
   const ids = observed.sourceIds ?? (observed.sourceId ? [observed.sourceId] : [sourceId]);
   assertKnownSourceIds(ids, "événement observé.sourceIds");
   if (!ids.includes(sourceId)) fail(`événement observé absent de sa source ${sourceId}`);
-  return [...ids].sort((left, right) => left.localeCompare(right, "fr"));
+  if (observed.sourceId !== undefined && !ids.includes(observed.sourceId)) {
+    fail("événement observé.sourceId est absent de sourceIds");
+  }
+  return [...ids].sort();
 }
 
 function seenRecord(observed, sourceIds, notifiedAt) {
@@ -260,14 +269,53 @@ function seenRecord(observed, sourceIds, notifiedAt) {
   };
 }
 
-function assertObservedEvent(observed, sourceId) {
+function observedSourceUrls(observed) {
+  const urls = observed.sourceUrls ?? (observed.sourceUrl ? [observed.sourceUrl] : []);
+  if (!Array.isArray(urls) || urls.length === 0) {
+    fail("événement observé.sourceUrls est absent");
+  }
+  for (const url of urls) assertHttpsUrl(url, "événement observé.sourceUrls");
+  const normalized = urls.map((url) => new URL(url).href);
+  if (observed.sourceUrl !== undefined && !normalized.includes(new URL(observed.sourceUrl).href)) {
+    fail("événement observé.sourceUrl est absent de sa provenance");
+  }
+  return [...new Set(normalized)].sort();
+}
+
+function validateObservedEvent(observed, sourceId) {
   if (!isRecord(observed)) fail("événement observé invalide");
   assertText(observed.title, "événement observé.title");
   assertDate(observed.startsOn, "événement observé.startsOn");
+  if (observed.startsAt !== null && observed.startsAt !== undefined &&
+      (typeof observed.startsAt !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/u.test(observed.startsAt))) {
+    fail("événement observé.startsAt est invalide");
+  }
   assertText(observed.venue, "événement observé.venue");
   assertText(observed.city, "événement observé.city");
   assertHttpsUrl(observed.bookingUrl, "événement observé.bookingUrl");
-  return observedSourceIds(observed, sourceId);
+  if (observed.sourceId !== undefined && !SOURCE_IDS.has(observed.sourceId)) {
+    fail("événement observé.sourceId est inconnu");
+  }
+  if (observed.sourceUrl !== undefined) assertHttpsUrl(observed.sourceUrl, "événement observé.sourceUrl");
+
+  const sourceIds = observedSourceIds(observed, sourceId);
+  const sourceUrls = observedSourceUrls(observed);
+  return {
+    observed,
+    sourceIds,
+    sourceUrls,
+    fingerprintValue: {
+      id: canonicalEventId(observed),
+      title: observed.title.trim(),
+      startsOn: observed.startsOn,
+      startsAt: observed.startsAt ?? null,
+      venue: observed.venue.trim(),
+      city: observed.city.trim(),
+      bookingUrl: new URL(observed.bookingUrl).href,
+      sourceIds,
+      sourceUrls,
+    },
+  };
 }
 
 function mergeCandidateUpdates(next, candidateUpdates, nowMs) {
@@ -298,7 +346,34 @@ function mergeCandidateUpdates(next, candidateUpdates, nowMs) {
   return changed;
 }
 
-function classifySourceResult(current, entry, kind) {
+function resultFingerprint(value) {
+  return `sha256:${createHash("sha256").update(JSON.stringify(value)).digest("hex")}`;
+}
+
+function prepareSourceResult(entry, kind, nowMs) {
+  assertCollectionEntry(entry, kind === "success" ? "réussite" : "échec", nowMs);
+  if (kind === "failure") {
+    return {
+      entry,
+      fingerprint: resultFingerprint({ kind, message: entry.message.trim() }),
+      validatedEvents: [],
+    };
+  }
+
+  const validatedEvents = entry.events.map((observed) => validateObservedEvent(observed, entry.source.id));
+  const normalizedEvents = [...new Set(validatedEvents
+    .map(({ fingerprintValue }) => JSON.stringify(fingerprintValue)))]
+    .sort()
+    .map((value) => JSON.parse(value));
+  return {
+    entry,
+    fingerprint: resultFingerprint({ kind, events: normalizedEvents }),
+    validatedEvents,
+  };
+}
+
+function classifySourceResult(current, prepared) {
+  const { entry, fingerprint } = prepared;
   const previous = current.sources[entry.source.id];
   if (!previous) return "fresh";
 
@@ -308,8 +383,7 @@ function classifySourceResult(current, entry, kind) {
   }
   if (ordering > 0) return "fresh";
 
-  const previousKind = previous.consecutiveFailures === 0 ? "success" : "failure";
-  if (previousKind !== kind) {
+  if (previous.lastResultFingerprint !== fingerprint) {
     throw new Error(`Résultat contradictoire pour la source ${entry.source.id} à ${entry.checkedAt}`);
   }
   return "replay";
@@ -328,8 +402,8 @@ export function planTransition({
   const nowMs = timestamp(nowValue);
   if (!Array.isArray(successes) || !Array.isArray(failures)) throw new Error("résultats de collecte invalides");
 
-  successes.forEach((entry) => assertCollectionEntry(entry, "réussite", nowMs));
-  failures.forEach((entry) => assertCollectionEntry(entry, "échec", nowMs));
+  const preparedSuccesses = successes.map((entry) => prepareSourceResult(entry, "success", nowMs));
+  const preparedFailures = failures.map((entry) => prepareSourceResult(entry, "failure", nowMs));
   const resultIds = [...successes, ...failures].map(({ source }) => source.id);
   if (new Set(resultIds).size !== resultIds.length) throw new Error("une source possède plusieurs résultats");
 
@@ -340,11 +414,12 @@ export function planTransition({
   const observations = new Map();
   let touched = false;
 
-  const freshFailures = failures.filter((entry) => classifySourceResult(current, entry, "failure") === "fresh");
-  const freshSuccesses = successes.filter((entry) => classifySourceResult(current, entry, "success") === "fresh");
+  const freshFailures = preparedFailures.filter((prepared) => classifySourceResult(current, prepared) === "fresh");
+  const freshSuccesses = preparedSuccesses.filter((prepared) => classifySourceResult(current, prepared) === "fresh");
   touched ||= mergeCandidateUpdates(next, candidateUpdates, nowMs);
 
-  for (const entry of freshFailures) {
+  for (const prepared of freshFailures) {
+    const { entry, fingerprint } = prepared;
     touched = true;
     const previous = next.sources[entry.source.id] ?? {
       initializedAt: null,
@@ -352,6 +427,7 @@ export function planTransition({
       lastCheckedAt: entry.checkedAt,
       consecutiveFailures: 0,
       incidentOpen: false,
+      lastResultFingerprint: fingerprint,
     };
     const consecutiveFailures = previous.consecutiveFailures + 1;
     const opensIncident = !previous.incidentOpen && consecutiveFailures === 4;
@@ -360,11 +436,13 @@ export function planTransition({
       lastCheckedAt: entry.checkedAt,
       consecutiveFailures,
       incidentOpen: previous.incidentOpen || opensIncident,
+      lastResultFingerprint: fingerprint,
     };
     if (opensIncident) incidents.push({ ...entry, consecutiveFailures });
   }
 
-  for (const entry of freshSuccesses) {
+  for (const prepared of freshSuccesses) {
+    const { entry, fingerprint, validatedEvents } = prepared;
     touched = true;
     const previous = next.sources[entry.source.id];
     const wasInitialized = previous?.initializedAt !== null && previous?.initializedAt !== undefined;
@@ -376,12 +454,11 @@ export function planTransition({
       lastCheckedAt: entry.checkedAt,
       consecutiveFailures: 0,
       incidentOpen: false,
+      lastResultFingerprint: fingerprint,
     };
 
-    for (const observed of entry.events) {
-      const sourceIds = assertObservedEvent(observed, entry.source.id);
+    for (const { observed, sourceIds, sourceUrls } of validatedEvents) {
       const id = canonicalEventId(observed);
-      const sourceUrls = observed.sourceUrls ?? (observed.sourceUrl ? [observed.sourceUrl] : []);
       const existing = observations.get(id);
       if (existing) {
         existing.sourceIds = [...new Set([...existing.sourceIds, ...sourceIds])]
