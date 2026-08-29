@@ -21,6 +21,17 @@ function noSaleAnnounced($) {
   return /aucun (?:spectacle|événement)|aucune (?:vente|programmation)|pas de spectacle/iu.test($("body").text());
 }
 
+function hasSeasonMarker($) {
+  return $("link[rel~='canonical'][href]").toArray().some((element) => {
+    try {
+      const url = new URL($(element).attr("href"), `https://${THEATRE_HOST}`);
+      return url.protocol === "https:" && url.hostname === THEATRE_HOST && /^\/saison\/?$/u.test(url.pathname);
+    } catch {
+      return false;
+    }
+  });
+}
+
 function eventCard($, element) {
   return $(element).closest("article, [data-event], .agenda-item, .event-card").first();
 }
@@ -42,6 +53,10 @@ function isFuture(startsOn) {
   return startsOn > new Date().toISOString().slice(0, 10);
 }
 
+function excludedProduct(url, title, bookingUrl) {
+  return /abonnement|carte[-\s]?cadeau|gift[-\s]?card/iu.test(`${url.pathname} ${title} ${bookingUrl}`);
+}
+
 export function parseTheatreLorient(html, source) {
   if (!hasOfficialSource(source)) invalid(source);
   const $ = load(html);
@@ -54,7 +69,7 @@ export function parseTheatreLorient(html, source) {
     }
   });
   if (details.length === 0) {
-    if (noSaleAnnounced($)) return [];
+    if (hasSeasonMarker($) && noSaleAnnounced($)) return [];
     invalid(source);
   }
 
@@ -68,6 +83,7 @@ export function parseTheatreLorient(html, source) {
     const bookingUrl = ticketUrl($, card);
     if (!title || !startsOn || !venue || !bookingUrl) continue;
     const sourceUrl = new URL($(detail).attr("href"), source.url).href;
+    if (excludedProduct(new URL(sourceUrl), title, bookingUrl)) continue;
     const event = createEvent({
       title,
       startsOn,

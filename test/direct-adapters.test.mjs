@@ -30,7 +30,7 @@ const trios = {
 const fil = {
   id: "fil",
   name: "Festival Interceltique de Lorient",
-  url: "https://www.festival-interceltique.bzh/billetterie-2026/",
+  url: "https://www.festival-interceltique.bzh/billetterie-2099/",
   city: "Lorient",
   venue: "Festival Interceltique",
 };
@@ -86,13 +86,13 @@ test("extrait seulement le lien de réservation externe officiel du FIL", async 
     venue: "Espace Jean-Pierre Pichard",
     city: "Lorient",
     bookingUrl: "https://reelax-tickets.com/e/n/nuit-interceltique-2099",
-    sourceUrl: "https://www.festival-interceltique.bzh/billetterie-2026/",
+    sourceUrl: "https://www.festival-interceltique.bzh/billetterie-2099/",
     sourceId: "fil",
   }]);
 });
 
 test("retourne une liste vide seulement pour une page officielle qui annonce explicitement l'absence de vente", () => {
-  assert.deepEqual(parseTheatreLorient("<h1>Saison</h1><p>Aucun spectacle actuellement en vente.</p>", theatre), []);
+  assert.deepEqual(parseTheatreLorient('<link rel="canonical" href="https://theatredelorient.fr/saison/"><h1>Saison</h1><p>Aucun spectacle actuellement en vente.</p>', theatre), []);
   assert.deepEqual(parseHydrophone("<h1>Agenda</h1><p>Aucun concert actuellement en vente.</p>", hydrophone), []);
   assert.deepEqual(parseTrios('<a href="https://trio-s.fr/">TRIO…S</a><p>Aucun spectacle actuellement en vente.</p>', trios), []);
   assert.deepEqual(parseFil("<h1>Billetterie</h1><p>Aucun spectacle actuellement en vente.</p>", fil), []);
@@ -106,8 +106,90 @@ test("écarte les cartes officielles dont la date est déjà passée", async () 
     [parseFil, "fil.html", fil],
   ]) {
     const pastPage = (await fixture(name)).replaceAll("2099", "2000");
-    assert.deepEqual(parse(pastPage, source), []);
+    const pastSource = source.id === "fil"
+      ? { ...source, url: "https://www.festival-interceltique.bzh/billetterie-2000/" }
+      : source;
+    assert.deepEqual(parse(pastPage, pastSource), []);
   }
+});
+
+test("écarte les abonnements et cartes-cadeaux du Théâtre même s'ils ont une carte complète", async () => {
+  const html = `${await fixture("theatre-lorient.html")}
+    <article>
+      <h2><a href="/spectacle/abonnement-saison/">Abonnement saison</a></h2>
+      <p class="date">Le 13 octobre 2099</p><p class="room">Grand Théâtre</p>
+      <a href="https://billetterie.theatredelorient.fr/event/abonnement-saison">Réserver</a>
+    </article>
+    <article>
+      <h2><a href="/spectacle/une-offre/">Une offre</a></h2>
+      <p class="date">Le 14 octobre 2099</p><p class="room">Grand Théâtre</p>
+      <a href="https://billetterie.theatredelorient.fr/event/carte-cadeau">Réserver</a>
+    </article>`;
+
+  const events = parseTheatreLorient(html, theatre);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].title, "Une pièce à Lorient");
+});
+
+test("déduplique deux cartes Théâtre qui portent le même spectacle réservé", async () => {
+  const html = `${await fixture("theatre-lorient.html")}${await fixture("theatre-lorient.html")}`;
+
+  assert.equal(parseTheatreLorient(html, theatre).length, 1);
+});
+
+test("replie Hydrophone et FIL sur la source quand une carte officielle omet son lieu", async () => {
+  const hydrophoneWithoutPlace = (await fixture("hydrophone.html")).replace(/<p class="place">.*?<\/p>/u, "");
+  const filWithoutPlace = (await fixture("fil.html")).replace(/<p class="place">.*?<\/p>/u, "");
+
+  assert.deepEqual(parseHydrophone(hydrophoneWithoutPlace, hydrophone)[0], {
+    title: "Concert très attendu",
+    startsOn: "2099-11-14",
+    startsAt: null,
+    venue: "Hydrophone",
+    city: "Lorient",
+    bookingUrl: "https://billetterie.hydrophone.fr/evenement/concert-tres-attendu",
+    sourceUrl: "https://www.hydrophone.fr/concert-tres-attendu.html",
+    sourceId: "hydrophone",
+  });
+  assert.deepEqual(parseFil(filWithoutPlace, fil)[0], {
+    title: "Nuit interceltique",
+    startsOn: "2099-08-08",
+    startsAt: null,
+    venue: "Festival Interceltique",
+    city: "Lorient",
+    bookingUrl: "https://reelax-tickets.com/e/n/nuit-interceltique-2099",
+    sourceUrl: "https://www.festival-interceltique.bzh/billetterie-2099/",
+    sourceId: "fil",
+  });
+});
+
+test("rejette texte d'absence Théâtre sans marqueur officiel de saison", () => {
+  assert.throws(
+    () => parseTheatreLorient("<h1>Saison</h1><p>Aucun spectacle actuellement en vente.</p>", theatre),
+    /Théâtre de Lorient: signature officielle absente/,
+  );
+});
+
+test("écarte les fichiers de navigation Hydrophone même s'ils ressemblent à une carte", async () => {
+  const html = `${await fixture("hydrophone.html")}
+    <article>
+      <h2><a href="agenda.html">Agenda</a></h2>
+      <p class="date">Dimanche 15 novembre 2099</p>
+      <p class="place">Hydrophone, Lorient</p>
+      <a href="https://billetterie.hydrophone.fr/evenement/agenda">Réserver</a>
+    </article>`;
+
+  assert.equal(parseHydrophone(html, hydrophone).length, 1);
+});
+
+test("rejette une archive FIL qui ne correspond ni à l'année de page ni aux événements", async () => {
+  const archive = { ...fil, url: "https://www.festival-interceltique.bzh/billetterie-2025/" };
+  const html = await fixture("fil.html");
+
+  assert.throws(
+    () => parseFil(html, archive),
+    /Festival Interceltique de Lorient: signature officielle absente/,
+  );
 });
 
 test("refuse explicitement une page qui ne porte pas la signature officielle attendue", () => {

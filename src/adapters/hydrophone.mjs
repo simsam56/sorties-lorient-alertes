@@ -3,6 +3,17 @@ import { createEvent, parseFrenchDate } from "../model.mjs";
 
 const HYDROPHONE_HOST = "www.hydrophone.fr";
 const TICKETING_HOST = "billetterie.hydrophone.fr";
+const NAVIGATION_FILES = new Set([
+  "agenda.html",
+  "programmation.html",
+  "accessibilite.html",
+  "a-propos.html",
+  "espace-pro.html",
+  "magazine.html",
+  "studios.html",
+  "missions.html",
+  "pratique.html",
+]);
 
 function invalid(source) {
   throw new Error(`${source.name}: signature officielle absente`);
@@ -30,7 +41,8 @@ function programmeUrl($, element, source) {
   }
   const filename = url.pathname.split("/").at(-1) ?? "";
   return url.protocol === "https:" && url.hostname === HYDROPHONE_HOST &&
-    filename.endsWith(".html") && !filename.startsWith("-") ? url : null;
+    filename.endsWith(".html") && !filename.startsWith("-") &&
+    !NAVIGATION_FILES.has(filename.toLowerCase()) ? url : null;
 }
 
 function placeParts(text) {
@@ -75,13 +87,15 @@ export function parseHydrophone(html, source) {
     const startsOn = parseFrenchDate(card.text());
     const place = placeParts(card.find(".place, .venue, .lieu, [class*='place'], [class*='venue'], [class*='lieu']").first().text());
     const bookingUrl = ticketUrl($, card);
-    if (!title || !startsOn || !place || !bookingUrl) continue;
+    const venue = place?.venue ?? source.venue;
+    const city = place?.city ?? source.city;
+    if (!title || !startsOn || !venue || !city || !bookingUrl) continue;
     const event = createEvent({
       title,
       startsOn,
       startsAt: null,
-      venue: place.venue,
-      city: place.city,
+      venue,
+      city,
       bookingUrl,
       sourceUrl: url.href,
       sourceId: source.id,

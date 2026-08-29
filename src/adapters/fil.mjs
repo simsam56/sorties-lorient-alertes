@@ -8,12 +8,13 @@ function invalid(source) {
   throw new Error(`${source.name}: signature officielle absente`);
 }
 
-function hasOfficialSource(source) {
+function ticketYear(source) {
   try {
     const url = new URL(source.url);
-    return url.protocol === "https:" && url.hostname === FESTIVAL_HOST && /^\/billetterie-20\d{2}\/?$/u.test(url.pathname);
+    const match = url.pathname.match(/^\/billetterie-(20\d{2})\/?$/u);
+    return url.protocol === "https:" && url.hostname === FESTIVAL_HOST && match ? Number(match[1]) : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -44,10 +45,13 @@ function isFuture(startsOn) {
 }
 
 export function parseFil(html, source) {
-  if (!hasOfficialSource(source)) invalid(source);
+  const expectedYear = ticketYear(source);
+  if (!expectedYear) invalid(source);
   const $ = load(html);
-  const hasHeading = $("h1, h2").filter((_, heading) => /billetterie/iu.test($(heading).text())).length > 0;
-  if (!hasHeading) invalid(source);
+  const heading = $("h1, h2").filter((_, element) => /billetterie/iu.test($(element).text())).first().text();
+  if (!heading) invalid(source);
+  const headingYear = heading.match(/20\d{2}/u)?.[0];
+  if (headingYear && Number(headingYear) !== expectedYear) invalid(source);
   const cards = $("article, [data-event], .event-card").toArray();
   if (cards.length === 0) {
     if (noSaleAnnounced($)) return [];
@@ -61,13 +65,15 @@ export function parseFil(html, source) {
     const startsOn = parseFrenchDate(card.text());
     const place = placeParts(card.find(".place, .venue, .lieu, [class*='place'], [class*='venue'], [class*='lieu']").first().text());
     const bookingUrl = ticketUrl($, card, source);
-    if (!title || !startsOn || !place || !bookingUrl) continue;
+    const venue = place?.venue ?? source.venue;
+    const city = place?.city ?? source.city;
+    if (!title || !startsOn || !venue || !city || !bookingUrl || Number(startsOn.slice(0, 4)) !== expectedYear) continue;
     const event = createEvent({
       title,
       startsOn,
       startsAt: null,
-      venue: place.venue,
-      city: place.city,
+      venue,
+      city,
       bookingUrl,
       sourceUrl: new URL(source.url).href,
       sourceId: source.id,
