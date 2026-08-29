@@ -1,5 +1,5 @@
-import { appendFile, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { appendFile, readFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
 import { collectDueSources } from "../src/collector.mjs";
@@ -7,7 +7,13 @@ import { deduplicateEvents } from "../src/dedupe.mjs";
 import { sendNtfy } from "../src/network.mjs";
 import { buildEventNotifications, buildHealthNotifications } from "../src/notifications.mjs";
 import { SOURCES, getSource } from "../src/sources.mjs";
-import { acknowledgeNotifications, planTransition, validateState } from "../src/state.mjs";
+import { writeJsonAtomically } from "../src/state-file.mjs";
+import {
+  acknowledgeHealthNotifications,
+  acknowledgeNotifications,
+  planTransition,
+  validateState,
+} from "../src/state.mjs";
 
 const FIXTURE_ROUTES_FILE = "routes.json";
 const FIXTURE_REQUESTS_FILE = "requests.jsonl";
@@ -102,22 +108,6 @@ async function loadState(path) {
   return { state: validateState(parsed), exists: true };
 }
 
-async function writeStateAtomically(path, state) {
-  const temporaryPath = `${path}.tmp`;
-  await mkdir(dirname(path), { recursive: true });
-  try {
-    await writeFile(temporaryPath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
-    await rename(temporaryPath, path);
-  } catch (error) {
-    try {
-      await unlink(temporaryPath);
-    } catch (cleanupError) {
-      if (cleanupError?.code !== "ENOENT") throw cleanupError;
-    }
-    throw error;
-  }
-}
-
 async function collect({ state, now, fetchImpl }) {
   const sourceState = Object.fromEntries(
     Object.entries(state?.sources ?? {}).map(([id, record]) => [id, record.lastCheckedAt]),
@@ -160,26 +150,41 @@ function printInspection(collection, canonicalEvents) {
 }
 
 async function publishTransition({ transition, topic, fetchImpl, now }) {
-  const eventNotifications = buildEventNotifications(transition.newEvents)
+  const eventNotifications = buildEventNotifications(Object.values(transition.state.outbox.events))
     .map((notification) => ({ kind: "event", notification }));
-  const healthNotifications = buildHealthNotifications(transition.incidents, transition.recoveries)
-    .map((notification) => ({ kind: "health", notification }));
+  const healthNotifications = Object.entries(transition.state.outbox.health)
+    .sort(([leftId, left], [rightId, right]) =>
+      left.queuedAt.localeCompare(right.queuedAt) || leftId.localeCompare(rightId, "fr"))
+    .map(([id, pending]) => {
+      const source = getSource(pending.sourceId);
+      const [notification] = pending.kind === "incident"
+        ? buildHealthNotifications([{ source, consecutiveFailures: pending.consecutiveFailures }], [])
+        : buildHealthNotifications([], [{ source }]);
+      return { kind: "health", id, sourceId: pending.sourceId, notification };
+    });
   const successfulEventIds = [];
+  const successfulHealthIds = [];
   const failures = [];
+  const blockedHealthSources = new Set();
 
   for (const entry of [...eventNotifications, ...healthNotifications]) {
+    if (entry.kind === "health" && blockedHealthSources.has(entry.sourceId)) continue;
     try {
       await sendNtfy({ topic, notification: entry.notification, fetchImpl });
       if (entry.kind === "event") successfulEventIds.push(...entry.notification.ids);
+      else successfulHealthIds.push(entry.id);
     } catch (error) {
       failures.push({ title: entry.notification.title, message: errorMessage(error) });
+      if (entry.kind === "health") blockedHealthSources.add(entry.sourceId);
     }
   }
 
+  const eventsAcknowledged = acknowledgeNotifications(transition, successfulEventIds, now);
   return {
-    transition: acknowledgeNotifications(transition, successfulEventIds, now),
+    transition: acknowledgeHealthNotifications(eventsAcknowledged, successfulHealthIds, now),
     failures,
     successfulEventIds,
+    successfulHealthIds,
   };
 }
 
@@ -209,6 +214,11 @@ async function check(args, environment) {
     candidateUpdates: collection.candidateUpdates,
     now,
   });
+
+  // L'outbox et les transitions de santé sont durables avant le premier envoi.
+  if (!loaded.exists || !isDeepStrictEqual(planned.state, loaded.state)) {
+    await writeJsonAtomically(statePath, planned.state);
+  }
   const published = await publishTransition({
     transition: planned,
     topic: environment.NTFY_TOPIC,
@@ -216,8 +226,8 @@ async function check(args, environment) {
     now,
   });
 
-  if (!loaded.exists || !isDeepStrictEqual(published.transition.state, loaded.state)) {
-    await writeStateAtomically(statePath, published.transition.state);
+  if (!isDeepStrictEqual(published.transition.state, planned.state)) {
+    await writeJsonAtomically(statePath, published.transition.state);
   }
 
   console.log(

@@ -125,6 +125,10 @@ async function addHydrophoneEvents(directory, events) {
   await writeFile(path, html.replace("</main>", `${cards}\n  </main>`));
 }
 
+async function resetHydrophoneEvents(directory) {
+  await cp(new URL("hydrophone.html", fixtureRoot), join(directory, "hydrophone.html"));
+}
+
 function assertTopicIsPrivate(...results) {
   const output = results.map(({ stdout, stderr }) => `${stdout}${stderr}`).join("");
   assert.doesNotMatch(output, new RegExp(topic));
@@ -304,6 +308,172 @@ test("un lot partiel persiste santé, cache et acquittements puis retente seulem
     assert.ok(retryState.seen["2099-11-16:lorient:hydrophone:pair-a-retenter"]);
     assert.equal(retryState.sources[theatre.id].consecutiveFailures, 0);
     assertTopicIsPrivate(baseline, partial, retry);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("une notification échouée reste dans l'outbox même si la source retire ensuite l'événement", async () => {
+  const directory = await createFixtureDirectory("sorties-disappeared-");
+  const statePath = join(directory, "state.json");
+  const pendingId = "2099-11-15:lorient:hydrophone:concert-disparu";
+  try {
+    await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:00:00.000Z",
+    });
+    await addHydrophoneEvents(directory, [{
+      slug: "concert-disparu",
+      title: "Concert disparu",
+      date: "Dimanche 15 novembre 2099 à 20h30",
+    }]);
+    await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [503] });
+    await resetRequests(directory);
+
+    const failed = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:15:00.000Z",
+    });
+    const failedState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+
+    assert.notEqual(failed.code, 0);
+    assert.ok(failedState.outbox.events[pendingId]);
+    assert.equal(failedState.seen[pendingId], undefined);
+
+    await resetHydrophoneEvents(directory);
+    await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [200] });
+    await resetRequests(directory);
+    const retry = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:30:00.000Z",
+    });
+    const retryNtfy = (await requests(directory)).filter(({ kind }) => kind === "ntfy");
+    const retryState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+
+    assert.equal(retry.code, 0, retry.stderr);
+    assert.equal(retryNtfy.length, 1);
+    assert.match(JSON.parse(retryNtfy[0].body).message, /Concert disparu/u);
+    assert.equal(retryState.outbox.events[pendingId], undefined);
+    assert.ok(retryState.seen[pendingId]);
+    assertTopicIsPrivate(failed, retry);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("une double collecte d'un événement pending conserve une seule entrée et un seul envoi par contrôle", async () => {
+  const directory = await createFixtureDirectory("sorties-pending-twice-");
+  const statePath = join(directory, "state.json");
+  try {
+    await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:00:00.000Z",
+    });
+    await addHydrophoneEvents(directory, [{
+      slug: "pending-unique",
+      title: "Pending unique",
+      date: "Dimanche 15 novembre 2099 à 20h30",
+    }]);
+
+    for (const now of ["2026-08-30T10:15:00.000Z", "2026-08-30T10:30:00.000Z"]) {
+      await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [503] });
+      await resetRequests(directory);
+      const result = await runCli({ args: ["check", "--state", statePath], fixtureDirectory: directory, now });
+      const ntfyRequests = (await requests(directory)).filter(({ kind }) => kind === "ntfy");
+      const state = validateState(JSON.parse(await readFile(statePath, "utf8")));
+
+      assert.notEqual(result.code, 0);
+      assert.equal(ntfyRequests.length, 1);
+      assert.deepEqual(Object.keys(state.outbox.events), [
+        "2099-11-15:lorient:hydrophone:pending-unique",
+      ]);
+      assertTopicIsPrivate(result);
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("incident et récupération restent dans l'outbox jusqu'à leur acquittement ntfy", async () => {
+  const directory = await createFixtureDirectory("sorties-health-outbox-");
+  const statePath = join(directory, "state.json");
+  const theatre = getSource("theatre-lorient");
+  try {
+    await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:00:00.000Z",
+    });
+    const failedRoutes = defaultRoutes();
+    failedRoutes[theatre.url] = { status: 503, body: "indisponible" };
+
+    for (const now of [
+      "2026-08-30T10:15:00.000Z",
+      "2026-08-30T10:30:00.000Z",
+      "2026-08-30T10:45:00.000Z",
+    ]) {
+      await configureFixtures(directory, { routes: failedRoutes, ntfyStatuses: [] });
+      await resetRequests(directory);
+      const result = await runCli({ args: ["check", "--state", statePath], fixtureDirectory: directory, now });
+      assert.notEqual(result.code, 0);
+      assert.deepEqual((await requests(directory)).filter(({ kind }) => kind === "ntfy"), []);
+    }
+
+    await configureFixtures(directory, { routes: failedRoutes, ntfyStatuses: [503] });
+    await resetRequests(directory);
+    const fourth = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T11:00:00.000Z",
+    });
+    const fourthState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.notEqual(fourth.code, 0);
+    assert.equal((await requests(directory)).filter(({ kind }) => kind === "ntfy").length, 1);
+    assert.ok(fourthState.outbox.health["incident:theatre-lorient"]);
+
+    await configureFixtures(directory, { routes: failedRoutes, ntfyStatuses: [200] });
+    await resetRequests(directory);
+    const fifth = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T11:15:00.000Z",
+    });
+    const fifthNtfy = (await requests(directory)).filter(({ kind }) => kind === "ntfy");
+    const fifthState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.notEqual(fifth.code, 0);
+    assert.equal(fifthNtfy.length, 1);
+    assert.match(JSON.parse(fifthNtfy[0].body).title, /Incident de surveillance/u);
+    assert.equal(fifthState.outbox.health["incident:theatre-lorient"], undefined);
+
+    await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [503] });
+    await resetRequests(directory);
+    const recoveryFailed = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T11:30:00.000Z",
+    });
+    const recoveryFailedState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.notEqual(recoveryFailed.code, 0);
+    assert.ok(recoveryFailedState.outbox.health["recovery:theatre-lorient"]);
+
+    await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [200] });
+    await resetRequests(directory);
+    const recoveryRetry = await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T11:45:00.000Z",
+    });
+    const recoveryNtfy = (await requests(directory)).filter(({ kind }) => kind === "ntfy");
+    const recoveredState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.equal(recoveryRetry.code, 0, recoveryRetry.stderr);
+    assert.equal(recoveryNtfy.length, 1);
+    assert.match(JSON.parse(recoveryNtfy[0].body).title, /Surveillance rétablie/u);
+    assert.deepEqual(recoveredState.outbox.health, {});
+    assertTopicIsPrivate(fourth, fifth, recoveryFailed, recoveryRetry);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

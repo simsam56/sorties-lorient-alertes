@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { canonicalEventId, createEvent } from "../src/model.mjs";
 import { getSource } from "../src/sources.mjs";
 import {
+  acknowledgeHealthNotifications,
   acknowledgeNotifications,
   applyCollection,
   emptyState,
@@ -43,19 +44,21 @@ function failure(source, checkedAt, message = "source inaccessible") {
 
 test("distingue un état absent d'un état présent mal formé", () => {
   const expected = {
-    version: 1,
+    version: 2,
     initializedAt: null,
     updatedAt: null,
     seen: {},
     sources: {},
     candidates: {},
+    outbox: { events: {}, health: {} },
   };
 
   assert.deepEqual(emptyState(), expected);
   assert.deepEqual(validateState(undefined), expected);
   assert.throws(() => validateState({}), /État invalide/);
   assert.throws(() => validateState(null), /État invalide/);
-  assert.throws(() => validateState({ ...expected, version: 2 }), /version/i);
+  assert.throws(() => validateState({ ...expected, version: 1 }), /version/i);
+  assert.throws(() => validateState({ ...expected, version: 3 }), /version/i);
 });
 
 test("initialise silencieusement une source et inscrit ses événements observés", () => {
@@ -124,11 +127,13 @@ test("ne mémorise une nouveauté qu'après son acquittement de notification", (
 
   assert.deepEqual(planned.newEvents, [newcomer]);
   assert.equal(planned.state.seen[newcomerId], undefined);
+  assert.deepEqual(planned.state.outbox.events[newcomerId], newcomer);
   assert.deepEqual(baseline.state.sources.hydrophone.lastCheckedAt, firstAt);
 
   const acknowledged = acknowledgeNotifications(planned, [newcomerId], notifiedAt);
   assert.equal(acknowledged.state.seen[newcomerId].notifiedAt, notifiedAt);
   assert.deepEqual(acknowledged.state.seen[newcomerId].sourceIds, ["hydrophone"]);
+  assert.equal(acknowledged.state.outbox.events[newcomerId], undefined);
 });
 
 test("un acquittement partiel garde les pairs échoués retentables et le cache candidat durable", () => {
@@ -172,6 +177,11 @@ test("un acquittement partiel garde les pairs échoués retentables et le cache 
 
   assert.ok(acknowledged.state.seen["2026-10-16:lorient:hydrophone:concert-b"]);
   assert.equal(acknowledged.state.seen["2026-10-17:lorient:hydrophone:concert-c"], undefined);
+  assert.equal(acknowledged.state.outbox.events["2026-10-16:lorient:hydrophone:concert-b"], undefined);
+  assert.deepEqual(
+    acknowledged.state.outbox.events["2026-10-17:lorient:hydrophone:concert-c"],
+    concertC,
+  );
   assert.deepEqual(acknowledged.state.candidates[candidateUrl], { checkedAt, event: null });
 
   const retry = planTransition({
@@ -180,7 +190,47 @@ test("un acquittement partiel garde les pairs échoués retentables et le cache 
     failures: [],
     now: "2026-08-30T10:30:00.000Z",
   });
-  assert.deepEqual(retry.newEvents, [concertC]);
+  assert.deepEqual(retry.newEvents, []);
+  assert.deepEqual(retry.state.outbox.events, {
+    "2026-10-17:lorient:hydrophone:concert-c": concertC,
+  });
+});
+
+test("conserve une nouveauté pending si la source la retire puis évite de la dupliquer à son retour", () => {
+  const baselineAt = "2026-08-30T10:00:00.000Z";
+  const newcomer = event({
+    title: "Concert éphémère",
+    startsOn: "2026-10-18",
+    bookingUrl: "https://www.hydrophone.fr/billetterie/concert-ephemere",
+    sourceUrl: "https://www.hydrophone.fr/concert-ephemere.html",
+  });
+  const id = canonicalEventId(newcomer);
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [event()], baselineAt)],
+    now: baselineAt,
+  });
+  const detected = planTransition({
+    state: baseline.state,
+    successes: [success(hydrophone, [event(), newcomer], "2026-08-30T10:15:00.000Z")],
+    now: "2026-08-30T10:15:00.000Z",
+  });
+  const disappeared = planTransition({
+    state: detected.state,
+    successes: [success(hydrophone, [event()], "2026-08-30T10:30:00.000Z")],
+    now: "2026-08-30T10:30:00.000Z",
+  });
+  const returned = planTransition({
+    state: disappeared.state,
+    successes: [success(hydrophone, [event(), newcomer], "2026-08-30T10:45:00.000Z")],
+    now: "2026-08-30T10:45:00.000Z",
+  });
+
+  assert.deepEqual(detected.newEvents, [newcomer]);
+  assert.deepEqual(disappeared.newEvents, []);
+  assert.deepEqual(returned.newEvents, []);
+  assert.deepEqual(Object.keys(returned.state.outbox.events), [id]);
+  assert.deepEqual(returned.state.outbox.events[id], newcomer);
 });
 
 test("conserve toutes les sources d'une nouveauté partagée lors de l'acquittement", () => {
@@ -226,6 +276,7 @@ test("conserve toutes les sources d'une nouveauté partagée lors de l'acquittem
 
 test("ouvre un seul incident au quatrième échec puis le ferme au premier succès", () => {
   let state = emptyState();
+  let lastFailure;
 
   for (let attempt = 1; attempt <= 5; attempt += 1) {
     const checkedAt = `2026-08-30T1${attempt}:00:00.000Z`;
@@ -240,15 +291,31 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
       assert.equal(transition.incidents[0].source, tourism);
       assert.equal(transition.incidents[0].consecutiveFailures, 4);
     }
+    lastFailure = transition;
     state = transition.state;
   }
 
   assert.equal(state.sources.tourism.consecutiveFailures, 5);
   assert.equal(state.sources.tourism.incidentOpen, true);
+  assert.deepEqual(state.outbox.health, {
+    "incident:tourism": {
+      kind: "incident",
+      sourceId: "tourism",
+      consecutiveFailures: 4,
+      queuedAt: "2026-08-30T14:00:00.000Z",
+    },
+  });
+
+  const incidentAcknowledged = acknowledgeHealthNotifications(
+    lastFailure,
+    ["incident:tourism"],
+    "2026-08-30T15:01:00.000Z",
+  );
+  assert.deepEqual(incidentAcknowledged.state.outbox.health, {});
 
   const recoveredAt = "2026-08-30T16:00:00.000Z";
   const recovered = planTransition({
-    state,
+    state: incidentAcknowledged.state,
     successes: [success(tourism, [], recoveredAt)],
     failures: [],
     now: recoveredAt,
@@ -256,6 +323,14 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
   assert.deepEqual(recovered.recoveries, [{ source: tourism, checkedAt: recoveredAt }]);
   assert.equal(recovered.state.sources.tourism.consecutiveFailures, 0);
   assert.equal(recovered.state.sources.tourism.incidentOpen, false);
+  assert.deepEqual(recovered.state.outbox.health, {
+    "recovery:tourism": {
+      kind: "recovery",
+      sourceId: "tourism",
+      consecutiveFailures: null,
+      queuedAt: recoveredAt,
+    },
+  });
 
   const nextAt = "2026-08-30T17:00:00.000Z";
   const next = planTransition({
@@ -265,6 +340,14 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
     now: nextAt,
   });
   assert.deepEqual(next.recoveries, []);
+  assert.deepEqual(next.state.outbox.health, recovered.state.outbox.health);
+
+  const recoveryAcknowledged = acknowledgeHealthNotifications(
+    next,
+    ["recovery:tourism"],
+    "2026-08-30T17:01:00.000Z",
+  );
+  assert.deepEqual(recoveryAcknowledged.state.outbox.health, {});
 });
 
 test("un même échec rejoué quatre fois au même checkedAt reste un seul échec", () => {

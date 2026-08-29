@@ -4,7 +4,8 @@ import { isDeepStrictEqual } from "node:util";
 import { canonicalEventId } from "./model.mjs";
 import { SOURCES } from "./sources.mjs";
 
-const STATE_KEYS = ["version", "initializedAt", "updatedAt", "seen", "sources", "candidates"];
+const STATE_KEYS = ["version", "initializedAt", "updatedAt", "seen", "sources", "candidates", "outbox"];
+const OUTBOX_KEYS = ["events", "health"];
 const SOURCE_KEYS = [
   "initializedAt",
   "lastSuccessAt",
@@ -25,6 +26,8 @@ const EVENT_KEYS = [
   "sourceUrl",
   "sourceId",
 ];
+const PENDING_EVENT_KEYS = [...EVENT_KEYS, "sourceIds", "sourceUrls"];
+const HEALTH_OUTBOX_KEYS = ["kind", "sourceId", "consecutiveFailures", "queuedAt"];
 const SOURCE_IDS = new Set(SOURCES.map(({ id }) => id));
 const TERRITORIAL_HOSTS = new Map(
   SOURCES
@@ -181,14 +184,47 @@ function assertCandidateRecord(record, detailUrl, stateUpdatedAt) {
   if (record.event !== null) assertCandidateEvent(record.event, detailUrl, sourceId);
 }
 
+function assertPendingEvent(record, id) {
+  assertExactKeys(record, PENDING_EVENT_KEYS, `outbox événement ${id}`);
+  const validated = validateObservedEvent(record, record.sourceId);
+  if (canonicalEventId(record) !== id) fail(`identifiant d'outbox incohérent: ${id}`);
+  if (!isDeepStrictEqual(record.sourceIds, validated.sourceIds) ||
+      !isDeepStrictEqual(record.sourceUrls, validated.sourceUrls)) {
+    fail(`provenance d'outbox non canonique: ${id}`);
+  }
+}
+
+function assertPendingHealth(record, id, state) {
+  assertExactKeys(record, HEALTH_OUTBOX_KEYS, `outbox santé ${id}`);
+  if (record.kind !== "incident" && record.kind !== "recovery") {
+    fail(`outbox santé ${id}.kind est invalide`);
+  }
+  if (!SOURCE_IDS.has(record.sourceId) || !state.sources[record.sourceId]) {
+    fail(`outbox santé ${id}.sourceId est inconnu`);
+  }
+  if (id !== `${record.kind}:${record.sourceId}`) fail(`identifiant d'outbox santé incohérent: ${id}`);
+  if (record.kind === "incident") {
+    if (!Number.isInteger(record.consecutiveFailures) || record.consecutiveFailures < 4) {
+      fail(`outbox santé ${id}.consecutiveFailures est invalide`);
+    }
+  } else if (record.consecutiveFailures !== null) {
+    fail(`outbox santé ${id}.consecutiveFailures doit être null`);
+  }
+  if (!isIsoTimestamp(record.queuedAt) ||
+      state.updatedAt === null || timestamp(record.queuedAt) > timestamp(state.updatedAt)) {
+    fail(`outbox santé ${id}.queuedAt est invalide`);
+  }
+}
+
 export function emptyState() {
   return {
-    version: 1,
+    version: 2,
     initializedAt: null,
     updatedAt: null,
     seen: {},
     sources: {},
     candidates: {},
+    outbox: { events: {}, health: {} },
   };
 }
 
@@ -199,7 +235,7 @@ export function emptyState() {
 export function validateState(value) {
   if (value === undefined) return emptyState();
   assertExactKeys(value, STATE_KEYS, "racine");
-  if (value.version !== 1) fail(`version ${String(value.version)} non prise en charge`);
+  if (value.version !== 2) fail(`version ${String(value.version)} non prise en charge`);
   assertNullableTimestamp(value.initializedAt, "initializedAt");
   assertNullableTimestamp(value.updatedAt, "updatedAt");
   if ((value.initializedAt === null) !== (value.updatedAt === null)) {
@@ -210,6 +246,10 @@ export function validateState(value) {
   }
   if (!isRecord(value.seen) || !isRecord(value.sources) || !isRecord(value.candidates)) {
     fail("seen, sources et candidates doivent être des objets");
+  }
+  assertExactKeys(value.outbox, OUTBOX_KEYS, "outbox");
+  if (!isRecord(value.outbox.events) || !isRecord(value.outbox.health)) {
+    fail("outbox.events et outbox.health doivent être des objets");
   }
 
   for (const [id, record] of Object.entries(value.sources)) {
@@ -222,10 +262,18 @@ export function validateState(value) {
   for (const [detailUrl, record] of Object.entries(value.candidates)) {
     assertCandidateRecord(record, detailUrl, value.updatedAt);
   }
+  for (const [id, record] of Object.entries(value.outbox.events)) {
+    assertPendingEvent(record, id);
+    if (value.seen[id]) fail(`événement présent dans seen et outbox: ${id}`);
+  }
+  for (const [id, record] of Object.entries(value.outbox.health)) {
+    assertPendingHealth(record, id, value);
+  }
 
   if (value.initializedAt === null &&
       (Object.keys(value.seen).length > 0 || Object.keys(value.sources).length > 0 ||
-       Object.keys(value.candidates).length > 0)) {
+       Object.keys(value.candidates).length > 0 || Object.keys(value.outbox.events).length > 0 ||
+       Object.keys(value.outbox.health).length > 0)) {
     fail("un état non initialisé doit être vide");
   }
   return value;
@@ -317,6 +365,21 @@ function validateObservedEvent(observed, sourceId) {
       sourceIds,
       sourceUrls,
     },
+  };
+}
+
+function pendingEventRecord({ observed, sourceIds, sourceUrls }) {
+  return {
+    title: observed.title,
+    startsOn: observed.startsOn,
+    startsAt: observed.startsAt ?? null,
+    venue: observed.venue,
+    city: observed.city,
+    bookingUrl: observed.bookingUrl,
+    sourceUrl: observed.sourceUrl,
+    sourceId: observed.sourceId,
+    sourceIds: [...sourceIds],
+    sourceUrls: [...sourceUrls],
   };
 }
 
@@ -440,7 +503,15 @@ export function planTransition({
       incidentOpen: previous.incidentOpen || opensIncident,
       lastResultFingerprint: fingerprint,
     };
-    if (opensIncident) incidents.push({ ...entry, consecutiveFailures });
+    if (opensIncident) {
+      incidents.push({ ...entry, consecutiveFailures });
+      next.outbox.health[`incident:${entry.source.id}`] = {
+        kind: "incident",
+        sourceId: entry.source.id,
+        consecutiveFailures,
+        queuedAt: entry.checkedAt,
+      };
+    }
   }
 
   for (const prepared of freshSuccesses) {
@@ -448,7 +519,15 @@ export function planTransition({
     touched = true;
     const previous = next.sources[entry.source.id];
     const wasInitialized = previous?.initializedAt !== null && previous?.initializedAt !== undefined;
-    if (previous?.incidentOpen) recoveries.push({ source: entry.source, checkedAt: entry.checkedAt });
+    if (previous?.incidentOpen) {
+      recoveries.push({ source: entry.source, checkedAt: entry.checkedAt });
+      next.outbox.health[`recovery:${entry.source.id}`] = {
+        kind: "recovery",
+        sourceId: entry.source.id,
+        consecutiveFailures: null,
+        queuedAt: entry.checkedAt,
+      };
+    }
     if (!wasInitialized) initializedSources.push(entry.source);
     next.sources[entry.source.id] = {
       initializedAt: previous?.initializedAt ?? entry.checkedAt,
@@ -481,11 +560,17 @@ export function planTransition({
       prior.sourceIds = [...new Set([...prior.sourceIds, ...observation.sourceIds])]
         .sort((left, right) => left.localeCompare(right, "fr"));
     } else if (observation.fromInitializedSource) {
-      newEvents.push({
-        ...observation.observed,
-        sourceIds: observation.sourceIds,
-        sourceUrls: observation.sourceUrls,
-      });
+      const pending = next.outbox.events[id];
+      if (pending) {
+        pending.sourceIds = [...new Set([...pending.sourceIds, ...observation.sourceIds])]
+          .sort((left, right) => left.localeCompare(right, "fr"));
+        pending.sourceUrls = [...new Set([...pending.sourceUrls, ...observation.sourceUrls])]
+          .sort((left, right) => left.localeCompare(right, "fr"));
+      } else {
+        const queued = pendingEventRecord(observation);
+        next.outbox.events[id] = queued;
+        newEvents.push(queued);
+      }
     } else {
       next.seen[id] = seenRecord(observation.observed, observation.sourceIds, null);
     }
@@ -513,7 +598,7 @@ export function acknowledgeNotifications(transition, successfulIds, now = new Da
   }
   if (!Array.isArray(successfulIds)) throw new Error("Identifiants acquittés invalides");
 
-  const pending = new Map(transition.newEvents.map((observed) => [canonicalEventId(observed), observed]));
+  const pending = new Map(Object.entries(current.outbox.events));
   const acknowledgedIds = new Set(successfulIds);
   for (const id of acknowledgedIds) {
     if (!pending.has(id)) throw new Error(`Acquittement inconnu: ${id}`);
@@ -524,8 +609,31 @@ export function acknowledgeNotifications(transition, successfulIds, now = new Da
     const observed = pending.get(id);
     const sourceIds = observed.sourceIds ?? [observed.sourceId];
     next.seen[id] = seenRecord(observed, [...sourceIds], notifiedAt);
+    delete next.outbox.events[id];
   }
   if (acknowledgedIds.size > 0) next.updatedAt = notifiedAt;
+  validateState(next);
+  return { ...transition, state: next };
+}
+
+export function acknowledgeHealthNotifications(transition, successfulIds, now = new Date()) {
+  if (!isRecord(transition)) throw new Error("Transition invalide");
+  const current = validateState(transition.state);
+  const acknowledgedAt = now instanceof Date ? now.toISOString() : now;
+  if (!isIsoTimestamp(acknowledgedAt) ||
+      (current.updatedAt !== null && timestamp(acknowledgedAt) < timestamp(current.updatedAt))) {
+    throw new Error("Date d'acquittement invalide");
+  }
+  if (!Array.isArray(successfulIds)) throw new Error("Identifiants santé acquittés invalides");
+
+  const acknowledgedIds = new Set(successfulIds);
+  for (const id of acknowledgedIds) {
+    if (!current.outbox.health[id]) throw new Error(`Acquittement santé inconnu: ${id}`);
+  }
+
+  const next = structuredClone(current);
+  for (const id of acknowledgedIds) delete next.outbox.health[id];
+  if (acknowledgedIds.size > 0) next.updatedAt = acknowledgedAt;
   validateState(next);
   return { ...transition, state: next };
 }
