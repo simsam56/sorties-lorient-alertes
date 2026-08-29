@@ -11,6 +11,12 @@ const source = {
   venue: "Le Strapontin",
 };
 
+function mapadoHtml(items) {
+  return `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+    props: { pageProps: { entities: { ticketings: { "hydra:member": items } } } },
+  })}</script>`;
+}
+
 test("extrait seulement la vente datée disponible de la signature Mapado", async () => {
   const html = await readFile(new URL("./fixtures/mapado.html", import.meta.url), "utf8");
 
@@ -50,5 +56,26 @@ test("refuse une signature Mapado sans collection de billetterie", () => {
   assert.throws(
     () => parseMapado('<script id="__NEXT_DATA__" type="application/json">{}</script>', source),
     /Le Strapontin: collection Mapado absente/,
+  );
+});
+
+test("refuse une entrée nulle dans la collection Mapado", () => {
+  assert.throws(
+    () => parseMapado(mapadoHtml([null]), source),
+    /Le Strapontin: structure Mapado invalide/,
+  );
+});
+
+test("refuse une entrée de planning Mapado nulle", () => {
+  assert.throws(
+    () => parseMapado(mapadoHtml([{
+      title: "Vente endommagée",
+      type: "dated_events",
+      isOnSale: true,
+      availabilityStatus: "onSale",
+      slug: "vente-endommagee",
+      sellingDeviceSchedule: { "/v1/selling_devices/3326": null },
+    }]), source),
+    /Le Strapontin: structure Mapado invalide/,
   );
 });

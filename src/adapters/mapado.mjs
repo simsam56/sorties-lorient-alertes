@@ -9,11 +9,18 @@ export function parseMapado(html, source) {
   const data = JSON.parse(raw);
   const items = data?.props?.pageProps?.entities?.ticketings?.["hydra:member"];
   if (!Array.isArray(items)) throw new Error(`${source.name}: collection Mapado absente`);
+  if (items.some((item) => !item || typeof item !== "object")) {
+    throw new Error(`${source.name}: structure Mapado invalide`);
+  }
 
   return items
     .filter((item) => item.type === "dated_events" && item.isOnSale && item.availabilityStatus === "onSale")
     .map((item) => {
-      const labels = Object.values(item.sellingDeviceSchedule ?? {})
+      const schedules = Object.values(item.sellingDeviceSchedule ?? {});
+      if (schedules.some((entry) => !entry || typeof entry !== "object")) {
+        throw new Error(`${source.name}: structure Mapado invalide`);
+      }
+      const labels = schedules
         .map((entry) => entry.fr)
         .filter(Boolean);
       const startsOn = labels.map(parseFrenchDate).find(Boolean);
