@@ -82,6 +82,8 @@ test("le workflow monitor sérialise les contrôles planifiés et manuels", asyn
     ["check", "inspect", "test-notification"],
   );
   assert.equal(workflow.on.workflow_dispatch.inputs.mode.type, "choice");
+  assert.equal(workflow.on.workflow_dispatch.inputs.mode.required, true);
+  assert.equal(workflow.on.workflow_dispatch.inputs.mode.default, "check");
   assert.equal(workflow.concurrency["cancel-in-progress"], false);
   assert.equal(typeof workflow.concurrency.group, "string");
   assert.deepEqual(workflow.permissions, { contents: "write" });
@@ -117,10 +119,19 @@ test("le workflow monitor utilise Node 22 et des actions immuablement épinglée
 test("le checkout de l'état arrive après les tests et borne l'exécution du monitor", async () => {
   const workflow = await loadWorkflow("monitor.yml");
   const job = workflow.jobs.monitor;
+  const setupNode = findStep(job, "Setup Node.js");
+  const install = findStep(job, "Install dependencies");
   const tests = findStep(job, "Run tests");
   const stateCheckout = findStep(job, "Checkout state");
   const runMonitor = findStep(job, "Run monitor");
+  assert.equal(install.run, "npm ci");
+  assert.equal(install["working-directory"], "app");
+  assert.equal(tests.run, "npm test");
+  assert.equal(tests["working-directory"], "app");
+  assert.ok(job.steps.indexOf(install) > job.steps.indexOf(setupNode));
+  assert.ok(job.steps.indexOf(tests) > job.steps.indexOf(install));
   assert.ok(job.steps.indexOf(stateCheckout) > job.steps.indexOf(tests));
+  assert.ok(job.steps.indexOf(runMonitor) > job.steps.indexOf(stateCheckout));
   assert.equal(runMonitor["working-directory"], undefined);
   assert.equal(runMonitor.run.trim(), 'node app/scripts/run-monitor.mjs "$MODE" --state .monitor-state/state.json');
   assert.equal(
@@ -170,10 +181,12 @@ test("la persistance ne committe que les changements de state.json", async () =>
 
 test("le heartbeat mensuel met à jour main avec un horodatage UTC", async () => {
   const workflow = await loadWorkflow("heartbeat.yml");
+  const monitorWorkflow = await loadWorkflow("monitor.yml");
   assert.deepEqual(workflow.on.schedule, [{ cron: "17 3 1 * *" }]);
   assert.equal(Object.hasOwn(workflow.on, "workflow_dispatch"), true);
   assert.deepEqual(workflow.permissions, { contents: "write" });
   assert.equal(workflow.concurrency["cancel-in-progress"], false);
+  assert.notEqual(workflow.concurrency.group, monitorWorkflow.concurrency.group);
 
   const job = workflow.jobs.heartbeat;
   assert.equal(job["timeout-minutes"], 5);

@@ -107,7 +107,7 @@ Le premier `check` distant doit servir uniquement à établir les baselines. Vé
 
 ### Récupération
 
-Un état JSON absent, illisible ou incohérent arrête le moniteur avant tout appel réseau : il n'est jamais remplacé silencieusement. Dans ce cas :
+Un état JSON illisible ou incohérent arrête le moniteur avant tout appel réseau : il n'est jamais remplacé silencieusement. Un fichier absent crée au contraire un état vide et une nouvelle baseline ; sur une branche déjà exploitée, cette absence doit donc être traitée comme un incident avant de relancer. Dans ce cas :
 
 1. suspendre les lancements manuels le temps du diagnostic ;
 2. récupérer la branche `state` et sauvegarder l'octet exact de `state.json` ;
