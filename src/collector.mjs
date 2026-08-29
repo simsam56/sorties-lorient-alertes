@@ -10,6 +10,7 @@ import { resolveReservation as resolveOfficialReservation } from "./adapters/res
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 15_000;
 const DETAIL_CONCURRENCY = 5;
+const defaultTimeoutSignalFactory = (milliseconds) => AbortSignal.timeout(milliseconds);
 
 export const DIRECT_ADAPTERS = Object.freeze({
   mapado: parseMapado,
@@ -44,8 +45,8 @@ function isDue(source, sourceState, now) {
   return now.getTime() - lastChecked.getTime() >= source.pollEveryMinutes * 60 * 1000;
 }
 
-function timeoutOptions() {
-  return { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) };
+function timeoutOptions(timeoutSignalFactory) {
+  return { signal: timeoutSignalFactory(FETCH_TIMEOUT_MS) };
 }
 
 function errorMessage(error) {
@@ -54,29 +55,45 @@ function errorMessage(error) {
 
 function cacheRecord(candidateState, detailUrl, now) {
   const record = stateEntry(candidateState, detailUrl);
+  if (!record || typeof record !== "object" || !Object.hasOwn(record, "event")) return undefined;
   const checkedAt = asDate(record?.checkedAt);
   if (!checkedAt || now.getTime() < checkedAt.getTime() ||
-      now.getTime() - checkedAt.getTime() >= SIX_HOURS_MS || !Object.hasOwn(record, "event")) {
+      now.getTime() - checkedAt.getTime() >= SIX_HOURS_MS ||
+      (record.event !== null && typeof record.event !== "object")) {
     return undefined;
   }
   return record.event;
 }
 
-async function mapSettledWithLimit(items, limit, mapper) {
-  const results = new Array(items.length);
-  let nextIndex = 0;
-  const worker = async () => {
-    while (nextIndex < items.length) {
-      const index = nextIndex++;
-      try {
-        results[index] = { status: "fulfilled", value: await mapper(items[index]) };
-      } catch (reason) {
-        results[index] = { status: "rejected", reason };
-      }
+function createLimiter(limit) {
+  let active = 0;
+  const pending = [];
+
+  const runNext = () => {
+    while (active < limit && pending.length > 0) {
+      const { task, resolve, reject } = pending.shift();
+      active += 1;
+      Promise.resolve().then(task).then(resolve, reject).finally(() => {
+        active -= 1;
+        runNext();
+      });
     }
   };
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
+
+  return (task) => new Promise((resolve, reject) => {
+    pending.push({ task, resolve, reject });
+    runNext();
+  });
+}
+
+async function mapSettledWithLimit(items, runWithLimit, mapper) {
+  return Promise.all(items.map(async (item) => {
+    try {
+      return { status: "fulfilled", value: await runWithLimit(() => mapper(item)) };
+    } catch (reason) {
+      return { status: "rejected", reason };
+    }
+  }));
 }
 
 async function collectTerritorialSource({
@@ -87,8 +104,10 @@ async function collectTerritorialSource({
   candidateUpdates,
   candidateParsers,
   resolveReservation,
+  runDetail,
+  timeoutSignalFactory,
 }) {
-  const listHtml = await fetchText(source.url, timeoutOptions());
+  const listHtml = await fetchText(source.url, timeoutOptions(timeoutSignalFactory));
   const candidates = candidateParsers[source.adapter](listHtml, source);
   const cachedEvents = [];
   const candidatesToResolve = [];
@@ -102,8 +121,8 @@ async function collectTerritorialSource({
     candidatesToResolve.push(candidate);
   }
 
-  const detailResults = await mapSettledWithLimit(candidatesToResolve, DETAIL_CONCURRENCY, async (candidate) => {
-    const detailHtml = await fetchText(candidate.detailUrl, timeoutOptions());
+  const detailResults = await mapSettledWithLimit(candidatesToResolve, runDetail, async (candidate) => {
+    const detailHtml = await fetchText(candidate.detailUrl, timeoutOptions(timeoutSignalFactory));
     const event = resolveReservation(detailHtml, candidate);
     candidateUpdates[candidate.detailUrl] = { checkedAt, event };
     return event;
@@ -123,6 +142,8 @@ async function collectOneSource({
   adapters,
   candidateParsers,
   resolveReservation,
+  runDetail,
+  timeoutSignalFactory,
 }) {
   if (candidateParsers[source.adapter]) {
     return collectTerritorialSource({
@@ -133,12 +154,14 @@ async function collectOneSource({
       candidateUpdates,
       candidateParsers,
       resolveReservation,
+      runDetail,
+      timeoutSignalFactory,
     });
   }
 
   const adapter = adapters[source.adapter];
   if (!adapter) throw new Error(`Adaptateur absent: ${source.adapter}`);
-  const html = await fetchText(source.url, timeoutOptions());
+  const html = await fetchText(source.url, timeoutOptions(timeoutSignalFactory));
   return adapter(html, source);
 }
 
@@ -156,6 +179,7 @@ export async function collectDueSources({
   adapters = DIRECT_ADAPTERS,
   candidateParsers = TERRITORIAL_PARSERS,
   resolveReservation = resolveOfficialReservation,
+  timeoutSignalFactory = defaultTimeoutSignalFactory,
 }) {
   const checkedNow = asDate(now);
   if (!checkedNow) throw new Error("Date de collecte invalide");
@@ -167,6 +191,7 @@ export async function collectDueSources({
   const failures = [];
   const skipped = [];
   const dueSources = [];
+  const runDetail = createLimiter(DETAIL_CONCURRENCY);
 
   for (const source of sources ?? []) {
     if (source.enabled !== true) {
@@ -189,6 +214,8 @@ export async function collectDueSources({
       adapters,
       candidateParsers,
       resolveReservation,
+      runDetail,
+      timeoutSignalFactory,
     }),
   })));
 

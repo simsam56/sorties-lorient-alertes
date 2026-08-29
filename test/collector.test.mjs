@@ -199,3 +199,161 @@ test("ne résout jamais plus de cinq détails territoriaux simultanément", asyn
   assert.equal(result.successes[0].events.length, 6);
   assert.equal(maxActiveDetails, 5);
 });
+
+test("partage le plafond de cinq résolutions entre les deux sources territoriales", async () => {
+  const tourism = source("tourisme", "tourism", 60);
+  const lorientEvents = source("lorient-evenements", "lorient-events", 60);
+  const candidatesFor = (source) => Array.from({ length: 5 }, (_, index) => ({
+    title: `${source.id} ${index}`,
+    startsOn: "2026-09-16",
+    venue: "Théâtre",
+    city: "Lorient",
+    detailUrl: `https://${source.id}.example.test/${index}`,
+    sourceId: source.id,
+  }));
+  let activeDetails = 0;
+  let maxActiveDetails = 0;
+
+  const result = await collectDueSources({
+    sources: [tourism, lorientEvents],
+    sourceState: {},
+    fetchText: async (url) => {
+      if (url === tourism.url || url === lorientEvents.url) return "<main>liste</main>";
+      activeDetails += 1;
+      maxActiveDetails = Math.max(maxActiveDetails, activeDetails);
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      activeDetails -= 1;
+      return "<main>détail</main>";
+    },
+    now,
+    candidateParsers: {
+      tourism: () => candidatesFor(tourism),
+      "lorient-events": () => candidatesFor(lorientEvents),
+    },
+    resolveReservation: (_html, candidate) => ({ title: candidate.title }),
+  });
+
+  assert.equal(result.successes.length, 2);
+  assert.equal(maxActiveDetails, 5);
+});
+
+test("demande exactement un délai d'expiration de quinze secondes par récupération", async () => {
+  const direct = source("direct", "ok");
+  const timeoutDurations = [];
+
+  await collectDueSources({
+    sources: [direct],
+    sourceState: {},
+    fetchText: async (_url, { signal }) => {
+      assert.equal(signal.marker, "timeout");
+      return "<main>officiel</main>";
+    },
+    now,
+    adapters: { ok: () => [] },
+    timeoutSignalFactory: (milliseconds) => {
+      timeoutDurations.push(milliseconds);
+      return { marker: "timeout" };
+    },
+  });
+
+  assert.deepEqual(timeoutDurations, [15_000]);
+});
+
+test("réutilise une entrée cache récente à event:null sans résoudre son détail", async () => {
+  const tourism = source("tourisme", "tourism", 60);
+  const candidate = {
+    title: "Sans réservation",
+    startsOn: "2026-09-17",
+    venue: "Théâtre",
+    city: "Lorient",
+    detailUrl: "https://tourisme.example.test/sans-reservation",
+    sourceId: tourism.id,
+  };
+  const fetchedUrls = [];
+
+  const result = await collectDueSources({
+    sources: [tourism],
+    sourceState: {},
+    candidateState: {
+      [candidate.detailUrl]: { checkedAt: "2026-08-30T05:00:01.000Z", event: null },
+    },
+    fetchText: async (url) => { fetchedUrls.push(url); return "<main>liste</main>"; },
+    now,
+    candidateParsers: { tourism: () => [candidate] },
+    resolveReservation: () => { throw new Error("ne doit pas résoudre"); },
+  });
+
+  assert.deepEqual(result.successes[0].events, []);
+  assert.deepEqual(fetchedUrls, [tourism.url]);
+  assert.deepEqual(result.candidateUpdates, {});
+});
+
+test("ignore une entrée cache malformée et rafraîchit la résolution", async () => {
+  const tourism = source("tourisme", "tourism", 60);
+  const candidate = {
+    title: "À rafraîchir",
+    startsOn: "2026-09-18",
+    venue: "Théâtre",
+    city: "Lorient",
+    detailUrl: "https://tourisme.example.test/a-rafraichir",
+    sourceId: tourism.id,
+  };
+  const event = { title: candidate.title, bookingUrl: "https://billets.example.test/rafraichir" };
+  const fetchedUrls = [];
+
+  const result = await collectDueSources({
+    sources: [tourism],
+    sourceState: {},
+    candidateState: {
+      [candidate.detailUrl]: { checkedAt: "2026-08-30T05:00:00.000Z", event: "invalide" },
+    },
+    fetchText: async (url) => { fetchedUrls.push(url); return "<main>officiel</main>"; },
+    now,
+    candidateParsers: { tourism: () => [candidate] },
+    resolveReservation: () => event,
+  });
+
+  assert.deepEqual(fetchedUrls, [tourism.url, candidate.detailUrl]);
+  assert.deepEqual(result.successes[0].events, [event]);
+  assert.deepEqual(result.candidateUpdates, {
+    [candidate.detailUrl]: { checkedAt: "2026-08-30T10:00:00.000Z", event },
+  });
+});
+
+test("réutilise seulement le cache strictement antérieur à six heures", async () => {
+  const tourism = source("tourisme", "tourism", 60);
+  const justBefore = {
+    title: "Avant frontière",
+    startsOn: "2026-09-19",
+    venue: "Théâtre",
+    city: "Lorient",
+    detailUrl: "https://tourisme.example.test/avant-frontiere",
+    sourceId: tourism.id,
+  };
+  const exactlySixHours = { ...justBefore, title: "À la frontière", detailUrl: "https://tourisme.example.test/frontiere" };
+  const cachedEvent = { title: justBefore.title, bookingUrl: "https://billets.example.test/avant" };
+  const refreshedEvent = { title: exactlySixHours.title, bookingUrl: "https://billets.example.test/frontiere" };
+  const fetchedUrls = [];
+
+  const result = await collectDueSources({
+    sources: [tourism],
+    sourceState: {},
+    candidateState: {
+      [justBefore.detailUrl]: { checkedAt: "2026-08-30T04:00:00.001Z", event: cachedEvent },
+      [exactlySixHours.detailUrl]: { checkedAt: "2026-08-30T04:00:00.000Z", event: refreshedEvent },
+    },
+    fetchText: async (url) => { fetchedUrls.push(url); return "<main>officiel</main>"; },
+    now,
+    candidateParsers: { tourism: () => [justBefore, exactlySixHours] },
+    resolveReservation: () => refreshedEvent,
+  });
+
+  assert.deepEqual(fetchedUrls, [tourism.url, exactlySixHours.detailUrl]);
+  assert.deepEqual(result.successes[0].events, [cachedEvent, refreshedEvent]);
+  assert.deepEqual(result.candidateUpdates, {
+    [exactlySixHours.detailUrl]: {
+      checkedAt: "2026-08-30T10:00:00.000Z",
+      event: refreshedEvent,
+    },
+  });
+});
