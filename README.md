@@ -98,35 +98,15 @@ Le workflow récupère la branche `state` dans `.monitor-state/`, puis passe `.m
 - `candidates` met en cache pendant six heures les détails issus des agendas territoriaux ;
 - `outbox.events` et `outbox.health` conservent ce qui doit encore être publié ou acquitté.
 
-Pour amorcer la branche, créer un commit orphelin `state` contenant uniquement un état produit par `emptyState()`, le pousser, puis relire et valider le fichier distant avant le premier `check`. Cette procédure s'arrête si `state` existe déjà et ne touche pas au checkout principal :
+Pour amorcer la branche, lancer le script depuis un checkout propre de `main` :
 
 ```bash
-state_worktree=$(mktemp -d)
-rmdir "$state_worktree"
-git worktree add --detach "$state_worktree" main
-(
-  cd "$state_worktree"
-  node --input-type=module -e '
-    import { writeFile } from "node:fs/promises";
-    import { emptyState } from "./src/state.mjs";
-    await writeFile("state.json", `${JSON.stringify(emptyState(), null, 2)}\n`);
-  '
-  git switch --orphan state
-  git add state.json
-  git commit -m "chore: initialize monitor state"
-  git push -u origin state
-)
-git fetch origin state
-git show origin/state:state.json | node --input-type=module -e '
-  import { validateState } from "./src/state.mjs";
-  let input = "";
-  for await (const chunk of process.stdin) input += chunk;
-  validateState(JSON.parse(input));
-  console.log("État distant valide");
-'
-git worktree remove "$state_worktree"
-unset state_worktree
+node scripts/bootstrap-state.mjs
 ```
+
+Le préflight exécute exactement `git ls-remote --exit-code --heads origin refs/heads/state` **avant** de créer un worktree ou une branche locale. Un code `0` signifie que `origin/state` existe : le script s'arrête en erreur sans commit ni push. Un code `2` autorise l'amorçage ; tout autre code est une erreur d'accès au distant et arrête également l'opération.
+
+Après ce contrôle, le script crée un worktree temporaire sur `main`, une branche locale orpheline au nom unique et un `state.json` produit par `emptyState()`. Il vérifie que le commit racine ne contient que ce fichier, pousse `state`, relit `FETCH_HEAD:state.json` depuis le distant et le passe à `validateState()`. Une fonction de nettoyage commune s'exécute après succès comme après échec : retrait forcé du seul worktree temporaire connu, suppression de sa branche locale si elle a été créée et suppression de son répertoire temporaire. Un nettoyage incomplet fait échouer explicitement le script.
 
 Le premier `check` distant doit servir uniquement à établir les baselines. Vérifier son journal et le diff de `state.json` avant de considérer la surveillance active.
 
