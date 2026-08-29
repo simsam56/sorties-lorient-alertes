@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, chmod, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -45,7 +45,28 @@ async function createRepository(t) {
   mustExecute("git", ["init", "--bare", remote]);
   mustExecute("git", ["remote", "add", "origin", remote], { cwd: repository });
   mustExecute("git", ["push", "-u", "origin", "main"], { cwd: repository });
-  return { bootstrapTmp, repository, remote };
+  return { bootstrapTmp, remote, repository, root };
+}
+
+async function createOrphanResidueGitShim(root) {
+  const shimDirectory = join(root, "git-shim");
+  const shim = join(shimDirectory, "git");
+  const realGit = mustExecute("which", ["git"]);
+  await mkdir(shimDirectory);
+  await writeFile(shim, `#!/bin/sh
+"${realGit}" "$@"
+status=$?
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+if [ "$1" = "switch" ] && [ "$2" = "--orphan" ]; then
+  printf inherited > inherited-from-main.txt
+  "${realGit}" add -- inherited-from-main.txt
+fi
+exit 0
+`, "utf8");
+  await chmod(shim, 0o700);
+  return shimDirectory;
 }
 
 function repositorySnapshot(repository) {
@@ -96,11 +117,13 @@ exit 1
 test("nettoie le worktree et la branche locale si le push échoue après création", async (t) => {
   const { bootstrapTmp, repository, remote } = await createRepository(t);
   const hook = join(remote, "hooks", "pre-receive");
+  const pushMarker = join(remote, "push-attempted");
   await mkdir(dirname(hook), { recursive: true });
   await writeFile(hook, `#!/bin/sh
 while read -r old_value new_value reference
 do
   if [ "$reference" = "refs/heads/state" ]; then
+    printf attempted > "${pushMarker}"
     echo "state push rejected" >&2
     exit 1
   fi
@@ -117,18 +140,20 @@ exit 0
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /state push rejected/u);
+  assert.equal(await readFile(pushMarker, "utf8"), "attempted");
   assert.deepEqual(repositorySnapshot(repository), before);
   assert.equal(remoteState(remote).status, 2);
   assert.deepEqual(await readdir(bootstrapTmp), []);
 });
 
 test("crée, valide et relit un état v2 distant puis retire ses ressources temporaires", async (t) => {
-  const { bootstrapTmp, repository, remote } = await createRepository(t);
+  const { bootstrapTmp, repository, remote, root } = await createRepository(t);
+  const shimDirectory = await createOrphanResidueGitShim(root);
   const before = repositorySnapshot(repository);
 
   const result = execute(process.execPath, [BOOTSTRAP_SCRIPT], {
     cwd: repository,
-    env: { TMPDIR: bootstrapTmp },
+    env: { PATH: `${shimDirectory}:${process.env.PATH}`, TMPDIR: bootstrapTmp },
   });
 
   assert.equal(result.status, 0, result.stderr);

@@ -81,9 +81,11 @@ export async function bootstrapState({ cwd = process.cwd(), remote = "origin" } 
   try {
     await git(["worktree", "add", "--detach", worktree, "main"], repository);
     worktreeAdded = true;
+    await git(["switch", "--orphan", branch], worktree);
+    await git(["read-tree", "--empty"], worktree);
+    await git(["clean", "-fdx"], worktree);
     const initial = emptyState();
     await writeFile(join(worktree, "state.json"), `${JSON.stringify(initial, null, 2)}\n`, "utf8");
-    await git(["switch", "--orphan", branch], worktree);
     await git(["add", "--", "state.json"], worktree);
     await git([
       "-c", "user.name=github-actions[bot]",
