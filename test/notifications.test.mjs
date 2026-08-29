@@ -21,6 +21,10 @@ function event(overrides = {}) {
   });
 }
 
+function hasUnpairedSurrogate(value) {
+  return /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(value);
+}
+
 test("compose une notification individuelle avec date, lieu et lien de réservation", () => {
   const observed = event({ title: "Émilie Simon", startsOn: "2026-10-18" });
 
@@ -83,6 +87,36 @@ test("tronque un digest Unicode à 4 096 octets sans couper son renvoi Markdown"
   assert.ok(notification.message.endsWith(suffix));
   assert.match(notification.message, /^\[Événement 1 /u);
   assert.equal(notification.ids.length, 12);
+});
+
+test("borne une alerte individuelle quand son URL de réservation Unicode dépasse le budget", () => {
+  const bookingUrl = `https://billetterie.example.test/${"🎭".repeat(1_500)}`;
+  const [notification] = buildEventNotifications([event({ bookingUrl })]);
+
+  assert.ok(Buffer.byteLength(notification.message, "utf8") <= 4_096);
+  assert.equal(hasUnpairedSurrogate(notification.message), false);
+  assert.match(notification.message, /Lien de réservation indisponible dans ce message/u);
+  assert.doesNotMatch(notification.message, /\]\(/u);
+  assert.equal(notification.clickUrl, bookingUrl);
+});
+
+test("borne un digest même lorsque les URL de réservation et de source sont Unicode et hors budget", () => {
+  const bookingUrl = `https://billetterie.example.test/${"🎭".repeat(1_500)}`;
+  const sourceUrl = `https://www.hydrophone.fr/${"🎼".repeat(1_500)}`;
+  const events = [
+    event({ bookingUrl, sourceUrl, startsOn: "2026-11-01" }),
+    event({ bookingUrl, sourceUrl, startsOn: "2026-11-02", title: "Deuxième sortie" }),
+    event({ bookingUrl, sourceUrl, startsOn: "2026-11-03", title: "Troisième sortie" }),
+  ];
+
+  const [notification] = buildEventNotifications(events);
+
+  assert.ok(Buffer.byteLength(notification.message, "utf8") <= 4_096);
+  assert.equal(hasUnpairedSurrogate(notification.message), false);
+  assert.match(notification.message, /Lien de réservation indisponible dans ce message/u);
+  assert.match(notification.message, /Source indisponible dans ce message/u);
+  assert.doesNotMatch(notification.message, /\]\(/u);
+  assert.equal(notification.clickUrl, sourceUrl);
 });
 
 test("compose les alertes techniques d'incident et de rétablissement", () => {

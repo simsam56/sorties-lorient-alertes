@@ -2,6 +2,8 @@ import { canonicalEventId } from "./model.mjs";
 
 const MAX_MESSAGE_BYTES = 4_096;
 const EVENT_TAGS = Object.freeze(["ticket", "performing_arts"]);
+const RESERVATION_OMITTED = "Lien de réservation indisponible dans ce message — ouvrez la notification.";
+const SOURCE_OMITTED = "Source indisponible dans ce message — ouvrez la notification.";
 const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   dateStyle: "full",
   timeZone: "Europe/Paris",
@@ -9,6 +11,19 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
 
 function byteLength(value) {
   return Buffer.byteLength(value, "utf8");
+}
+
+function truncateUtf8(value, maxBytes) {
+  const budget = Math.max(0, Math.floor(Number(maxBytes) || 0));
+  if (byteLength(value) <= budget) return value;
+  if (budget < byteLength("…")) return "";
+
+  let result = "";
+  for (const character of value) {
+    if (byteLength(`${result}${character}…`) > budget) break;
+    result += character;
+  }
+  return `${result}…`;
 }
 
 function escapeMarkdown(value) {
@@ -43,20 +58,42 @@ function eventLine(event, title = event.title) {
 }
 
 function clippedEventLine(event, maxBytes) {
+  const budget = Math.max(0, Math.floor(Number(maxBytes) || 0));
   const fixedBytes = byteLength(eventLine(event, ""));
-  if (fixedBytes > maxBytes) return eventLine(event, "").slice(0, maxBytes);
+  if (fixedBytes > budget) return null;
 
   let title = "";
   for (const character of event.title) {
     const candidate = `${title}${character}`;
-    if (byteLength(eventLine(event, `${candidate}…`)) > maxBytes) break;
+    if (byteLength(eventLine(event, `${candidate}…`)) > budget) break;
     title = candidate;
   }
-  return eventLine(event, `${title}…`);
+  const decorated = byteLength(eventLine(event, `${title}…`)) <= budget ? `${title}…` : title;
+  return eventLine(event, decorated);
 }
 
-function sourceLink(event) {
-  return `[Voir la programmation](${event.sourceUrl})`;
+function reservationFallback(event, maxBytes) {
+  return truncateUtf8(
+    `${RESERVATION_OMITTED}\n${escapeMarkdown(event.title)}\n${formatDate(event.startsOn)} — ${escapeMarkdown(event.venue)}, ${escapeMarkdown(event.city)}`,
+    maxBytes,
+  );
+}
+
+function boundedEventLine(event, maxBytes) {
+  const full = eventLine(event);
+  if (byteLength(full) <= maxBytes) return full;
+  return clippedEventLine(event, maxBytes) ?? reservationFallback(event, maxBytes);
+}
+
+function sourceReference(sourceUrl, maxBytes, label = "Voir la programmation") {
+  const full = `[${label}](${sourceUrl})`;
+  if (byteLength(full) <= maxBytes) return full;
+  return truncateUtf8(SOURCE_OMITTED, maxBytes);
+}
+
+function digestFooter(event, omitted, maxBytes) {
+  const prefix = omitted === 0 ? "" : `… et ${omitted} autres événements\n`;
+  return `${prefix}${sourceReference(event.sourceUrl, maxBytes - byteLength(prefix))}`;
 }
 
 function digestMessage(events) {
@@ -67,28 +104,23 @@ function digestMessage(events) {
   const included = [];
   for (let index = 0; index < events.length; index += 1) {
     const omitted = events.length - index - 1;
-    const ending = `… et ${omitted} autres événements\n${sourceLink(events[0])}`;
-    const candidate = [...included, lines[index], ending].join("\n\n");
-    if (byteLength(candidate) <= MAX_MESSAGE_BYTES) {
-      included.push(lines[index]);
-      continue;
-    }
-    if (included.length === 0) {
-      const separatorBytes = byteLength(`\n\n${ending}`);
-      included.push(clippedEventLine(events[index], MAX_MESSAGE_BYTES - separatorBytes));
-    }
-    break;
+    const footer = digestFooter(events[0], omitted, MAX_MESSAGE_BYTES);
+    const prefix = included.length === 0 ? "" : `${included.join("\n\n")}\n\n`;
+    const available = MAX_MESSAGE_BYTES - byteLength(prefix) - byteLength(`\n\n${footer}`);
+    const line = boundedEventLine(events[index], available);
+    if (line === "" || byteLength(`${prefix}${line}\n\n${footer}`) > MAX_MESSAGE_BYTES) break;
+    included.push(line);
   }
 
   const omitted = events.length - included.length;
-  return [...included, `… et ${omitted} autres événements\n${sourceLink(events[0])}`].join("\n\n");
+  return [...included, digestFooter(events[0], omitted, MAX_MESSAGE_BYTES)].join("\n\n");
 }
 
 function eventNotification(event) {
   return {
     ids: [canonicalEventId(event)],
     title: "Nouvelle sortie près de Lorient",
-    message: eventLine(event),
+    message: boundedEventLine(event, MAX_MESSAGE_BYTES),
     clickUrl: event.bookingUrl,
     priority: 4,
     tags: [...EVENT_TAGS],
@@ -113,14 +145,20 @@ export function buildEventNotifications(events) {
 
 function sourceLinkNotification({ source, kind, consecutiveFailures }) {
   const isIncident = kind === "incident";
+  const messagePrefix = isIncident
+    ? `${source.name} est en échec depuis ${consecutiveFailures} contrôles consécutifs.`
+    : `${source.name} est de nouveau accessible.`;
+  const sourceText = sourceReference(
+    source.url,
+    MAX_MESSAGE_BYTES - byteLength(`${messagePrefix}\n`),
+    "Ouvrir la source",
+  );
   return {
     ids: [`${kind}:${source.id}`],
     title: isIncident
       ? `Incident de surveillance : ${source.name}`
       : `Surveillance rétablie : ${source.name}`,
-    message: isIncident
-      ? `${source.name} est en échec depuis ${consecutiveFailures} contrôles consécutifs.\n[Ouvrir la source](${source.url})`
-      : `${source.name} est de nouveau accessible.\n[Ouvrir la source](${source.url})`,
+    message: truncateUtf8(`${messagePrefix}\n${sourceText}`, MAX_MESSAGE_BYTES),
     clickUrl: source.url,
     priority: isIncident ? 4 : 3,
     tags: [isIncident ? "warning" : "white_check_mark"],
