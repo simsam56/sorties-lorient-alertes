@@ -15,6 +15,10 @@ const TERRITORIAL_DOMAINS = new Set([
   "lorientbretagnesudtourisme.fr",
   "lorient-evenements.bzh",
 ]);
+const ORGANIZER_WORDS = new Set([
+  "association", "centre", "collectif", "culture", "festival", "mairie",
+  "production", "productions", "salle", "theatre", "ville",
+]);
 
 function hostname(url) {
   try {
@@ -42,9 +46,16 @@ function canonicalVenue(venue) {
   return VENUE_ALIASES.get(normalized) ?? normalized;
 }
 
+function titleWithoutOrganizerPrefix(title) {
+  const source = String(title).trim();
+  const match = source.match(/^(.{1,80}?)\s+pr[ée]sente(?:\s*[:\-–—]\s*|\s+)(.+)$/iu);
+  if (!match) return source;
+  const organizer = normalizeText(match[1]).split("-");
+  return organizer.some((word) => ORGANIZER_WORDS.has(word)) ? match[2].trim() : source;
+}
+
 function titleTokens(title) {
-  const withoutOrganizer = String(title)
-    .replace(/^[^:]{1,80}\s+pr[ée]sente\s*[:\-–—]\s*/iu, "")
+  const withoutOrganizer = titleWithoutOrganizerPrefix(title)
     .replace(/[&+]/gu, " et ")
     .normalize("NFKD")
     .replace(/\p{Diacritic}/gu, "")
@@ -65,6 +76,7 @@ function sameIdentity(left, right) {
   return left.startsOn === right.startsOn &&
     normalizeText(left.city) === normalizeText(right.city) &&
     canonicalVenue(left.venue) === canonicalVenue(right.venue) &&
+    (!isPresent(left.startsAt) || !isPresent(right.startsAt) || left.startsAt === right.startsAt) &&
     titleSimilarity(left.title, right.title) >= 0.85;
 }
 
@@ -72,12 +84,20 @@ function dataPrecision(event) {
   return Object.values(event).filter((value) => value !== null && value !== undefined && value !== "").length;
 }
 
+function stableEventKey(event) {
+  return Object.entries(event)
+    .sort(([left], [right]) => left.localeCompare(right, "fr"))
+    .map(([key, value]) => `${key}\u0000${JSON.stringify(value)}`)
+    .join("\u0001");
+}
+
 function compareEvents(left, right) {
   return bookingPriority(left) - bookingPriority(right) ||
     dataPrecision(right) - dataPrecision(left) ||
     canonicalEventId(left).localeCompare(canonicalEventId(right), "fr") ||
     left.sourceId.localeCompare(right.sourceId, "fr") ||
-    left.sourceUrl.localeCompare(right.sourceUrl, "fr");
+    left.sourceUrl.localeCompare(right.sourceUrl, "fr") ||
+    stableEventKey(left).localeCompare(stableEventKey(right), "fr");
 }
 
 function isPresent(value) {
@@ -97,6 +117,7 @@ function mergeGroup(group) {
   }
 
   merged.bookingUrl = ordered[0].bookingUrl;
+  merged.title = titleWithoutOrganizerPrefix(merged.title);
   return Object.freeze({
     ...merged,
     sourceIds: Object.freeze([...new Set(ordered.map((event) => event.sourceId))].sort((a, b) => a.localeCompare(b, "fr"))),

@@ -56,6 +56,64 @@ test("ne fusionne jamais deux dates différentes", () => {
   assert.equal(events.length, 2);
 });
 
+test("produit la même fusion quelle que soit la permutation des sources ex aequo", () => {
+  const first = event({
+    title: "Miossec",
+    sourceId: "theatre-lorient",
+    sourceUrl: "https://theatredelorient.fr/spectacle/miossec/",
+    bookingUrl: "https://billetterie.theatredelorient.fr/event/miossec-a",
+  });
+  const second = event({
+    title: "MIOSSEC",
+    sourceId: "theatre-lorient",
+    sourceUrl: "https://theatredelorient.fr/spectacle/miossec/",
+    bookingUrl: "https://billetterie.theatredelorient.fr/event/miossec-b",
+  });
+
+  assert.deepEqual(
+    deduplicateEvents([first, second]),
+    deduplicateEvents([second, first]),
+  );
+});
+
+test("ne fusionne pas deux représentations aux horaires connus différents", () => {
+  const events = deduplicateEvents([
+    event({ title: "Miossec", startsAt: "18:00" }),
+    event({ title: "MIOSSEC", startsAt: "21:00", sourceId: "theatre-lorient" }),
+  ]);
+
+  assert.equal(events.length, 2);
+});
+
+test("normalise un préfixe organisateur sans séparateur sans altérer un vrai titre", () => {
+  const organized = event({
+    title: "Le Grand Théâtre présente Emily Loizeau",
+    sourceId: "theatre-lorient",
+    sourceUrl: "https://theatredelorient.fr/spectacle/emily-loizeau/",
+    bookingUrl: "https://billetterie.theatredelorient.fr/event/emily-loizeau",
+  });
+  const plain = event({ title: "Emily Loizeau" });
+  const separated = event({
+    title: "La Ville de Lorient présente — Emily Loizeau",
+    sourceId: "city-culture",
+    sourceUrl: "https://example.test/culture/emily-loizeau",
+    bookingUrl: "https://example.test/culture/emily-loizeau",
+  });
+  const actualTitle = event({
+    title: "Emily présente Bob",
+    startsOn: "2026-10-16",
+    sourceId: "theatre-lorient",
+    sourceUrl: "https://theatredelorient.fr/spectacle/emily-presente-bob/",
+    bookingUrl: "https://billetterie.theatredelorient.fr/event/emily-presente-bob",
+  });
+
+  const events = deduplicateEvents([organized, plain, separated, actualTitle]);
+
+  assert.equal(events.length, 2);
+  assert.equal(events.find((candidate) => candidate.startsOn === "2026-10-15").title, "Emily Loizeau");
+  assert.equal(events.find((candidate) => candidate.startsOn === "2026-10-16").title, "Emily présente Bob");
+});
+
 test("reconnaît les deux appellations connues d'Océanis", () => {
   const events = deduplicateEvents([
     event({
