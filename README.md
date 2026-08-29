@@ -53,16 +53,24 @@ node scripts/run-monitor.mjs inspect
 Contrôle avec lecture et mise à jour d'un fichier d'état :
 
 ```bash
-NTFY_TOPIC='sujet-aleatoire-long-et-prive' \
-  node scripts/run-monitor.mjs check --state .monitor-state/state.json
+printf 'Sujet ntfy local : '
+IFS= read -r -s NTFY_TOPIC
+printf '\n'
+NTFY_TOPIC="$NTFY_TOPIC" node scripts/run-monitor.mjs check --state .monitor-state/state.json
+unset NTFY_TOPIC
 ```
 
 Test isolé du trajet vers ntfy :
 
 ```bash
-NTFY_TOPIC='sujet-aleatoire-long-et-prive' \
-  node scripts/run-monitor.mjs test-notification
+printf 'Sujet ntfy local : '
+IFS= read -r -s NTFY_TOPIC
+printf '\n'
+NTFY_TOPIC="$NTFY_TOPIC" node scripts/run-monitor.mjs test-notification
+unset NTFY_TOPIC
 ```
+
+`read -s` évite d'inscrire la valeur dans la ligne de commande et dans l'historique du shell. Cette variable locale est temporaire : le secret GitHub `NTFY_TOPIC` reste la source canonique pour l'exploitation. Ne pas copier sa valeur dans un fichier `.env`, un script ou une commande littérale.
 
 Dans GitHub, le workflow `Monitor Lorient events` accepte manuellement les modes `check`, `inspect` et `test-notification`. Le mode planifié est toujours `check`.
 
@@ -90,17 +98,34 @@ Le workflow récupère la branche `state` dans `.monitor-state/`, puis passe `.m
 - `candidates` met en cache pendant six heures les détails issus des agendas territoriaux ;
 - `outbox.events` et `outbox.health` conservent ce qui doit encore être publié ou acquitté.
 
-Pour amorcer la branche, créer un commit orphelin `state` contenant uniquement ce `state.json`, le pousser, puis relire le fichier distant et le valider avant le premier `check`. Une méthode isolée du checkout principal :
+Pour amorcer la branche, créer un commit orphelin `state` contenant uniquement un état produit par `emptyState()`, le pousser, puis relire et valider le fichier distant avant le premier `check`. Cette procédure s'arrête si `state` existe déjà et ne touche pas au checkout principal :
 
 ```bash
-git worktree add --detach ../sorties-lorient-alertes-state
-cd ../sorties-lorient-alertes-state
-git switch --orphan state
-git rm -rf .
-# Créer ici state.json avec le JSON version 2 ci-dessus.
-git add state.json
-git commit -m "chore: initialize monitor state"
-git push -u origin state
+state_worktree=$(mktemp -d)
+rmdir "$state_worktree"
+git worktree add --detach "$state_worktree" main
+(
+  cd "$state_worktree"
+  node --input-type=module -e '
+    import { writeFile } from "node:fs/promises";
+    import { emptyState } from "./src/state.mjs";
+    await writeFile("state.json", `${JSON.stringify(emptyState(), null, 2)}\n`);
+  '
+  git switch --orphan state
+  git add state.json
+  git commit -m "chore: initialize monitor state"
+  git push -u origin state
+)
+git fetch origin state
+git show origin/state:state.json | node --input-type=module -e '
+  import { validateState } from "./src/state.mjs";
+  let input = "";
+  for await (const chunk of process.stdin) input += chunk;
+  validateState(JSON.parse(input));
+  console.log("État distant valide");
+'
+git worktree remove "$state_worktree"
+unset state_worktree
 ```
 
 Le premier `check` distant doit servir uniquement à établir les baselines. Vérifier son journal et le diff de `state.json` avant de considérer la surveillance active.
@@ -109,11 +134,13 @@ Le premier `check` distant doit servir uniquement à établir les baselines. Vé
 
 Un état JSON illisible ou incohérent arrête le moniteur avant tout appel réseau : il n'est jamais remplacé silencieusement. Un fichier absent crée au contraire un état vide et une nouvelle baseline ; sur une branche déjà exploitée, cette absence doit donc être traitée comme un incident avant de relancer. Dans ce cas :
 
-1. suspendre les lancements manuels le temps du diagnostic ;
-2. récupérer la branche `state` et sauvegarder l'octet exact de `state.json` ;
-3. identifier le dernier commit valide dans `git log state -- state.json` ;
-4. restaurer ce commit par une opération Git traçable, de préférence `git revert`, puis pousser `state` ;
-5. exécuter `inspect`, puis un seul `check` supervisé et contrôler le diff d'état.
+1. désactiver `monitor.yml` depuis **Actions → Monitor Lorient events → … → Disable workflow**, ou avec `gh workflow disable monitor.yml --repo PROPRIETAIRE/sorties-lorient-alertes` ;
+2. attendre la fin du run actif et vérifier qu'aucun run n'est encore `in_progress` ou `queued` ;
+3. récupérer la branche `state` et sauvegarder l'octet exact de `state.json` ;
+4. identifier le dernier commit valide dans `git log state -- state.json`, le restaurer par une opération Git traçable, de préférence `git revert`, puis pousser `state` ;
+5. relire `origin/state:state.json` et le passer à `validateState()` comme dans la procédure d'amorçage ;
+6. exécuter `inspect`, puis un seul `check` supervisé sur un checkout dédié de `state`, avec le sujet saisi par `read -s` ; examiner le code retour et le diff, puis committer/pousser seulement l'état contrôlé ;
+7. supprimer ce checkout temporaire et réactiver enfin le workflow depuis l'interface, ou avec `gh workflow enable monitor.yml --repo PROPRIETAIRE/sorties-lorient-alertes`.
 
 Ne pas supprimer `seen`, les outbox ou toute la branche pour « débloquer » un run : cela recréerait une baseline ou des alertes incohérentes. En cas de reset volontaire, conserver l'ancien état et assumer explicitement qu'un nouveau premier passage sera silencieux.
 
@@ -138,7 +165,7 @@ Le workflow `monitor.yml` :
 - tourne aux minutes 7, 22, 37 et 52 ;
 - utilise Node.js 22 et s'arrête après 10 minutes ;
 - exécute `npm ci` et tous les tests avant de récupérer l'état ;
-- sérialise les runs afin que deux écritures ne se chevauchent pas ;
+- sérialise les runs afin que deux écritures ne se chevauchent pas, sans annuler les runs en attente ; `queue: max` conserve jusqu'à 100 runs pending au lieu de remplacer le run déjà en file ;
 - persiste `state.json` même après certains échecs de source ou de notification, mais uniquement si le checkout `state` a réussi et si le fichier a changé.
 
 GitHub Actions ne garantit pas un démarrage à la minute exacte : un cron peut être retardé, voire différé lors d'une forte charge. Les cadences 15/60 minutes sont donc des fréquences demandées, pas un délai d'alerte garanti.

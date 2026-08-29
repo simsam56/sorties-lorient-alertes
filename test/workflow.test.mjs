@@ -84,8 +84,11 @@ test("le workflow monitor sérialise les contrôles planifiés et manuels", asyn
   assert.equal(workflow.on.workflow_dispatch.inputs.mode.type, "choice");
   assert.equal(workflow.on.workflow_dispatch.inputs.mode.required, true);
   assert.equal(workflow.on.workflow_dispatch.inputs.mode.default, "check");
-  assert.equal(workflow.concurrency["cancel-in-progress"], false);
-  assert.equal(typeof workflow.concurrency.group, "string");
+  assert.deepEqual(workflow.concurrency, {
+    group: "monitor-state",
+    queue: "max",
+    "cancel-in-progress": false,
+  });
   assert.deepEqual(workflow.permissions, { contents: "write" });
 
   const job = workflow.jobs.monitor;
