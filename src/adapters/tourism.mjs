@@ -1,6 +1,8 @@
 import { load } from "cheerio";
 import { parseFrenchDate } from "../model.mjs";
 
+const TOURISM_HOST = "www.lorientbretagnesudtourisme.fr";
+
 function placeParts(text) {
   const match = text.trim().match(/^(.*?)(?:\s*,\s*|\s+[–—-]\s+)([^,]+)$/u);
   if (!match) return null;
@@ -9,6 +11,18 @@ function placeParts(text) {
 
 function invalid(source) {
   throw new Error(`${source.name}: signature Tourisme invalide`);
+}
+
+function officialDetailUrl(href, source) {
+  let detailUrl;
+  try {
+    detailUrl = new URL(href, source.url);
+  } catch {
+    invalid(source);
+  }
+  if (detailUrl.protocol !== "https:" || detailUrl.hostname !== TOURISM_HOST ||
+      !/^\/fr\/fiche\/.+\/$/u.test(detailUrl.pathname)) invalid(source);
+  return detailUrl;
 }
 
 export function parseTourismCandidates(html, source) {
@@ -24,8 +38,7 @@ export function parseTourismCandidates(html, source) {
     const href = detail.attr("href");
     if (!href) invalid(source);
 
-    const detailUrl = new URL(href, source.url);
-    if (!/^\/fr\/fiche\/.+\/$/u.test(detailUrl.pathname)) invalid(source);
+    const detailUrl = officialDetailUrl(href, source);
 
     const place = placeParts($(card).find(".place").first().text());
     const title = detail.text().trim();
