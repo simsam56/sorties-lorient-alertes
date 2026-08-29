@@ -1,0 +1,36 @@
+name: Monthly heartbeat
+
+on:
+  schedule:
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heartbeat-main
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - name: Update heartbeat
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > monitor-heartbeat.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- monitor-heartbeat.txt
+          if git diff --cached --quiet -- monitor-heartbeat.txt; then
+            exit 0
+          fi
+          git commit -m "chore: refresh monitor heartbeat"
+          git pull --rebase origin main
+          git push origin HEAD:main
