@@ -202,7 +202,9 @@ function assertPendingHealth(record, id, state) {
   if (!SOURCE_IDS.has(record.sourceId) || !state.sources[record.sourceId]) {
     fail(`outbox santé ${id}.sourceId est inconnu`);
   }
-  if (id !== `${record.kind}:${record.sourceId}`) fail(`identifiant d'outbox santé incohérent: ${id}`);
+  if (id !== healthOutboxId(record.kind, record.sourceId, record.queuedAt)) {
+    fail(`identifiant d'outbox santé incohérent: ${id}`);
+  }
   if (record.kind === "incident") {
     if (!Number.isInteger(record.consecutiveFailures) || record.consecutiveFailures < 4) {
       fail(`outbox santé ${id}.consecutiveFailures est invalide`);
@@ -214,6 +216,20 @@ function assertPendingHealth(record, id, state) {
       state.updatedAt === null || timestamp(record.queuedAt) > timestamp(state.updatedAt)) {
     fail(`outbox santé ${id}.queuedAt est invalide`);
   }
+}
+
+function healthOutboxId(kind, sourceId, queuedAt) {
+  return `${kind}:${sourceId}:${queuedAt}`;
+}
+
+function queueHealthTransition(next, record) {
+  const id = healthOutboxId(record.kind, record.sourceId, record.queuedAt);
+  const existing = next.outbox.health[id];
+  if (existing && !isDeepStrictEqual(existing, record)) {
+    throw new Error(`Transition santé contradictoire: ${id}`);
+  }
+  if (!existing) next.outbox.health[id] = record;
+  return id;
 }
 
 export function emptyState() {
@@ -505,12 +521,12 @@ export function planTransition({
     };
     if (opensIncident) {
       incidents.push({ ...entry, consecutiveFailures });
-      next.outbox.health[`incident:${entry.source.id}`] = {
+      queueHealthTransition(next, {
         kind: "incident",
         sourceId: entry.source.id,
         consecutiveFailures,
         queuedAt: entry.checkedAt,
-      };
+      });
     }
   }
 
@@ -521,12 +537,12 @@ export function planTransition({
     const wasInitialized = previous?.initializedAt !== null && previous?.initializedAt !== undefined;
     if (previous?.incidentOpen) {
       recoveries.push({ source: entry.source, checkedAt: entry.checkedAt });
-      next.outbox.health[`recovery:${entry.source.id}`] = {
+      queueHealthTransition(next, {
         kind: "recovery",
         sourceId: entry.source.id,
         consecutiveFailures: null,
         queuedAt: entry.checkedAt,
-      };
+      });
     }
     if (!wasInitialized) initializedSources.push(entry.source);
     next.sources[entry.source.id] = {

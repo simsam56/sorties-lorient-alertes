@@ -277,6 +277,7 @@ test("conserve toutes les sources d'une nouveauté partagée lors de l'acquittem
 test("ouvre un seul incident au quatrième échec puis le ferme au premier succès", () => {
   let state = emptyState();
   let lastFailure;
+  const incidentId = "incident:tourism:2026-08-30T14:00:00.000Z";
 
   for (let attempt = 1; attempt <= 5; attempt += 1) {
     const checkedAt = `2026-08-30T1${attempt}:00:00.000Z`;
@@ -298,7 +299,7 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
   assert.equal(state.sources.tourism.consecutiveFailures, 5);
   assert.equal(state.sources.tourism.incidentOpen, true);
   assert.deepEqual(state.outbox.health, {
-    "incident:tourism": {
+    [incidentId]: {
       kind: "incident",
       sourceId: "tourism",
       consecutiveFailures: 4,
@@ -308,12 +309,13 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
 
   const incidentAcknowledged = acknowledgeHealthNotifications(
     lastFailure,
-    ["incident:tourism"],
+    [incidentId],
     "2026-08-30T15:01:00.000Z",
   );
   assert.deepEqual(incidentAcknowledged.state.outbox.health, {});
 
   const recoveredAt = "2026-08-30T16:00:00.000Z";
+  const recoveryId = `recovery:tourism:${recoveredAt}`;
   const recovered = planTransition({
     state: incidentAcknowledged.state,
     successes: [success(tourism, [], recoveredAt)],
@@ -324,7 +326,7 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
   assert.equal(recovered.state.sources.tourism.consecutiveFailures, 0);
   assert.equal(recovered.state.sources.tourism.incidentOpen, false);
   assert.deepEqual(recovered.state.outbox.health, {
-    "recovery:tourism": {
+    [recoveryId]: {
       kind: "recovery",
       sourceId: "tourism",
       consecutiveFailures: null,
@@ -344,10 +346,90 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
 
   const recoveryAcknowledged = acknowledgeHealthNotifications(
     next,
-    ["recovery:tourism"],
+    [recoveryId],
     "2026-08-30T17:01:00.000Z",
   );
   assert.deepEqual(recoveryAcknowledged.state.outbox.health, {});
+});
+
+test("conserve chaque transition santé non acquittée sur plusieurs cycles et retire seulement l'ID acquitté", () => {
+  let state = emptyState();
+  const applyFailure = (checkedAt) => {
+    const transition = planTransition({
+      state,
+      failures: [failure(tourism, checkedAt)],
+      now: checkedAt,
+    });
+    state = transition.state;
+    return transition;
+  };
+  const applySuccess = (checkedAt) => {
+    const transition = planTransition({
+      state,
+      successes: [success(tourism, [], checkedAt)],
+      now: checkedAt,
+    });
+    state = transition.state;
+    return transition;
+  };
+
+  for (const checkedAt of [
+    "2026-08-30T10:00:00.000Z",
+    "2026-08-30T11:00:00.000Z",
+    "2026-08-30T12:00:00.000Z",
+    "2026-08-30T13:00:00.000Z",
+  ]) applyFailure(checkedAt);
+  applySuccess("2026-08-30T14:00:00.000Z");
+  for (const checkedAt of [
+    "2026-08-30T15:00:00.000Z",
+    "2026-08-30T16:00:00.000Z",
+    "2026-08-30T17:00:00.000Z",
+    "2026-08-30T18:00:00.000Z",
+  ]) applyFailure(checkedAt);
+
+  const firstIncidentId = "incident:tourism:2026-08-30T13:00:00.000Z";
+  const firstRecoveryId = "recovery:tourism:2026-08-30T14:00:00.000Z";
+  const secondIncidentId = "incident:tourism:2026-08-30T18:00:00.000Z";
+  assert.deepEqual(Object.keys(state.outbox.health), [
+    firstIncidentId,
+    firstRecoveryId,
+    secondIncidentId,
+  ]);
+  assert.deepEqual(Object.values(state.outbox.health).map(({ kind }) => kind), [
+    "incident",
+    "recovery",
+    "incident",
+  ]);
+  const fixedKeyState = structuredClone(state);
+  fixedKeyState.outbox.health["incident:tourism"] = fixedKeyState.outbox.health[firstIncidentId];
+  delete fixedKeyState.outbox.health[firstIncidentId];
+  assert.throws(() => validateState(fixedKeyState), /identifiant d'outbox santé incohérent/u);
+
+  const replay = planTransition({
+    state,
+    failures: [failure(tourism, "2026-08-30T18:00:00.000Z")],
+    now: "2026-08-30T18:05:00.000Z",
+  });
+  assert.deepEqual(replay.state.outbox.health, state.outbox.health);
+
+  const middleAcknowledged = acknowledgeHealthNotifications(
+    replay,
+    [firstRecoveryId],
+    "2026-08-30T18:06:00.000Z",
+  );
+  assert.deepEqual(Object.keys(middleAcknowledged.state.outbox.health), [
+    firstIncidentId,
+    secondIncidentId,
+  ]);
+  state = middleAcknowledged.state;
+
+  const secondRecovery = applySuccess("2026-08-30T19:00:00.000Z");
+  const secondRecoveryId = "recovery:tourism:2026-08-30T19:00:00.000Z";
+  assert.deepEqual(Object.keys(secondRecovery.state.outbox.health), [
+    firstIncidentId,
+    secondIncidentId,
+    secondRecoveryId,
+  ]);
 });
 
 test("un même échec rejoué quatre fois au même checkedAt reste un seul échec", () => {

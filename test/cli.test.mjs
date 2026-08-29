@@ -134,6 +134,12 @@ function assertTopicIsPrivate(...results) {
   assert.doesNotMatch(output, new RegExp(topic));
 }
 
+function pendingHealthIds(state, kind, sourceId) {
+  return Object.entries(state.outbox.health)
+    .filter(([, pending]) => pending.kind === kind && pending.sourceId === sourceId)
+    .map(([id]) => id);
+}
+
 test("inspect contrôle toutes les sources sans secret, déduplique et ne touche aucun état", async () => {
   const directory = await createFixtureDirectory("sorties-inspect-");
   const statePath = join(directory, "inspect-state.json");
@@ -433,7 +439,9 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     const fourthState = validateState(JSON.parse(await readFile(statePath, "utf8")));
     assert.notEqual(fourth.code, 0);
     assert.equal((await requests(directory)).filter(({ kind }) => kind === "ntfy").length, 1);
-    assert.ok(fourthState.outbox.health["incident:theatre-lorient"]);
+    assert.deepEqual(pendingHealthIds(fourthState, "incident", theatre.id), [
+      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
+    ]);
 
     await configureFixtures(directory, { routes: failedRoutes, ntfyStatuses: [200] });
     await resetRequests(directory);
@@ -447,7 +455,7 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     assert.notEqual(fifth.code, 0);
     assert.equal(fifthNtfy.length, 1);
     assert.match(JSON.parse(fifthNtfy[0].body).title, /Incident de surveillance/u);
-    assert.equal(fifthState.outbox.health["incident:theatre-lorient"], undefined);
+    assert.deepEqual(pendingHealthIds(fifthState, "incident", theatre.id), []);
 
     await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [503] });
     await resetRequests(directory);
@@ -458,7 +466,9 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     });
     const recoveryFailedState = validateState(JSON.parse(await readFile(statePath, "utf8")));
     assert.notEqual(recoveryFailed.code, 0);
-    assert.ok(recoveryFailedState.outbox.health["recovery:theatre-lorient"]);
+    assert.deepEqual(pendingHealthIds(recoveryFailedState, "recovery", theatre.id), [
+      "recovery:theatre-lorient:2026-08-30T11:30:00.000Z",
+    ]);
 
     await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [200] });
     await resetRequests(directory);
@@ -474,6 +484,76 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     assert.match(JSON.parse(recoveryNtfy[0].body).title, /Surveillance rétablie/u);
     assert.deepEqual(recoveredState.outbox.health, {});
     assertTopicIsPrivate(fourth, fifth, recoveryFailed, recoveryRetry);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("plusieurs cycles santé non acquittés restent distincts et causalement ordonnés", async () => {
+  const directory = await createFixtureDirectory("sorties-health-cycles-");
+  const statePath = join(directory, "state.json");
+  const theatre = getSource("theatre-lorient");
+  const failedRoutes = defaultRoutes();
+  failedRoutes[theatre.url] = { status: 503, body: "indisponible" };
+
+  const runWithNtfyFailure = async (now, routes) => {
+    await configureFixtures(directory, { routes, ntfyStatuses: [503] });
+    await resetRequests(directory);
+    const result = await runCli({ args: ["check", "--state", statePath], fixtureDirectory: directory, now });
+    return {
+      result,
+      ntfy: (await requests(directory)).filter(({ kind }) => kind === "ntfy"),
+    };
+  };
+
+  try {
+    await runCli({
+      args: ["check", "--state", statePath],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:00:00.000Z",
+    });
+
+    for (const now of [
+      "2026-08-30T10:15:00.000Z",
+      "2026-08-30T10:30:00.000Z",
+      "2026-08-30T10:45:00.000Z",
+      "2026-08-30T11:00:00.000Z",
+    ]) await runWithNtfyFailure(now, failedRoutes);
+
+    const firstRecovery = await runWithNtfyFailure("2026-08-30T11:15:00.000Z", defaultRoutes());
+    assert.equal(firstRecovery.ntfy.length, 1);
+    assert.match(JSON.parse(firstRecovery.ntfy[0].body).title, /Incident de surveillance/u);
+
+    for (const now of [
+      "2026-08-30T11:30:00.000Z",
+      "2026-08-30T11:45:00.000Z",
+      "2026-08-30T12:00:00.000Z",
+      "2026-08-30T12:15:00.000Z",
+    ]) await runWithNtfyFailure(now, failedRoutes);
+
+    const secondIncidentState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.deepEqual(Object.keys(secondIncidentState.outbox.health), [
+      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
+      "recovery:theatre-lorient:2026-08-30T11:15:00.000Z",
+      "incident:theatre-lorient:2026-08-30T12:15:00.000Z",
+    ]);
+    assert.deepEqual(Object.values(secondIncidentState.outbox.health).map(({ kind }) => kind), [
+      "incident",
+      "recovery",
+      "incident",
+    ]);
+
+    const secondRecovery = await runWithNtfyFailure("2026-08-30T12:30:00.000Z", defaultRoutes());
+    const secondRecoveryState = validateState(JSON.parse(await readFile(statePath, "utf8")));
+    assert.notEqual(secondRecovery.result.code, 0);
+    assert.equal(secondRecovery.ntfy.length, 1);
+    assert.deepEqual(Object.keys(secondRecoveryState.outbox.health), [
+      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
+      "recovery:theatre-lorient:2026-08-30T11:15:00.000Z",
+      "incident:theatre-lorient:2026-08-30T12:15:00.000Z",
+      "recovery:theatre-lorient:2026-08-30T12:30:00.000Z",
+    ]);
+    assertTopicIsPrivate(firstRecovery.result, secondRecovery.result);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
