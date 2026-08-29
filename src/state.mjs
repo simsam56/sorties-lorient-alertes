@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from "node:util";
+
 import { canonicalEventId } from "./model.mjs";
 import { SOURCES } from "./sources.mjs";
 
@@ -275,8 +277,42 @@ function mergeCandidateUpdates(next, candidateUpdates, nowMs) {
     assertExactKeys(record, CANDIDATE_KEYS, `candidat ${detailUrl}`);
     assertTransitionTimestamp(record.checkedAt, `candidat ${detailUrl}.checkedAt`, nowMs);
     if (record.event !== null) assertCandidateEvent(record.event, detailUrl, sourceId);
-    next.candidates[detailUrl] = structuredClone(record);
   }
+
+  let changed = false;
+  for (const [detailUrl, record] of Object.entries(candidateUpdates)) {
+    const previous = next.candidates[detailUrl];
+    if (previous) {
+      const ordering = timestamp(record.checkedAt) - timestamp(previous.checkedAt);
+      if (ordering < 0) continue;
+      if (ordering === 0) {
+        if (!isDeepStrictEqual(record, previous)) {
+          throw new Error(`Cache candidat contradictoire à ${record.checkedAt}: ${detailUrl}`);
+        }
+        continue;
+      }
+    }
+    next.candidates[detailUrl] = structuredClone(record);
+    changed = true;
+  }
+  return changed;
+}
+
+function classifySourceResult(current, entry, kind) {
+  const previous = current.sources[entry.source.id];
+  if (!previous) return "fresh";
+
+  const ordering = timestamp(entry.checkedAt) - timestamp(previous.lastCheckedAt);
+  if (ordering < 0) {
+    throw new Error(`Résultat périmé pour la source ${entry.source.id}: ${entry.checkedAt}`);
+  }
+  if (ordering > 0) return "fresh";
+
+  const previousKind = previous.consecutiveFailures === 0 ? "success" : "failure";
+  if (previousKind !== kind) {
+    throw new Error(`Résultat contradictoire pour la source ${entry.source.id} à ${entry.checkedAt}`);
+  }
+  return "replay";
 }
 
 export function planTransition({
@@ -302,11 +338,14 @@ export function planTransition({
   const recoveries = [];
   const initializedSources = [];
   const observations = new Map();
-  let touched = resultIds.length > 0 || Object.keys(candidateUpdates).length > 0;
+  let touched = false;
 
-  mergeCandidateUpdates(next, candidateUpdates, nowMs);
+  const freshFailures = failures.filter((entry) => classifySourceResult(current, entry, "failure") === "fresh");
+  const freshSuccesses = successes.filter((entry) => classifySourceResult(current, entry, "success") === "fresh");
+  touched ||= mergeCandidateUpdates(next, candidateUpdates, nowMs);
 
-  for (const entry of failures) {
+  for (const entry of freshFailures) {
+    touched = true;
     const previous = next.sources[entry.source.id] ?? {
       initializedAt: null,
       lastSuccessAt: null,
@@ -325,7 +364,8 @@ export function planTransition({
     if (opensIncident) incidents.push({ ...entry, consecutiveFailures });
   }
 
-  for (const entry of successes) {
+  for (const entry of freshSuccesses) {
+    touched = true;
     const previous = next.sources[entry.source.id];
     const wasInitialized = previous?.initializedAt !== null && previous?.initializedAt !== undefined;
     if (previous?.incidentOpen) recoveries.push({ source: entry.source, checkedAt: entry.checkedAt });

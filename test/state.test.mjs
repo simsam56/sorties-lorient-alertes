@@ -265,6 +265,197 @@ test("ouvre un seul incident au quatrième échec puis le ferme au premier succ�
   assert.deepEqual(next.recoveries, []);
 });
 
+test("un même échec rejoué quatre fois au même checkedAt reste un seul échec", () => {
+  const checkedAt = "2026-08-30T11:00:00.000Z";
+  const first = planTransition({
+    state: emptyState(),
+    successes: [],
+    failures: [failure(tourism, checkedAt)],
+    now: checkedAt,
+  });
+  const stableState = structuredClone(first.state);
+  let state = first.state;
+
+  for (let replay = 1; replay <= 4; replay += 1) {
+    const transition = planTransition({
+      state,
+      successes: [],
+      failures: [failure(tourism, checkedAt)],
+      now: `2026-08-30T1${replay + 1}:00:00.000Z`,
+    });
+    assert.deepEqual(transition.state, stableState);
+    assert.deepEqual(transition.incidents, []);
+    assert.deepEqual(transition.recoveries, []);
+    state = transition.state;
+  }
+
+  assert.equal(state.sources.tourism.consecutiveFailures, 1);
+  assert.equal(state.sources.tourism.incidentOpen, false);
+});
+
+test("un succès identique rejoué au même checkedAt est un no-op strict", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [event()], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(baseline.state);
+
+  const replay = planTransition({
+    state: baseline.state,
+    successes: [success(hydrophone, [event()], checkedAt)],
+    failures: [],
+    now: "2026-08-30T10:15:00.000Z",
+  });
+
+  assert.deepEqual(replay.state, snapshot);
+  assert.deepEqual(replay.newEvents, []);
+  assert.deepEqual(replay.initializedSources, []);
+  assert.deepEqual(baseline.state, snapshot);
+});
+
+test("rejette un résultat égal contradictoire et un succès périmé après incident", () => {
+  const firstAt = "2026-08-30T11:00:00.000Z";
+  const oneFailure = planTransition({
+    state: emptyState(),
+    successes: [],
+    failures: [failure(tourism, firstAt)],
+    now: firstAt,
+  });
+  const oneFailureSnapshot = structuredClone(oneFailure.state);
+
+  assert.throws(
+    () => planTransition({
+      state: oneFailure.state,
+      successes: [success(tourism, [], firstAt)],
+      failures: [],
+      now: "2026-08-30T11:05:00.000Z",
+    }),
+    /Résultat contradictoire.*tourism/u,
+  );
+  assert.deepEqual(oneFailure.state, oneFailureSnapshot);
+
+  let incidentState = oneFailure.state;
+  for (const checkedAt of [
+    "2026-08-30T12:00:00.000Z",
+    "2026-08-30T13:00:00.000Z",
+    "2026-08-30T14:00:00.000Z",
+  ]) {
+    incidentState = planTransition({
+      state: incidentState,
+      successes: [],
+      failures: [failure(tourism, checkedAt)],
+      now: checkedAt,
+    }).state;
+  }
+  const incidentSnapshot = structuredClone(incidentState);
+
+  assert.throws(
+    () => planTransition({
+      state: incidentState,
+      successes: [success(tourism, [], "2026-08-30T13:30:00.000Z")],
+      failures: [],
+      now: "2026-08-30T14:05:00.000Z",
+    }),
+    /Résultat périmé.*tourism/u,
+  );
+  assert.deepEqual(incidentState, incidentSnapshot);
+  assert.equal(incidentState.sources.tourism.incidentOpen, true);
+});
+
+test("le replay du quatrième échec n'émet pas une seconde alerte et ne change pas l'état", () => {
+  let state = emptyState();
+  let fourth;
+  for (const checkedAt of [
+    "2026-08-30T11:00:00.000Z",
+    "2026-08-30T12:00:00.000Z",
+    "2026-08-30T13:00:00.000Z",
+    "2026-08-30T14:00:00.000Z",
+  ]) {
+    fourth = planTransition({
+      state,
+      successes: [],
+      failures: [failure(tourism, checkedAt)],
+      now: checkedAt,
+    });
+    state = fourth.state;
+  }
+  assert.equal(fourth.incidents.length, 1);
+  const snapshot = structuredClone(state);
+
+  const replay = planTransition({
+    state,
+    successes: [],
+    failures: [failure(tourism, "2026-08-30T14:00:00.000Z")],
+    now: "2026-08-30T14:05:00.000Z",
+  });
+
+  assert.deepEqual(replay.incidents, []);
+  assert.deepEqual(replay.state, snapshot);
+});
+
+test("un cache candidat ancien ou égal ne remplace jamais une résolution fraîche", () => {
+  const detailUrl = "https://www.lorientbretagnesudtourisme.fr/fr/fiche/cache-monotone/";
+  const cachedEvent = createEvent({
+    title: "Cache frais",
+    startsOn: "2026-10-21",
+    startsAt: null,
+    venue: "Hydrophone",
+    city: "Lorient",
+    bookingUrl: "https://billetterie.hydrophone.fr/cache-frais",
+    sourceUrl: detailUrl,
+    sourceId: "tourism",
+  });
+  const freshRecord = {
+    checkedAt: "2026-08-30T12:00:00.000Z",
+    event: cachedEvent,
+  };
+  const fresh = planTransition({
+    state: emptyState(),
+    successes: [],
+    failures: [],
+    candidateUpdates: { [detailUrl]: freshRecord },
+    now: freshRecord.checkedAt,
+  });
+  const snapshot = structuredClone(fresh.state);
+
+  const stale = planTransition({
+    state: fresh.state,
+    successes: [],
+    failures: [],
+    candidateUpdates: {
+      [detailUrl]: { checkedAt: "2026-08-30T11:00:00.000Z", event: null },
+    },
+    now: "2026-08-30T12:05:00.000Z",
+  });
+  assert.deepEqual(stale.state, snapshot);
+
+  const equalReplay = planTransition({
+    state: stale.state,
+    successes: [],
+    failures: [],
+    candidateUpdates: { [detailUrl]: structuredClone(freshRecord) },
+    now: "2026-08-30T12:10:00.000Z",
+  });
+  assert.deepEqual(equalReplay.state, snapshot);
+
+  assert.throws(
+    () => planTransition({
+      state: equalReplay.state,
+      successes: [],
+      failures: [],
+      candidateUpdates: {
+        [detailUrl]: { checkedAt: freshRecord.checkedAt, event: null },
+      },
+      now: "2026-08-30T12:15:00.000Z",
+    }),
+    /Cache candidat contradictoire/u,
+  );
+  assert.deepEqual(fresh.state, snapshot);
+});
+
 test("l'échec d'une source ne l'initialise pas et ne vide pas les événements existants", () => {
   const baselineAt = "2026-08-30T10:00:00.000Z";
   const failedAt = "2026-08-30T11:00:00.000Z";
