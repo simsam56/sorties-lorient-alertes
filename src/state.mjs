@@ -293,10 +293,10 @@ function validateObservedEvent(observed, sourceId) {
   assertText(observed.venue, "événement observé.venue");
   assertText(observed.city, "événement observé.city");
   assertHttpsUrl(observed.bookingUrl, "événement observé.bookingUrl");
-  if (observed.sourceId !== undefined && !SOURCE_IDS.has(observed.sourceId)) {
+  if (!SOURCE_IDS.has(observed.sourceId)) {
     fail("événement observé.sourceId est inconnu");
   }
-  if (observed.sourceUrl !== undefined) assertHttpsUrl(observed.sourceUrl, "événement observé.sourceUrl");
+  assertHttpsUrl(observed.sourceUrl, "événement observé.sourceUrl");
 
   const sourceIds = observedSourceIds(observed, sourceId);
   const sourceUrls = observedSourceUrls(observed);
@@ -312,6 +312,8 @@ function validateObservedEvent(observed, sourceId) {
       venue: observed.venue.trim(),
       city: observed.city.trim(),
       bookingUrl: new URL(observed.bookingUrl).href,
+      sourceId: observed.sourceId,
+      sourceUrl: new URL(observed.sourceUrl).href,
       sourceIds,
       sourceUrls,
     },

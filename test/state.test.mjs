@@ -357,6 +357,38 @@ test("rejette à checkedAt égal un succès dont le contenu ou la provenance dif
   }
 });
 
+test("inclut la source primaire dans le fingerprint malgré des tableaux agrégés identiques", () => {
+  const checkedAt = "2026-08-30T10:00:00.000Z";
+  const hydrophoneUrl = "https://www.hydrophone.fr/concert-a.html";
+  const tourismUrl = "https://www.lorientbretagnesudtourisme.fr/fr/fiche/concert-a/";
+  const sourceIds = ["hydrophone", "tourism"];
+  const sourceUrls = [hydrophoneUrl, tourismUrl];
+  const primaryHydrophone = event({ sourceIds, sourceUrls, sourceUrl: hydrophoneUrl });
+  const primaryTourism = {
+    ...primaryHydrophone,
+    sourceId: "tourism",
+    sourceUrl: tourismUrl,
+  };
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(hydrophone, [primaryHydrophone], checkedAt)],
+    failures: [],
+    now: checkedAt,
+  });
+  const snapshot = structuredClone(baseline.state);
+
+  assert.throws(
+    () => planTransition({
+      state: baseline.state,
+      successes: [success(hydrophone, [primaryTourism], checkedAt)],
+      failures: [],
+      now: "2026-08-30T10:05:00.000Z",
+    }),
+    /Résultat contradictoire.*hydrophone/u,
+  );
+  assert.deepEqual(baseline.state, snapshot);
+});
+
 test("normalise l'ordre des événements avant de comparer un replay de succès", () => {
   const checkedAt = "2026-08-30T10:00:00.000Z";
   const concertA = event();
