@@ -7,3 +7,4 @@
 ## Etat
 - 2026-08-29 — [Codex] Conception validée en conversation ; spécification écrite en cours.
 - 2026-08-29 — [Codex] Spécification complète rédigée et auto-relue ; attente de la validation de Simon avant le plan d'implémentation.
+- 2026-08-29 — [Codex] Spécification validée ; plan test-first en 12 tâches rédigé et inventaire technique des sources vérifié.
