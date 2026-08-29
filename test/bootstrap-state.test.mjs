@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmod, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -68,8 +68,16 @@ test("refuse une branche state distante existante avant tout worktree ou commit"
   const { bootstrapTmp, repository, remote } = await createRepository(t);
   mustExecute("git", ["push", "origin", "main:state"], { cwd: repository });
   const before = repositorySnapshot(repository);
+  const objectsBefore = mustExecute("git", ["count-objects", "-v"], { cwd: repository });
   const remoteBefore = remoteState(remote);
   assert.equal(remoteBefore.status, 0);
+  const pushMarker = join(remote, "push-attempted");
+  const hook = join(remote, "hooks", "pre-receive");
+  await writeFile(hook, `#!/bin/sh
+printf attempted > "${pushMarker}"
+exit 1
+`, "utf8");
+  await chmod(hook, 0o700);
 
   const result = execute(process.execPath, [BOOTSTRAP_SCRIPT], {
     cwd: repository,
@@ -79,8 +87,10 @@ test("refuse une branche state distante existante avant tout worktree ou commit"
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /origin\/state existe déjà/u);
   assert.deepEqual(repositorySnapshot(repository), before);
+  assert.equal(mustExecute("git", ["count-objects", "-v"], { cwd: repository }), objectsBefore);
   assert.equal(remoteState(remote).stdout, remoteBefore.stdout);
   assert.deepEqual(await readdir(bootstrapTmp), []);
+  await assert.rejects(access(pushMarker), { code: "ENOENT" });
 });
 
 test("nettoie le worktree et la branche locale si le push échoue après création", async (t) => {
