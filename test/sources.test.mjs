@@ -47,9 +47,12 @@ test("les salles directes sont interrogées toutes les 15 minutes", () => {
   assert.ok(directSources.every((source) => source.pollEveryMinutes === 15));
 });
 
-test("chaque source est explicitement activée sans motif de désactivation", () => {
-  assert.ok(SOURCES.every((source) => source.enabled === true));
-  assert.ok(SOURCES.every((source) => source.disabledReason === null));
+test("chaque source est explicitement activée ou désactivée avec un motif", () => {
+  for (const source of SOURCES) {
+    assert.equal(typeof source.enabled, "boolean");
+    if (source.enabled) assert.equal(source.disabledReason, null);
+    else assert.match(source.disabledReason ?? "", /\S/u);
+  }
 });
 
 test("getSource refuse un identifiant inconnu", () => {

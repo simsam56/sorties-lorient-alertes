@@ -8,18 +8,13 @@ Le dépôt contient le moteur et les adaptateurs. GitHub Actions lance le contr�
 
 Les événements retenus sont les concerts, festivals, pièces de théâtre, spectacles d'humour, danse, cirque, propositions hybrides et spectacles familiaux possédant une URL de réservation HTTPS. Une manifestation gratuite est incluse si elle demande une réservation.
 
-Sources directes contrôlées toutes les 15 minutes :
+Sources actives contrôlées toutes les 15 minutes :
 
-- L'Estran à Guidel, Océanis à Ploemeur, Le Strapontin à Pont-Scorff, Quai 9 à Lanester, Les Arcs à Quéven et Théâtre à la Coque à Hennebont, via leurs billetteries officielles Mapado ;
-- Théâtre de Lorient ;
-- Hydrophone ;
-- TRIO…S.
+- L'Estran à Guidel, Océanis à Ploemeur, Le Strapontin à Pont-Scorff, Quai 9 à Lanester, Les Arcs à Quéven et Théâtre à la Coque à Hennebont, via leurs billetteries officielles Mapado.
 
-Sources de découverte ou saisonnières contrôlées toutes les 60 minutes :
+L'audit live du 30 août 2026 a laissé dans l'inventaire, mais désactivé, Lorient Bretagne Sud Tourisme, Lorient Bretagne Sud Événements, Théâtre de Lorient, Hydrophone, TRIO…S et le Festival Interceltique. Leurs pages ne permettaient pas de démontrer ensemble la signature et l'extraction d'une réservation officielle ; le motif exact reste visible dans `inspect`. Les preuves HTTP et la décision source par source sont consignées dans [`docs/source-audit.md`](docs/source-audit.md).
 
-- Lorient Bretagne Sud Tourisme ;
-- Lorient Bretagne Sud Événements, pour le Palais des Congrès et le Parc des Expositions ;
-- Festival Interceltique de Lorient (FIL).
+Le City n'a pas de source directe stable identifiée. Sa voie prévue reste l'agenda territorial, mais cette couverture n'est pas active tant que les sources territoriales ci-dessus demeurent désactivées.
 
 Le workflow se réveille toutes les 15 minutes, puis le collecteur ne relit que les sources arrivées à échéance. Une source désactivée dans [`src/sources.mjs`](src/sources.mjs) est ignorée avec sa raison explicite.
 
@@ -42,6 +37,12 @@ Prérequis : Node.js 22.
 ```bash
 npm ci
 npm test
+```
+
+Contrat live opt-in des seules sources actives, sans état ni notification :
+
+```bash
+LIVE_TESTS=1 node --test test/live-contract.test.mjs
 ```
 
 Inspection des sources, sans état et sans notification :

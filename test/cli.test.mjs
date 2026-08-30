@@ -112,21 +112,28 @@ async function exists(path) {
   }
 }
 
-async function addHydrophoneEvents(directory, events) {
-  const path = join(directory, "hydrophone.html");
+async function addMapadoEvents(directory, events) {
+  const path = join(directory, "mapado.html");
   const html = await readFile(path, "utf8");
-  const cards = events.map(({ slug, title, date }) => `
-    <article>
-      <h2><a href="${slug}.html">${title}</a></h2>
-      <p class="date">${date}</p>
-      <p class="place">Hydrophone, Lorient</p>
-      <a href="https://billetterie.hydrophone.fr/evenement/${slug}">Réserver</a>
-    </article>`).join("");
-  await writeFile(path, html.replace("</main>", `${cards}\n  </main>`));
+  const additions = events.map(({ slug, title, date }, index) => ({
+    title,
+    type: "dated_events",
+    isOnSale: true,
+    availabilityStatus: "onSale",
+    slug,
+    venue: { name: "Hydrophone", city: "Lorient" },
+    sellingDeviceSchedule: {
+      [`/v1/selling_devices/test-${index}`]: { fr: date },
+    },
+  }));
+  const marker = '"hydra:member": [';
+  if (!html.includes(marker)) throw new Error("Fixture Mapado invalide");
+  const serialized = JSON.stringify(additions, null, 2).slice(1, -1);
+  await writeFile(path, html.replace(marker, `${marker}${serialized},`));
 }
 
-async function resetHydrophoneEvents(directory) {
-  await cp(new URL("hydrophone.html", fixtureRoot), join(directory, "hydrophone.html"));
+async function resetMapadoEvents(directory) {
+  await cp(new URL("mapado.html", fixtureRoot), join(directory, "mapado.html"));
 }
 
 function assertTopicIsPrivate(...results) {
@@ -153,9 +160,12 @@ test("inspect contrôle toutes les sources sans secret, déduplique et ne touche
 
     assert.equal(result.code, 0, result.stderr);
     for (const source of SOURCES) {
-      assert.match(result.stdout, new RegExp(`${source.name.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")} — OK`, "u"));
+      const status = source.enabled
+        ? `${source.name} — OK`
+        : `${source.name} — IGNORÉ (désactivée : ${source.disabledReason})`;
+      assert.ok(result.stdout.includes(status), status);
     }
-    assert.match(result.stdout, /Événements canoniques : 6/u);
+    assert.match(result.stdout, /Événements canoniques : 1/u);
     assert.equal(await exists(statePath), false);
     assert.equal(await exists(`${statePath}.tmp`), false);
     assert.deepEqual((await requests(directory)).filter(({ kind }) => kind === "ntfy"), []);
@@ -183,8 +193,8 @@ test("check crée une baseline silencieuse puis laisse l'état inchangé octet p
 
     assert.equal(first.code, 0, first.stderr);
     assert.equal(second.code, 0, second.stderr);
-    assert.equal(Object.keys(state.sources).length, SOURCES.length);
-    assert.equal(Object.keys(state.candidates).length, 2);
+    assert.equal(Object.keys(state.sources).length, SOURCES.filter(({ enabled }) => enabled).length);
+    assert.equal(Object.keys(state.candidates).length, 0);
     assert.ok(Object.values(state.seen).every(({ notifiedAt }) => notifiedAt === null));
     assert.equal(await readFile(statePath, "utf8"), initialBytes);
     assert.equal(await exists(`${statePath}.tmp`), false);
@@ -204,7 +214,7 @@ test("une nouveauté produit une notification acquittée une seule fois", async 
       fixtureDirectory: directory,
       now: "2026-08-30T10:00:00.000Z",
     });
-    await addHydrophoneEvents(directory, [{
+    await addMapadoEvents(directory, [{
       slug: "nouveau-concert",
       title: "Nouveau concert",
       date: "Dimanche 15 novembre 2099 à 20h30",
@@ -264,7 +274,7 @@ test("un état mal formé échoue avant toute récupération et reste intact", a
 test("un lot partiel persiste santé, cache et acquittements puis retente seulement le pair échoué", async () => {
   const directory = await createFixtureDirectory("sorties-partial-");
   const statePath = join(directory, "state.json");
-  const theatre = getSource("theatre-lorient");
+  const monitoredSource = getSource("mapado-estran");
   try {
     const baseline = await runCli({
       args: ["check", "--state", statePath],
@@ -272,12 +282,12 @@ test("un lot partiel persiste santé, cache et acquittements puis retente seulem
       now: "2026-08-30T10:00:00.000Z",
     });
     const baselineState = validateState(JSON.parse(await readFile(statePath, "utf8")));
-    await addHydrophoneEvents(directory, [
+    await addMapadoEvents(directory, [
       { slug: "pair-reussi", title: "Pair réussi", date: "Dimanche 15 novembre 2099 à 20h30" },
       { slug: "pair-a-retenter", title: "Pair à retenter", date: "Lundi 16 novembre 2099 à 20h30" },
     ]);
     const partialRoutes = defaultRoutes();
-    partialRoutes[theatre.url] = { status: 503, body: "indisponible" };
+    partialRoutes[monitoredSource.url] = { status: 503, body: "indisponible" };
     await configureFixtures(directory, { routes: partialRoutes, ntfyStatuses: [200, 503] });
     await resetRequests(directory);
 
@@ -291,8 +301,8 @@ test("un lot partiel persiste santé, cache et acquittements puis retente seulem
 
     assert.notEqual(partial.code, 0);
     assert.equal(partialRequests.length, 2);
-    assert.equal(partialState.sources[theatre.id].consecutiveFailures, 1);
-    assert.equal(partialState.sources[theatre.id].lastCheckedAt, "2026-08-30T10:15:00.000Z");
+    assert.equal(partialState.sources[monitoredSource.id].consecutiveFailures, 1);
+    assert.equal(partialState.sources[monitoredSource.id].lastCheckedAt, "2026-08-30T10:15:00.000Z");
     assert.deepEqual(partialState.candidates, baselineState.candidates);
     assert.ok(partialState.seen["2099-11-15:lorient:hydrophone:pair-reussi"]);
     assert.equal(partialState.seen["2099-11-16:lorient:hydrophone:pair-a-retenter"], undefined);
@@ -312,7 +322,7 @@ test("un lot partiel persiste santé, cache et acquittements puis retente seulem
     assert.equal(retryRequests.length, 1);
     assert.match(JSON.parse(retryRequests[0].body).message, /Pair à retenter/u);
     assert.ok(retryState.seen["2099-11-16:lorient:hydrophone:pair-a-retenter"]);
-    assert.equal(retryState.sources[theatre.id].consecutiveFailures, 0);
+    assert.equal(retryState.sources[monitoredSource.id].consecutiveFailures, 0);
     assertTopicIsPrivate(baseline, partial, retry);
   } finally {
     await rm(directory, { recursive: true, force: true });
@@ -329,7 +339,7 @@ test("une notification échouée reste dans l'outbox même si la source retire e
       fixtureDirectory: directory,
       now: "2026-08-30T10:00:00.000Z",
     });
-    await addHydrophoneEvents(directory, [{
+    await addMapadoEvents(directory, [{
       slug: "concert-disparu",
       title: "Concert disparu",
       date: "Dimanche 15 novembre 2099 à 20h30",
@@ -348,7 +358,7 @@ test("une notification échouée reste dans l'outbox même si la source retire e
     assert.ok(failedState.outbox.events[pendingId]);
     assert.equal(failedState.seen[pendingId], undefined);
 
-    await resetHydrophoneEvents(directory);
+    await resetMapadoEvents(directory);
     await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [200] });
     await resetRequests(directory);
     const retry = await runCli({
@@ -379,7 +389,7 @@ test("une double collecte d'un événement pending conserve une seule entrée et
       fixtureDirectory: directory,
       now: "2026-08-30T10:00:00.000Z",
     });
-    await addHydrophoneEvents(directory, [{
+    await addMapadoEvents(directory, [{
       slug: "pending-unique",
       title: "Pending unique",
       date: "Dimanche 15 novembre 2099 à 20h30",
@@ -407,7 +417,7 @@ test("une double collecte d'un événement pending conserve une seule entrée et
 test("incident et récupération restent dans l'outbox jusqu'à leur acquittement ntfy", async () => {
   const directory = await createFixtureDirectory("sorties-health-outbox-");
   const statePath = join(directory, "state.json");
-  const theatre = getSource("theatre-lorient");
+  const monitoredSource = getSource("mapado-estran");
   try {
     await runCli({
       args: ["check", "--state", statePath],
@@ -415,7 +425,7 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
       now: "2026-08-30T10:00:00.000Z",
     });
     const failedRoutes = defaultRoutes();
-    failedRoutes[theatre.url] = { status: 503, body: "indisponible" };
+    failedRoutes[monitoredSource.url] = { status: 503, body: "indisponible" };
 
     for (const now of [
       "2026-08-30T10:15:00.000Z",
@@ -439,8 +449,8 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     const fourthState = validateState(JSON.parse(await readFile(statePath, "utf8")));
     assert.notEqual(fourth.code, 0);
     assert.equal((await requests(directory)).filter(({ kind }) => kind === "ntfy").length, 1);
-    assert.deepEqual(pendingHealthIds(fourthState, "incident", theatre.id), [
-      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
+    assert.deepEqual(pendingHealthIds(fourthState, "incident", monitoredSource.id), [
+      "incident:mapado-estran:2026-08-30T11:00:00.000Z",
     ]);
 
     await configureFixtures(directory, { routes: failedRoutes, ntfyStatuses: [200] });
@@ -455,7 +465,7 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     assert.notEqual(fifth.code, 0);
     assert.equal(fifthNtfy.length, 1);
     assert.match(JSON.parse(fifthNtfy[0].body).title, /Incident de surveillance/u);
-    assert.deepEqual(pendingHealthIds(fifthState, "incident", theatre.id), []);
+    assert.deepEqual(pendingHealthIds(fifthState, "incident", monitoredSource.id), []);
 
     await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [503] });
     await resetRequests(directory);
@@ -466,8 +476,8 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
     });
     const recoveryFailedState = validateState(JSON.parse(await readFile(statePath, "utf8")));
     assert.notEqual(recoveryFailed.code, 0);
-    assert.deepEqual(pendingHealthIds(recoveryFailedState, "recovery", theatre.id), [
-      "recovery:theatre-lorient:2026-08-30T11:30:00.000Z",
+    assert.deepEqual(pendingHealthIds(recoveryFailedState, "recovery", monitoredSource.id), [
+      "recovery:mapado-estran:2026-08-30T11:30:00.000Z",
     ]);
 
     await configureFixtures(directory, { routes: defaultRoutes(), ntfyStatuses: [200] });
@@ -492,9 +502,9 @@ test("incident et récupération restent dans l'outbox jusqu'à leur acquittemen
 test("plusieurs cycles santé non acquittés restent distincts et causalement ordonnés", async () => {
   const directory = await createFixtureDirectory("sorties-health-cycles-");
   const statePath = join(directory, "state.json");
-  const theatre = getSource("theatre-lorient");
+  const monitoredSource = getSource("mapado-estran");
   const failedRoutes = defaultRoutes();
-  failedRoutes[theatre.url] = { status: 503, body: "indisponible" };
+  failedRoutes[monitoredSource.url] = { status: 503, body: "indisponible" };
 
   const runWithNtfyFailure = async (now, routes) => {
     await configureFixtures(directory, { routes, ntfyStatuses: [503] });
@@ -533,9 +543,9 @@ test("plusieurs cycles santé non acquittés restent distincts et causalement or
 
     const secondIncidentState = validateState(JSON.parse(await readFile(statePath, "utf8")));
     assert.deepEqual(Object.keys(secondIncidentState.outbox.health), [
-      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
-      "recovery:theatre-lorient:2026-08-30T11:15:00.000Z",
-      "incident:theatre-lorient:2026-08-30T12:15:00.000Z",
+      "incident:mapado-estran:2026-08-30T11:00:00.000Z",
+      "recovery:mapado-estran:2026-08-30T11:15:00.000Z",
+      "incident:mapado-estran:2026-08-30T12:15:00.000Z",
     ]);
     assert.deepEqual(Object.values(secondIncidentState.outbox.health).map(({ kind }) => kind), [
       "incident",
@@ -548,10 +558,10 @@ test("plusieurs cycles santé non acquittés restent distincts et causalement or
     assert.notEqual(secondRecovery.result.code, 0);
     assert.equal(secondRecovery.ntfy.length, 1);
     assert.deepEqual(Object.keys(secondRecoveryState.outbox.health), [
-      "incident:theatre-lorient:2026-08-30T11:00:00.000Z",
-      "recovery:theatre-lorient:2026-08-30T11:15:00.000Z",
-      "incident:theatre-lorient:2026-08-30T12:15:00.000Z",
-      "recovery:theatre-lorient:2026-08-30T12:30:00.000Z",
+      "incident:mapado-estran:2026-08-30T11:00:00.000Z",
+      "recovery:mapado-estran:2026-08-30T11:15:00.000Z",
+      "incident:mapado-estran:2026-08-30T12:15:00.000Z",
+      "recovery:mapado-estran:2026-08-30T12:30:00.000Z",
     ]);
     assertTopicIsPrivate(firstRecovery.result, secondRecovery.result);
   } finally {
