@@ -1,7 +1,5 @@
 ## En cours
 
-- [Codex] 2026-08-30 14:28 — je touche : activation Hydrophone et agenda Lorient Événements (adaptateurs, sources, tests et déploiement)
-
 ## Decisions
 - 2026-08-29 — Projet GitHub Actions séparé du FCL ; nouveau canal ntfy et contrôle toutes les 15 minutes.
 - 2026-08-29 — Couverture hybride : agenda territorial et billetteries officielles des principales salles, avec déduplication.
@@ -44,3 +42,5 @@
 - 2026-08-30 02:37 — [Codex] Final fix round 2 livre : slug Mapado ASCII canonique avec URL exacte et dates francaises validees par calendrier UTC ; commit d80f94e, 125 reussites sur 127 tests, live 2/2, inspect stable a 81 canoniques.
 - 2026-08-30 13:55 — [Codex] Secours macOS livré : LaunchAgent `fr.baliseia.sorties-lorient-alertes` actif toutes les 900 s, commits b5b8c79/51cb855 ; deux déclenchements automatiques réussis, runs 33309496409 et 33310113152.
 - 2026-08-30 13:55 — [Codex] Etat distant validé par `src/state.mjs` après déploiement : 81 événements vus, 6/6 sources saines, outboxes événements/santé vides ; journaux LaunchAgent vides et dernier code local 0.
+- 2026-08-30 14:56 — [Codex] Hydrophone et Lorient Bretagne Sud Événements activés sur `main` par ce9b979 ; revue indépendante prête, Node 22 138/140 (2 skips attendus), contrat live 2/2 et inspect 10 Hydrophone + 13 agenda = 104 canoniques.
+- 2026-08-30 14:56 — [Codex] Déploiement automatique validé par le run 33312768662/job 99260675783 ; état distant validé par `src/state.mjs` : 104 vus, 43 candidats, 8/8 sources saines, outboxes événements/santé vides.
