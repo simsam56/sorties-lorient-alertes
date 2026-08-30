@@ -22,11 +22,12 @@ export async function sendNtfy({ topic, notification, fetchImpl = fetch, timeout
 
   let response;
   try {
-    response = await fetchImpl(`https://ntfy.sh/${topic}`, {
+    response = await fetchImpl("https://ntfy.sh/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal: AbortSignal.timeout(timeoutMs),
       body: JSON.stringify({
+        topic,
         title: notification.title,
         message: notification.message,
         click: notification.clickUrl,

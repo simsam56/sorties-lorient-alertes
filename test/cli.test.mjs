@@ -616,6 +616,7 @@ test("test-notification envoie le message explicite sans lire ni écrire l'état
     assert.equal(result.code, 0, result.stderr);
     assert.equal(ntfyRequests.length, 1);
     assert.deepEqual(payload, {
+      topic,
       title: "Alertes sorties Lorient",
       message: "Surveillance des concerts et spectacles opérationnelle",
       click: getSource("tourism").homeUrl,

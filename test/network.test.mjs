@@ -14,7 +14,7 @@ const notification = {
   markdown: true,
 };
 
-test("publie le JSON ntfy attendu sur une URL HTTPS construite depuis un sujet valide", async () => {
+test("publie le JSON ntfy attendu à la racine avec le sujet dans le corps", async () => {
   let request;
   await sendNtfy({
     topic: validTopic,
@@ -25,11 +25,12 @@ test("publie le JSON ntfy attendu sur une URL HTTPS construite depuis un sujet v
     },
   });
 
-  assert.equal(request.url, `https://ntfy.sh/${validTopic}`);
+  assert.equal(request.url, "https://ntfy.sh/");
   assert.equal(request.options.method, "POST");
   assert.deepEqual(request.options.headers, { "Content-Type": "application/json" });
   assert.ok(request.options.signal instanceof AbortSignal);
   assert.deepEqual(JSON.parse(request.options.body), {
+    topic: validTopic,
     title: notification.title,
     message: notification.message,
     click: notification.clickUrl,
