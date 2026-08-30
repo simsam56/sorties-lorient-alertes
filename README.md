@@ -155,6 +155,12 @@ GitHub Actions ne garantit pas un démarrage à la minute exacte : un cron peut 
 
 Le workflow `heartbeat.yml` écrit une date UTC dans `monitor-heartbeat.txt` sur `main`, le premier jour de chaque mois à 03:17 UTC. Il maintient l'activité planifiée d'un dépôt public mais ne remplace pas la surveillance des échecs de workflow.
 
+### Déclencheur macOS de secours
+
+Le LaunchAgent [`ops/fr.baliseia.sorties-lorient-alertes.plist`](ops/fr.baliseia.sorties-lorient-alertes.plist) demande toutes les quinze minutes à GitHub de lancer `monitor.yml` en mode `check`. Le Mac ne collecte rien lui-même et ne connaît pas le sujet ntfy : GitHub reste l'unique lieu d'exécution et la branche `state` reste l'unique état. Si le cron GitHub natif se déclenche aussi, la concurrence et l'état partagé empêchent une seconde notification pour le même événement.
+
+Le service utilisateur est chargé à l'ouverture de session et se déclenche ensuite toutes les quinze minutes tant que le Mac reste réveillé. Il ne rattrape pas les créneaux passés en veille ; sur ce Mac, la veille est désactivée lorsqu'il est branché. La sortie normale et les erreurs de déclenchement vont respectivement dans `~/Library/Logs/sorties-lorient-alertes.log` et `~/Library/Logs/sorties-lorient-alertes.error.log`. Le service dépend de la session `gh` du Mac et d'une connexion Internet. Le désinstaller consiste à exécuter `launchctl bootout gui/$(id -u)/fr.baliseia.sorties-lorient-alertes`, puis à retirer le plist de `~/Library/LaunchAgents/`.
+
 ## Sécurité ntfy et permissions
 
 Un sujet sur le service public `ntfy.sh` n'est pas un compte privé : toute personne qui devine ou apprend son nom peut potentiellement publier ou s'abonner. Utiliser un nom aléatoire long (24 à 64 caractères), dédié à ce projet, et ne jamais le mettre dans le code, l'état, les tests, les captures ou les journaux.

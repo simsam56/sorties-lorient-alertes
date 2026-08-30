@@ -1,6 +1,7 @@
 ## En cours
 
 - [Codex] 2026-08-29 23:35 — je touche : implementation complete dans la branche codex/implement-events
+- [Codex] 2026-08-30 13:33 — je touche : secours local macOS (ops LaunchAgent, test et README)
 
 ## Decisions
 - 2026-08-29 — Projet GitHub Actions séparé du FCL ; nouveau canal ntfy et contrôle toutes les 15 minutes.
