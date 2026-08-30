@@ -168,3 +168,77 @@ L'auto-relecture a été faite sans sous-agent, conformément à la consigne exp
 - `actionlint` n'est pas installé dans l'environnement ; son test reste le skip attendu. Le parsing YAML sémantique et les tests d'effets Git sont verts.
 - Les preuves live sont un instantané du 30 août 2026. Une dérive future d'une page Mapado doit désormais échouer explicitement au lieu de produire un faux vide.
 - La publication reste à faire avec l'autorisation externe prévue par la tâche 12 : dépôt public, branche `state`, secret GitHub, runs et notification ntfy ne sont pas couverts par ce correctif local.
+
+---
+
+## Round 2 — slug Mapado et calendrier stricts
+
+### Statut
+
+Le second correctif ciblé est livré dans `d80f94e` (`fix: reject ambiguous Mapado event data`).
+
+### Slug et URL Mapado
+
+- Un slug est accepté seulement s'il respecte `[a-z0-9]+(?:-[a-z0-9]+)*`.
+- Sont explicitement refusés : percent-encoding, slash ou backslash encodé, backslash littéral, segments point, query, fragment, Unicode, majuscules et tirets vides/doublés.
+- Après construction, l'URL est contrôlée contre l'origine de la source et le pathname littéral `/event/${slug}` ; search et hash doivent être vides.
+- Le contrat live vert confirme que les slugs actuellement observés sur les six Mapado actives respectent cette forme.
+
+### Date française réelle
+
+- `parseFrenchDate` construit une date UTC puis vérifie le round-trip année/mois/jour.
+- `31 févr. 2026`, `31 avril 2026` et `29 févr. 2027` retournent `null` ; `29 févr. 2028` reste accepté.
+- Une date Mapado syntaxiquement reconnaissable mais impossible devient une erreur contextualisée `sellingDeviceSchedule.date`, jamais un événement invalide différé.
+
+### TDD RED/GREEN
+
+RED :
+
+```text
+$ node --test test/model.test.mjs
+tests 5; pass 4; fail 1
+31 févr. 2026 produisait 2026-02-31 au lieu de null
+
+$ node --test test/mapado.test.mjs
+tests 14; pass 12; fail 2
+%2e%2e était accepté ; 31 févr. 2026 ne déclenchait aucune erreur Mapado
+```
+
+GREEN ciblé :
+
+```text
+$ node --test test/model.test.mjs test/mapado.test.mjs
+tests 19; pass 19; fail 0
+
+$ node --test test/model.test.mjs test/mapado.test.mjs test/cli.test.mjs test/live-contract.test.mjs
+tests 32; pass 31; fail 0; skipped 1 (live opt-in)
+```
+
+### Vérifications round 2
+
+```text
+$ npm test
+tests 127; pass 125; fail 0; skipped 2
+
+$ LIVE_TESTS=1 node --test test/live-contract.test.mjs
+tests 2; pass 2; fail 0
+
+$ node scripts/run-monitor.mjs inspect
+6 sources OK; 6 sources IGNORÉ avec motif; 81 événements canoniques; code 0
+
+$ for file in src/*.mjs src/adapters/*.mjs scripts/*.mjs test/*.mjs; do node --check "$file"; done
+aucune sortie; code 0
+
+$ git diff --check
+aucune sortie; code 0
+```
+
+### Auto-relecture round 2
+
+- Réalisée sans sous-agent, conformément à la consigne.
+- La whitelist rejette tout caractère pouvant changer de sens lors du parsing URL, avant même l'appel à `new URL`.
+- Le contrôle post-construction protège l'invariant d'origine et de pathname si la construction venait à évoluer.
+- Le round-trip UTC ne dépend ni du fuseau local ni d'une normalisation permissive de `Date`.
+- `git show --check d80f94e` ne relève aucune erreur d'espace.
+
+Réserves inchangées : `actionlint` reste absent et les preuves live restent un instantané du 30 août 2026. Aucun effet externe de publication ou de notification n'a été lancé.
