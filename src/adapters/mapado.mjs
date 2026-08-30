@@ -1,6 +1,8 @@
 import { load } from "cheerio";
 import { createEvent, parseFrenchDate } from "../model.mjs";
 
+const MAPADO_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+
 function invalidDatedEvent(source, index, field) {
   throw new Error(`${source.name}: structure Mapado invalide (dated_events[${index}].${field})`);
 }
@@ -9,14 +11,30 @@ function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
 }
 
+function bookingUrlForSlug(source, index, slug) {
+  let sourceUrl;
+  let bookingUrl;
+  const pathname = `/event/${slug}`;
+  try {
+    sourceUrl = new URL(source.url);
+    bookingUrl = new URL(pathname, sourceUrl);
+  } catch {
+    invalidDatedEvent(source, index, "slug");
+  }
+  if (bookingUrl.origin !== sourceUrl.origin || bookingUrl.pathname !== pathname ||
+      bookingUrl.search !== "" || bookingUrl.hash !== "") {
+    invalidDatedEvent(source, index, "slug");
+  }
+  return bookingUrl.href;
+}
+
 function validateDatedEvent(item, source, index) {
   if (!isNonEmptyString(item.availabilityStatus)) {
     invalidDatedEvent(source, index, "availabilityStatus");
   }
   if (typeof item.isOnSale !== "boolean") invalidDatedEvent(source, index, "isOnSale");
   if (!isNonEmptyString(item.title)) invalidDatedEvent(source, index, "title");
-  if (!isNonEmptyString(item.slug) || item.slug !== item.slug.trim() ||
-      item.slug === "." || item.slug === ".." || /[/?#]/u.test(item.slug)) {
+  if (!isNonEmptyString(item.slug) || !MAPADO_SLUG_PATTERN.test(item.slug)) {
     invalidDatedEvent(source, index, "slug");
   }
 
@@ -57,13 +75,14 @@ export function parseMapado(html, source) {
     if (item.type !== "dated_events") return [];
     const startsOn = validateDatedEvent(item, source, index);
     if (!startsOn) return [];
+    const bookingUrl = bookingUrlForSlug(source, index, item.slug);
     return [createEvent({
       title: item.title,
       startsOn,
       startsAt: null,
       venue: item.venue?.name ?? source.venue,
       city: item.venue?.city ?? source.city,
-      bookingUrl: new URL(`/event/${item.slug}`, source.url).href,
+      bookingUrl,
       sourceUrl: source.url,
       sourceId: source.id,
     })];

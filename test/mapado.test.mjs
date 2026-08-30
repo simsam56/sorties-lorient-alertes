@@ -122,13 +122,44 @@ test("refuse avec le contexte source les mauvais types d'une vente datée", () =
 });
 
 test("refuse un slug vide ou ambigu au lieu de fabriquer une URL undefined", () => {
-  for (const slug of ["", "../autre-page", "vente?redirection=ailleurs"]) {
+  for (const slug of [
+    "",
+    "../autre-page",
+    "%2e%2e",
+    "..\\autre-page",
+    "vente%2Fautre-page",
+    "vente%5Cautre-page",
+    "vente?redirection=ailleurs",
+    "vente#fragment",
+    "Vente-Temoin",
+    "vente-témoin",
+    "vente--temoin",
+  ]) {
     assert.throws(
       () => parseMapado(mapadoHtml([datedSale({ slug })]), source),
       /Le Strapontin:.*slug/u,
       slug,
     );
   }
+});
+
+test("construit l'URL finale Mapado sur l'origine et le chemin exacts", () => {
+  const [event] = parseMapado(mapadoHtml([datedSale({
+    slug: "735130-ouverture-de-saison-26-27",
+  })]), {
+    ...source,
+    url: "https://lestrapontin.mapado.com/catalogue/?lang=fr#ventes",
+  });
+  const bookingUrl = new URL(event.bookingUrl);
+
+  assert.equal(bookingUrl.origin, "https://lestrapontin.mapado.com");
+  assert.equal(bookingUrl.pathname, "/event/735130-ouverture-de-saison-26-27");
+  assert.equal(bookingUrl.search, "");
+  assert.equal(bookingUrl.hash, "");
+  assert.equal(
+    event.bookingUrl,
+    "https://lestrapontin.mapado.com/event/735130-ouverture-de-saison-26-27",
+  );
 });
 
 test("refuse une vente candidate sans planning structuré ni date exploitable", () => {
@@ -145,6 +176,17 @@ test("refuse une vente candidate sans planning structuré ni date exploitable", 
       /Le Strapontin:.*sellingDeviceSchedule/u,
     );
   }
+});
+
+test("contextualise une date Mapado syntaxiquement française mais impossible", () => {
+  assert.throws(
+    () => parseMapado(mapadoHtml([datedSale({
+      sellingDeviceSchedule: {
+        "/v1/selling_devices/3326": { fr: "Sam. 31 févr. 2026 à 20:00" },
+      },
+    })]), source),
+    /Le Strapontin:.*sellingDeviceSchedule\.date/u,
+  );
 });
 
 test("ignore un produit non daté même s'il ne porte aucun champ de vente", () => {

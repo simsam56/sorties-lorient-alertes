@@ -41,6 +41,13 @@ test("stabilise l'identité canonique pour tous les alias de salles connus", () 
 test("comprend une date française", () => {
   assert.equal(parseFrenchDate("Sam. 26 sept. 2026 à 20:30"), "2026-09-26");
   assert.equal(parseFrenchDate("Le 8 décembre 2026"), "2026-12-08");
+  assert.equal(parseFrenchDate("Jeu. 29 févr. 2028"), "2028-02-29");
+});
+
+test("refuse les dates françaises impossibles dans le calendrier", () => {
+  assert.equal(parseFrenchDate("31 févr. 2026"), null);
+  assert.equal(parseFrenchDate("31 avril 2026"), null);
+  assert.equal(parseFrenchDate("29 févr. 2027"), null);
 });
 
 test("refuse un événement sans réservation HTTPS", () => {

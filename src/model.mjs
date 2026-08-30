@@ -28,7 +28,14 @@ export function parseFrenchDate(text) {
   if (!match) return null;
   const month = MONTHS.get(match[2].replace(/\.$/, ""));
   if (!month) return null;
-  return `${match[3]}-${String(month).padStart(2, "0")}-${match[1].padStart(2, "0")}`;
+  const year = Number(match[3]);
+  const day = Number(match[1]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 ||
+      date.getUTCDate() !== day) {
+    return null;
+  }
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 export function createEvent(input) {
