@@ -1,7 +1,7 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-08-30T12:40:28.468Z",
+  "updatedAt": "2026-08-30T12:55:34.971Z",
   "seen": {
     "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
@@ -893,59 +893,618 @@
       "sourceIds": [
         "mapado-coque"
       ]
+    },
+    "2026-07-01:lorient:espace-evenementiel-k2:spectacle-immersif-voyage-vers-les-indes": {
+      "title": "Spectacle immersif – Voyage vers les Indes",
+      "startsOn": "2026-07-01",
+      "venue": "Espace événementiel K2",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.lorientlabase.fr/selection/timeslotpass?productId=10229839925638&gtmStepTracking=true",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-09-19:lanester:parc-des-expositions:mania-the-abba-tribute-lorient": {
+      "title": "MANIA, THE ABBA TRIBUTE – LORIENT",
+      "startsOn": "2026-09-19",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://stardust-spectacles.trium.fr/fr/t/-/event/61634",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-10-24:lanester:parc-des-expositions:festival-insolent": {
+      "title": "Festival Insolent",
+      "startsOn": "2026-10-24",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://festival-insolent.com/billetterie/",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-10-31:lanester:parc-des-expositions:thomas-marty": {
+      "title": "Thomas Marty",
+      "startsOn": "2026-10-31",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://billetterie.seetickets.fr/thomas-marty-spectacle-parc-des-expositions-lorient-lanester-31-octobre-2026-css5-arsenalprod-pg101-ri11403923.html",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-12-18:lanester:parc-des-expositions:claudio-capeo": {
+      "title": "Claudio Capéo",
+      "startsOn": "2026-12-18",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://diogene.trium.fr/fr/t/-/event/56413",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-01-09:lorient:palais-des-congres:greg-duth": {
+      "title": "Greg Duth",
+      "startsOn": "2027-01-09",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.seetickets.fr/greg-duth-spectacle-palais-des-congres-lorient-09-janvier-2027-css5-arsenalprod-pg101-ri11744025.html",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-01-27:lorient:palais-des-congres:elie-semoun": {
+      "title": "Elie Semoun",
+      "startsOn": "2027-01-27",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/65751",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-03-20:lorient:palais-des-congres:blandine-lehout": {
+      "title": "Blandine Lehout",
+      "startsOn": "2027-03-20",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.seetickets.fr/blandine-lehout-spectacle-palais-des-congres-lorient-20-mars-2027-css5-arsenalprod-pg101-ri11157625.html",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-03-27:lorient:palais-des-congres:djamil-le-schlag": {
+      "title": "Djamil Le Schlag",
+      "startsOn": "2027-03-27",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.seetickets.fr/djamil-le-shlag-spectacle-palais-des-congres-lorient-27-mars-2027-css5-arsenalprod-pg101-ri11791711.html",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-04-01:lanester:parc-des-expositions:laurent-gerra": {
+      "title": "Laurent Gerra",
+      "startsOn": "2027-04-01",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/66710",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-05-13:lorient:palais-des-congres:edouard-deloignon": {
+      "title": "Edouard Deloignon",
+      "startsOn": "2027-05-13",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://theatrealouest.com/auray/spectacle/reserver-places/edouard-deloignon-grandira-plus-tard-HLM",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-06-10:lorient:palais-des-congres:la-troupe-du-jamel-comedy-club": {
+      "title": "La troupe du Jamel Comedy Club",
+      "startsOn": "2027-06-10",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://stardust-spectacles.trium.fr/fr/t/-/event/65806",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2027-09-09:lorient:palais-des-congres:geremy-credeville": {
+      "title": "Gérémy Crédeville",
+      "startsOn": "2027-09-09",
+      "venue": "Palais des Congrès",
+      "city": "Lorient",
+      "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/67971",
+      "notifiedAt": null,
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-09-17:lorient:hydrophone:cq-wrestling": {
+      "title": "CQ WRESTLING",
+      "startsOn": "2026-09-17",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/606-CQ-WRESTLING?session=606",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-09-26:lorient:hydrophone:huarinami-guadal-tejaz-mercure-nitro-galere-sucree": {
+      "title": "HUARINAMI + GUADAL TEJAZ + MERCURE NITRO + ... + GALÈRE SUCRÉE",
+      "startsOn": "2026-09-26",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/607-HUARINAMI-GUADAL-TEJAZ-MERCURE-NITRO-GALERE-SUCREE?session=607",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-10-01:lorient:hydrophone:la-maison-tellier": {
+      "title": "LA MAISON TELLIER",
+      "startsOn": "2026-10-01",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/591-LA-MAISON-TELLIER?session=591",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-10-09:lorient:hydrophone:pi-ja-ma-ellie-james": {
+      "title": "PI JA MA + ELLIE JAMES",
+      "startsOn": "2026-10-09",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/592-PI-JA-MA-ELLIE-JAMES?session=592",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-10-23:lorient:hydrophone:lfsm-requin-chagrin-ile-de-garde": {
+      "title": "LFSM : REQUIN CHAGRIN + ILE DE GARDE + ...",
+      "startsOn": "2026-10-23",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/609-LFSM-REQUIN-CHAGRIN-ILE-DE-GARDE?session=609",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-11-05:lorient:hydrophone:tramhaus-lol-tolhurst-eat-girls": {
+      "title": "TRAMHAUS + LOL TOLHURST + eat-girls",
+      "startsOn": "2026-11-05",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/597-TRAMHAUS-LOL-TOLHURST-eat-girls?session=597",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-11-06:lorient:hydrophone:katzpascale": {
+      "title": "KATZPASCALE",
+      "startsOn": "2026-11-06",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/608-KATZPASCALE?session=608",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-11-06:lorient:hydrophone:meryl-streek-chest-library-card": {
+      "title": "MERYL STREEK + CHEST. + LIBRARY CARD",
+      "startsOn": "2026-11-06",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/603-MERYL-STREEK-CHEST-LIBRARY-CARD?session=603",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2026-11-07:lorient:hydrophone:syd-matters-oonagh-haines-michele-bry-teenage-bed": {
+      "title": "SYD MATTERS + OONAGH HAINES + MICHELE BRY + TEENAGE BED",
+      "startsOn": "2026-11-07",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/598-SYD-MATTERS-OONAGH-HAINES-MICHELE-BRY-TEENAGE-BED?session=598",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2027-02-10:lorient:hydrophone:revnoir-ice-sealed-eyes": {
+      "title": "REVNOIR + ICE SEALED EYES",
+      "startsOn": "2027-02-10",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/594-REVNOIR-ICE-SEALED-EYES?session=594",
+      "notifiedAt": null,
+      "sourceIds": [
+        "hydrophone"
+      ]
     }
   },
   "sources": {
     "mapado-estran": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:1d7ecea7c8410e0d09d7943513444e549fbfd4c23b113554007a7cd95396f8c9"
     },
     "mapado-oceanis": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:dade72e81557bc9c4dbc06adba7542aecdf9c639f8a6568c2eaef608055b4607"
     },
     "mapado-strapontin": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:862de7d5eb007e40af967b2e9baa8816228845f83783fa1269dfde83e191609c"
     },
     "mapado-quai9": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:8fd2d7ab4a9c838426e48f9a00f04322bc8bd7b792ab3a5b2e67484a6f52cc4f"
     },
     "mapado-arcs": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:2454c3cb74ecee245ecae0164724290ebc043151439aff109e64ea555a5f1f0b"
     },
     "mapado-coque": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-08-30T12:40:28.468Z",
-      "lastCheckedAt": "2026-08-30T12:40:28.468Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:b40592984dd5a0313c69a4dea6745b9278dd33e455222209e51dcd0990f14864"
+    },
+    "lorient-events": {
+      "initializedAt": "2026-08-30T12:55:34.971Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:02c78f1bcdb8225ae74bb22dc111530f90edc9c28d510cb0ee3c81060984e854"
+    },
+    "hydrophone": {
+      "initializedAt": "2026-08-30T12:55:34.971Z",
+      "lastSuccessAt": "2026-08-30T12:55:34.971Z",
+      "lastCheckedAt": "2026-08-30T12:55:34.971Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:dd2c464f4f6016d9a4153fb91aac7131a0d99ee52a164109f73fac50002fc244"
     }
   },
-  "candidates": {},
+  "candidates": {
+    "https://lorient-evenements.bzh/agenda/spectacle-immersif-voyage-vers-les-indes/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Spectacle immersif – Voyage vers les Indes",
+        "startsOn": "2026-07-01",
+        "startsAt": null,
+        "venue": "Espace événementiel K2",
+        "city": "Lorient",
+        "bookingUrl": "https://billetterie.lorientlabase.fr/selection/timeslotpass?productId=10229839925638&gtmStepTracking=true",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/spectacle-immersif-voyage-vers-les-indes/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/mania-the-abba-tribute-lorient/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "MANIA, THE ABBA TRIBUTE – LORIENT",
+        "startsOn": "2026-09-19",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://stardust-spectacles.trium.fr/fr/t/-/event/61634",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/mania-the-abba-tribute-lorient/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/innovemploi/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/tisseade/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/salon-mineraux-et-fossiles/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/jo-le-sinbad/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/celtic-motors-show-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/studyrama/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/salon-du-chocolat-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/festival-insolent-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Festival Insolent",
+        "startsOn": "2026-10-24",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://festival-insolent.com/billetterie/",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/festival-insolent-2/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/fete-des-assos-2026-lorient/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/manful-of-hemera-competition-de-crossfit/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/thomas-marty-3/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Thomas Marty",
+        "startsOn": "2026-10-31",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://billetterie.seetickets.fr/thomas-marty-spectacle-parc-des-expositions-lorient-lanester-31-octobre-2026-css5-arsenalprod-pg101-ri11403923.html",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/thomas-marty-3/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/salon-habitat-vins-et-gastronomie/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/artissim-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/https-hit-lorient-bzh-forum-2026-levenement/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/salon-livre-jeunesse-lorient-26/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/9938/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/illusion/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/claudio-capeo/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Claudio Capéo",
+        "startsOn": "2026-12-18",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://diogene.trium.fr/fr/t/-/event/56413",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/claudio-capeo/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/greg-duth/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Greg Duth",
+        "startsOn": "2027-01-09",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://billetterie.seetickets.fr/greg-duth-spectacle-palais-des-congres-lorient-09-janvier-2027-css5-arsenalprod-pg101-ri11744025.html",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/greg-duth/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/ana-godefroy-en-rodage/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/sarah-schwab/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/elie-semoun/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Elie Semoun",
+        "startsOn": "2027-01-27",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/65751",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/elie-semoun/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/marine/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/alexis-le-rossignol-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/jean-baptiste-guegan/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/yann-guillarme/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/le-cas-pucine/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/fabien-olicard-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/djal-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/blandine-lehout/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Blandine Lehout",
+        "startsOn": "2027-03-20",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://billetterie.seetickets.fr/blandine-lehout-spectacle-palais-des-congres-lorient-20-mars-2027-css5-arsenalprod-pg101-ri11157625.html",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/blandine-lehout/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/djamil-le-schlag/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Djamil Le Schlag",
+        "startsOn": "2027-03-27",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://billetterie.seetickets.fr/djamil-le-shlag-spectacle-palais-des-congres-lorient-27-mars-2027-css5-arsenalprod-pg101-ri11791711.html",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/djamil-le-schlag/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/laurent-gerra-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Laurent Gerra",
+        "startsOn": "2027-04-01",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/66710",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/laurent-gerra-2/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/tristan-lopin-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/pv/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/julien-santini/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/edouard-deloignon/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Edouard Deloignon",
+        "startsOn": "2027-05-13",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://theatrealouest.com/auray/spectacle/reserver-places/edouard-deloignon-grandira-plus-tard-HLM",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/edouard-deloignon/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/charlie-haid/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/les-annees-80-la-tournee/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/thomas-angelvy-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/la-troupe-du-jamel-comedy-club/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "La troupe du Jamel Comedy Club",
+        "startsOn": "2027-06-10",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://stardust-spectacles.trium.fr/fr/t/-/event/65806",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/la-troupe-du-jamel-comedy-club/",
+        "sourceId": "lorient-events"
+      }
+    },
+    "https://lorient-evenements.bzh/agenda/geremy-credeville-2/": {
+      "checkedAt": "2026-08-30T12:55:34.971Z",
+      "event": {
+        "title": "Gérémy Crédeville",
+        "startsOn": "2027-09-09",
+        "startsAt": null,
+        "venue": "Palais des Congrès",
+        "city": "Lorient",
+        "bookingUrl": "https://carreor.trium.fr/fr/t/-/event/67971",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/geremy-credeville-2/",
+        "sourceId": "lorient-events"
+      }
+    }
+  },
   "outbox": {
     "events": {},
     "health": {}
