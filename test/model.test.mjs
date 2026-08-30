@@ -18,7 +18,24 @@ test("normalise un événement sans perdre son lien officiel", () => {
     sourceId: "theatre-lorient",
   });
   assert.equal(event.title, "ÉMILY LOIZEAU & Quatuor Debussy");
-  assert.match(canonicalEventId(event), /^2026-10-15:lorient:grand-theatre:/);
+  assert.match(canonicalEventId(event), /^2026-10-15:lorient:theatre-de-lorient:/);
+});
+
+test("stabilise l'identité canonique pour tous les alias de salles connus", () => {
+  const identityAt = (venue) => canonicalEventId(createEvent({
+    title: "Concert témoin",
+    startsOn: "2026-10-15",
+    startsAt: null,
+    venue,
+    city: "Lorient",
+    bookingUrl: "https://example.test/reservation",
+    sourceUrl: "https://example.test/evenement",
+    sourceId: "theatre-lorient",
+  }));
+
+  assert.equal(identityAt("Grand Théâtre"), identityAt("Théâtre de Lorient"));
+  assert.equal(identityAt("Grand Théâtre de Lorient"), identityAt("Théâtre de Lorient"));
+  assert.equal(identityAt("Salle Keragan"), identityAt("Océanis"));
 });
 
 test("comprend une date française", () => {

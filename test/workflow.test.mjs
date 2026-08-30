@@ -136,7 +136,10 @@ test("le checkout de l'état arrive après les tests et borne l'exécution du mo
   assert.ok(job.steps.indexOf(stateCheckout) > job.steps.indexOf(tests));
   assert.ok(job.steps.indexOf(runMonitor) > job.steps.indexOf(stateCheckout));
   assert.equal(runMonitor["working-directory"], undefined);
-  assert.equal(runMonitor.run.trim(), 'node app/scripts/run-monitor.mjs "$MODE" --state .monitor-state/state.json');
+  assert.equal(
+    runMonitor.run.trim(),
+    'node app/scripts/run-monitor.mjs "$MODE" --state .monitor-state/state.json --require-existing-state',
+  );
   assert.equal(
     runMonitor.env.MODE,
     "${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'check' }}",

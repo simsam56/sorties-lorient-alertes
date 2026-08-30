@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 
 import { collectDueSources } from "../src/collector.mjs";
 import { createEvent } from "../src/model.mjs";
+import { fetchSourceText } from "../src/network.mjs";
 import { SOURCES } from "../src/sources.mjs";
 
 const LIVE_TESTS = process.env.LIVE_TESTS === "1";
-const USER_AGENT = "sorties-lorient-alertes-live-audit/1.0";
 
 test("le gate d'activation exige un motif concret pour chaque source désactivée", () => {
   assert.ok(SOURCES.some((source) => source.enabled), "au moins une source doit rester active");
@@ -29,17 +29,7 @@ test("chaque source active respecte son contrat live", { skip: !LIVE_TESTS }, as
   const collection = await collectDueSources({
     sources: activeSources,
     now: new Date(),
-    fetchText: async (url, options = {}) => {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          Accept: "text/html,application/xhtml+xml",
-          "User-Agent": USER_AGENT,
-        },
-      });
-      if (!response.ok) throw new Error(`Lecture de source refusée (HTTP ${response.status})`);
-      return response.text();
-    },
+    fetchText: fetchSourceText,
   });
 
   assert.deepEqual(collection.skipped, []);

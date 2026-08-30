@@ -168,7 +168,14 @@ test("inspect contrôle toutes les sources sans secret, déduplique et ne touche
     assert.match(result.stdout, /Événements canoniques : 1/u);
     assert.equal(await exists(statePath), false);
     assert.equal(await exists(`${statePath}.tmp`), false);
-    assert.deepEqual((await requests(directory)).filter(({ kind }) => kind === "ntfy"), []);
+    const recordedRequests = await requests(directory);
+    assert.deepEqual(recordedRequests.filter(({ kind }) => kind === "ntfy"), []);
+    for (const request of recordedRequests.filter(({ kind }) => kind === "source")) {
+      assert.deepEqual(request.headers, {
+        Accept: "text/html,application/xhtml+xml",
+        "User-Agent": "sorties-lorient-alertes-live-audit/1.0",
+      });
+    }
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -263,6 +270,27 @@ test("un état mal formé échoue avant toute récupération et reste intact", a
     assert.notEqual(result.code, 0);
     assert.match(result.stderr, /État invalide/u);
     assert.equal(await readFile(statePath, "utf8"), invalidBytes);
+    assert.equal(await exists(`${statePath}.tmp`), false);
+    assert.deepEqual(await requests(directory), []);
+    assertTopicIsPrivate(result);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("check requis refuse un état absent avant réseau, ntfy et écriture", async () => {
+  const directory = await createFixtureDirectory("sorties-required-state-");
+  const statePath = join(directory, "missing", "state.json");
+  try {
+    const result = await runCli({
+      args: ["check", "--state", statePath, "--require-existing-state"],
+      fixtureDirectory: directory,
+      now: "2026-08-30T10:00:00.000Z",
+    });
+
+    assert.notEqual(result.code, 0);
+    assert.match(result.stderr, /ENOENT/u);
+    assert.equal(await exists(statePath), false);
     assert.equal(await exists(`${statePath}.tmp`), false);
     assert.deepEqual(await requests(directory), []);
     assertTopicIsPrivate(result);

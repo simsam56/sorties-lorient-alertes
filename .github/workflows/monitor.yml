@@ -57,7 +57,7 @@ jobs:
           path: .monitor-state
 
       - name: Run monitor
-        run: node app/scripts/run-monitor.mjs "$MODE" --state .monitor-state/state.json
+        run: node app/scripts/run-monitor.mjs "$MODE" --state .monitor-state/state.json --require-existing-state
         env:
           MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'check' }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}

@@ -1,10 +1,4 @@
-import { canonicalEventId, normalizeText } from "./model.mjs";
-
-const VENUE_ALIASES = new Map([
-  ["grand-theatre", "theatre-de-lorient"],
-  ["grand-theatre-de-lorient", "theatre-de-lorient"],
-  ["salle-keragan", "oceanis"],
-]);
+import { canonicalEventId, canonicalVenueId, normalizeText } from "./model.mjs";
 
 const OFFICIAL_VENUE_DOMAINS = new Set([
   "theatredelorient.fr",
@@ -41,11 +35,6 @@ function bookingPriority(event) {
   return 4;
 }
 
-function canonicalVenue(venue) {
-  const normalized = normalizeText(venue);
-  return VENUE_ALIASES.get(normalized) ?? normalized;
-}
-
 function titleWithoutOrganizerPrefix(title) {
   const source = String(title).trim();
   const match = source.match(/^(.{1,80}?)\s+pr[ée]sente(?:\s*[:\-–—]\s*|\s+)(.+)$/iu);
@@ -75,7 +64,7 @@ function titleSimilarity(left, right) {
 function sameIdentity(left, right) {
   return left.startsOn === right.startsOn &&
     normalizeText(left.city) === normalizeText(right.city) &&
-    canonicalVenue(left.venue) === canonicalVenue(right.venue) &&
+    canonicalVenueId(left.venue) === canonicalVenueId(right.venue) &&
     (!isPresent(left.startsAt) || !isPresent(right.startsAt) || left.startsAt === right.startsAt) &&
     titleSimilarity(left.title, right.title) >= 0.85;
 }

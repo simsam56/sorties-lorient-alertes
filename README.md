@@ -1,12 +1,12 @@
 # Alertes sorties Lorient
 
-Ce projet surveille les pages officielles de concerts et de spectacles dans les communes de Lorient Agglomération. Il signale sur un sujet [ntfy](https://ntfy.sh/) les nouvelles réservations accessibles, sans compte billetterie et sans automatiser aucune réservation.
+Ce projet assure aujourd'hui une **couverture partielle de six salles officiellement vérifiées** dans Lorient Agglomération. Il ne surveille pas encore toute l'agglomération : les agendas territoriaux et les autres sources inventoriées restent désactivés tant que leur extraction fiable n'est pas démontrée. Il signale sur un sujet [ntfy](https://ntfy.sh/) les nouvelles réservations accessibles, sans compte billetterie et sans automatiser aucune réservation.
 
 Le dépôt contient le moteur et les adaptateurs. GitHub Actions lance le contrôle toutes les quinze minutes ; l'état durable vit sur une branche `state` séparée.
 
-## Périmètre et sources
+## Couverture active et périmètre visé
 
-Les événements retenus sont les concerts, festivals, pièces de théâtre, spectacles d'humour, danse, cirque, propositions hybrides et spectacles familiaux possédant une URL de réservation HTTPS. Une manifestation gratuite est incluse si elle demande une réservation.
+Le périmètre culturel visé comprend les concerts, festivals, pièces de théâtre, spectacles d'humour, danse, cirque, propositions hybrides et spectacles familiaux possédant une URL de réservation HTTPS. Une manifestation gratuite est incluse si elle demande une réservation. La couverture active reste toutefois limitée aux six salles ci-dessous ; elle ne constitue pas une couverture exhaustive de Lorient Agglomération.
 
 Sources actives contrôlées toutes les 15 minutes :
 
@@ -60,6 +60,8 @@ printf '\n'
 NTFY_TOPIC="$NTFY_TOPIC" node scripts/run-monitor.mjs check --state .monitor-state/state.json
 unset NTFY_TOPIC
 ```
+
+Cette commande locale sans `--require-existing-state` autorise explicitement la création d'un état neuf et sa baseline silencieuse. Le workflow de production ajoute `--require-existing-state` : si `.monitor-state/state.json` manque, le contrôle échoue avant toute lecture réseau, notification ou écriture.
 
 Test isolé du trajet vers ntfy :
 

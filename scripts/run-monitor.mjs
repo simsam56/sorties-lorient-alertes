@@ -4,7 +4,7 @@ import { isDeepStrictEqual } from "node:util";
 
 import { collectDueSources } from "../src/collector.mjs";
 import { deduplicateEvents } from "../src/dedupe.mjs";
-import { sendNtfy } from "../src/network.mjs";
+import { fetchSourceText, sendNtfy } from "../src/network.mjs";
 import { buildEventNotifications, buildHealthNotifications } from "../src/notifications.mjs";
 import { SOURCES, getSource } from "../src/sources.mjs";
 import { writeJsonAtomically } from "../src/state-file.mjs";
@@ -25,6 +25,10 @@ function errorMessage(error) {
 function requestedStatePath(args) {
   const flagIndex = args.indexOf("--state");
   return flagIndex === -1 ? undefined : args[flagIndex + 1];
+}
+
+function requiresExistingState(args) {
+  return args.includes("--require-existing-state");
 }
 
 function executionDate(environment) {
@@ -63,7 +67,11 @@ async function createFixtureFetch(directory) {
       return new Response("", { status });
     }
 
-    await appendFixtureRequest(directory, { kind: "source", url: parsedUrl.href });
+    await appendFixtureRequest(directory, {
+      kind: "source",
+      url: parsedUrl.href,
+      headers: options.headers,
+    });
     const route = routes[parsedUrl.href];
     if (route === undefined) throw new Error(`Route de fixture absente: ${parsedUrl.href}`);
     const specification = typeof route === "string" ? { file: route, status: 200 } : route;
@@ -84,18 +92,14 @@ async function networkFetch(environment) {
     : fetch;
 }
 
-async function fetchText(fetchImpl, url, options) {
-  const response = await fetchImpl(url, options);
-  if (!response.ok) throw new Error(`Lecture de source refusée (HTTP ${response.status})`);
-  return response.text();
-}
-
-async function loadState(path) {
+async function loadState(path, { requireExisting = false } = {}) {
   let bytes;
   try {
     bytes = await readFile(path, "utf8");
   } catch (error) {
-    if (error?.code === "ENOENT") return { state: validateState(undefined), exists: false };
+    if (error?.code === "ENOENT" && !requireExisting) {
+      return { state: validateState(undefined), exists: false };
+    }
     throw error;
   }
 
@@ -116,7 +120,7 @@ async function collect({ state, now, fetchImpl }) {
     sources: SOURCES,
     sourceState,
     candidateState: state?.candidates ?? {},
-    fetchText: (url, options) => fetchText(fetchImpl, url, options),
+    fetchText: (url, options) => fetchSourceText(url, options, fetchImpl),
     now,
   });
 }
@@ -202,7 +206,7 @@ async function check(args, environment) {
   if (!statePath) throw new Error("Option --state obligatoire en mode check");
 
   // Cette validation précède volontairement toute création de client réseau.
-  const loaded = await loadState(statePath);
+  const loaded = await loadState(statePath, { requireExisting: requiresExistingState(args) });
   const now = executionDate(environment);
   const fetchImpl = await networkFetch(environment);
   const collection = await collect({ state: loaded.state, now, fetchImpl });

@@ -14,6 +14,7 @@ import {
 
 const hydrophone = getSource("hydrophone");
 const tourism = getSource("tourism");
+const oceanis = getSource("mapado-oceanis");
 
 function event(overrides = {}) {
   const created = createEvent({
@@ -134,6 +135,50 @@ test("ne mémorise une nouveauté qu'après son acquittement de notification", (
   assert.equal(acknowledged.state.seen[newcomerId].notifiedAt, notifiedAt);
   assert.deepEqual(acknowledged.state.seen[newcomerId].sourceIds, ["hydrophone"]);
   assert.equal(acknowledged.state.outbox.events[newcomerId], undefined);
+});
+
+test("un événement acquitté reste connu si une lecture suivante emploie un alias du lieu", () => {
+  const oceanisEvent = (venue) => event({
+    title: "Miossec",
+    startsOn: "2026-10-16",
+    venue,
+    city: "Ploemeur",
+    sourceId: oceanis.id,
+    sourceIds: [oceanis.id],
+    sourceUrl: "https://billetterieoceanis.mapado.com/event/miossec",
+    sourceUrls: ["https://billetterieoceanis.mapado.com/event/miossec"],
+    bookingUrl: "https://billetterieoceanis.mapado.com/event/miossec",
+  });
+  const baselineAt = "2026-08-30T10:00:00.000Z";
+  const detectedAt = "2026-08-30T10:15:00.000Z";
+  const acknowledgedAt = "2026-08-30T10:16:00.000Z";
+  const aliasedAt = "2026-08-30T10:30:00.000Z";
+  const baseline = planTransition({
+    state: emptyState(),
+    successes: [success(oceanis, [], baselineAt)],
+    failures: [],
+    now: baselineAt,
+  });
+  const detected = planTransition({
+    state: baseline.state,
+    successes: [success(oceanis, [oceanisEvent("Océanis")], detectedAt)],
+    failures: [],
+    now: detectedAt,
+  });
+  const id = canonicalEventId(oceanisEvent("Océanis"));
+  const acknowledged = acknowledgeNotifications(detected, [id], acknowledgedAt);
+
+  const aliased = planTransition({
+    state: acknowledged.state,
+    successes: [success(oceanis, [oceanisEvent("Salle Keragan")], aliasedAt)],
+    failures: [],
+    now: aliasedAt,
+  });
+
+  assert.equal(id, "2026-10-16:ploemeur:oceanis:miossec");
+  assert.deepEqual(aliased.newEvents, []);
+  assert.deepEqual(aliased.state.outbox.events, {});
+  assert.equal(Object.keys(aliased.state.seen).length, 1);
 });
 
 test("un acquittement partiel garde les pairs échoués retentables et le cache candidat durable", () => {

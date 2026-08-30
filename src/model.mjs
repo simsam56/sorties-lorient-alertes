@@ -7,9 +7,20 @@ const MONTHS = new Map([
   ["déc", 12], ["dec", 12], ["décembre", 12], ["decembre", 12],
 ]);
 
+const VENUE_ALIASES = new Map([
+  ["grand-theatre", "theatre-de-lorient"],
+  ["grand-theatre-de-lorient", "theatre-de-lorient"],
+  ["salle-keragan", "oceanis"],
+]);
+
 export function normalizeText(value) {
   return value.normalize("NFKD").replace(/\p{Diacritic}/gu, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export function canonicalVenueId(venue) {
+  const normalized = normalizeText(venue);
+  return VENUE_ALIASES.get(normalized) ?? normalized;
 }
 
 export function parseFrenchDate(text) {
@@ -45,7 +56,7 @@ export function canonicalEventId(event) {
   return [
     event.startsOn,
     normalizeText(event.city),
-    normalizeText(event.venue),
+    canonicalVenueId(event.venue),
     normalizeText(event.title),
   ].join(":");
 }

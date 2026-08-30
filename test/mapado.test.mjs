@@ -17,6 +17,20 @@ function mapadoHtml(items) {
   })}</script>`;
 }
 
+function datedSale(overrides = {}) {
+  return {
+    title: "Vente témoin",
+    type: "dated_events",
+    isOnSale: true,
+    availabilityStatus: "onSale",
+    slug: "vente-temoin",
+    sellingDeviceSchedule: {
+      "/v1/selling_devices/3326": { fr: "Sam. 26 sept. 2026 à 20:00" },
+    },
+    ...overrides,
+  };
+}
+
 test("extrait seulement la vente datée disponible de la signature Mapado", async () => {
   const html = await readFile(new URL("./fixtures/mapado.html", import.meta.url), "utf8");
 
@@ -78,4 +92,61 @@ test("refuse une entrée de planning Mapado nulle", () => {
     }]), source),
     /Le Strapontin: structure Mapado invalide/,
   );
+});
+
+test("refuse avec le contexte source chaque champ structurant absent d'une vente datée", () => {
+  for (const field of ["availabilityStatus", "isOnSale", "title", "slug"]) {
+    const item = datedSale();
+    delete item[field];
+    assert.throws(
+      () => parseMapado(mapadoHtml([item]), source),
+      new RegExp(`Le Strapontin:.*${field}`, "u"),
+      field,
+    );
+  }
+});
+
+test("refuse avec le contexte source les mauvais types d'une vente datée", () => {
+  for (const [field, value] of [
+    ["availabilityStatus", true],
+    ["isOnSale", "true"],
+    ["title", 42],
+    ["slug", {}],
+  ]) {
+    assert.throws(
+      () => parseMapado(mapadoHtml([datedSale({ [field]: value })]), source),
+      new RegExp(`Le Strapontin:.*${field}`, "u"),
+      field,
+    );
+  }
+});
+
+test("refuse un slug vide ou ambigu au lieu de fabriquer une URL undefined", () => {
+  for (const slug of ["", "../autre-page", "vente?redirection=ailleurs"]) {
+    assert.throws(
+      () => parseMapado(mapadoHtml([datedSale({ slug })]), source),
+      /Le Strapontin:.*slug/u,
+      slug,
+    );
+  }
+});
+
+test("refuse une vente candidate sans planning structuré ni date exploitable", () => {
+  for (const sellingDeviceSchedule of [
+    undefined,
+    null,
+    [],
+    {},
+    { "/v1/selling_devices/3326": { fr: 42 } },
+    { "/v1/selling_devices/3326": { fr: "date à venir" } },
+  ]) {
+    assert.throws(
+      () => parseMapado(mapadoHtml([datedSale({ sellingDeviceSchedule })]), source),
+      /Le Strapontin:.*sellingDeviceSchedule/u,
+    );
+  }
+});
+
+test("ignore un produit non daté même s'il ne porte aucun champ de vente", () => {
+  assert.deepEqual(parseMapado(mapadoHtml([{ type: "offer" }]), source), []);
 });
