@@ -1,9 +1,950 @@
 {
   "version": 2,
-  "initializedAt": null,
-  "updatedAt": null,
-  "seen": {},
-  "sources": {},
+  "initializedAt": "2026-08-30T06:38:24.369Z",
+  "updatedAt": "2026-08-30T06:38:24.369Z",
+  "seen": {
+    "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
+      "title": "Présentation de saison + concert Harold López-Nussa",
+      "startsOn": "2026-09-08",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/779649-presentation-de-saison-concert-harold-lopez-nussa",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-10-02:56520:l-estran:dolines-marek-kastelnik": {
+      "title": "Dolines • Marek Kastelnik",
+      "startsOn": "2026-10-02",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780468-dolines-marek-kastelnik",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-10-16:56520:l-estran:interzone-les-debussy-s": {
+      "title": "Interzone & les Debussy(s)",
+      "startsOn": "2026-10-16",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780475-interzone-les-debussy-s",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-10-24:56520:l-estran:bonbon-fraktal-quintet": {
+      "title": "Bonbon Fraktal Quintet",
+      "startsOn": "2026-10-24",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780489-bonbon-fraktal-quintet",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-10-24:56520:l-estran:la-drave": {
+      "title": "La Drave",
+      "startsOn": "2026-10-24",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780496-la-drave",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-11-13:56520:l-estran:coup-de-torchon": {
+      "title": "Coup de Torchon",
+      "startsOn": "2026-11-13",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780510-coup-de-torchon",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-12-05:56520:l-estran:daoud": {
+      "title": "daoud",
+      "startsOn": "2026-12-05",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780517-daoud",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-12-12:56520:l-estran:lydia-shelley-piers-faccini": {
+      "title": "Lydia Shelley & Piers Faccini",
+      "startsOn": "2026-12-12",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780524-lydia-shelley-piers-faccini",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-12-19:56520:l-estran:le-la-couleur": {
+      "title": "le la couleur",
+      "startsOn": "2026-12-19",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780545-le-la-couleur",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-01-16:56520:l-estran:antonio-lizana": {
+      "title": "Antonio Lizana",
+      "startsOn": "2027-01-16",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780552-antonio-lizana",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-01-24:56520:l-estran:le-serment-du-gueridon": {
+      "title": "Le serment du guéridon",
+      "startsOn": "2027-01-24",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780566-le-serment-du-gueridon",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-01-30:56520:l-estran:festival-surf-skate-culture-edition-9": {
+      "title": "Festival Surf & Skate Culture édition #9",
+      "startsOn": "2027-01-30",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780580-festival-surf-skate-culture-edition-9",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-02-05:56520:l-estran:robinson-khoury-mya": {
+      "title": "Robinson Khoury · MŸA",
+      "startsOn": "2027-02-05",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780601-robinson-khoury-mya",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-02-12:pont-scorff:le-strapontin:chut-e": {
+      "title": "Chut.e !",
+      "startsOn": "2027-02-12",
+      "venue": "Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780629-chut-e",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-02-18:56520:l-estran:gaspar-claus-cells": {
+      "title": "Gaspar Claus • Cells",
+      "startsOn": "2027-02-18",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780643-gaspar-claus-cells",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-03-07:56520:l-estran:caloe": {
+      "title": "Caloé",
+      "startsOn": "2027-03-07",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780671-caloe",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-03-13:56520:l-estran:lagon-nwar": {
+      "title": "Lagon Nwar",
+      "startsOn": "2027-03-13",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780678-lagon-nwar",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-03-14:56520:l-estran:furcy-le-risque-de-la-liberte": {
+      "title": "Furcy, le risque de la liberté",
+      "startsOn": "2027-03-14",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780692-furcy-le-risque-de-la-liberte",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-03-14:56520:l-estran:furcy-ne-libre-film": {
+      "title": "Furcy, né libre (film)",
+      "startsOn": "2027-03-14",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780685-furcy-ne-libre-film",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-03-19:56520:l-estran:du-cote-de-schumann": {
+      "title": "Du côté de Schumann",
+      "startsOn": "2027-03-19",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780720-du-cote-de-schumann",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-04-03:56520:l-estran:laura-perrudin-kratos": {
+      "title": "Laura Perrudin • Kratos",
+      "startsOn": "2027-04-03",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780706-laura-perrudin-kratos",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-04-10:56520:l-estran:celia-kameni-gorgones": {
+      "title": "Célia Kameni • Gorgones",
+      "startsOn": "2027-04-10",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780727-celia-kameni-gorgones",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-04-17:56520:l-estran:le-petit-festival-des-livres-en-musique": {
+      "title": "Le petit festival des livres en musique",
+      "startsOn": "2027-04-17",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780741-le-petit-festival-des-livres-en-musique",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-05-04:56520:l-estran:becca-stevens-laura-perrudin": {
+      "title": "Becca Stevens & Laura Perrudin",
+      "startsOn": "2027-05-04",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780755-becca-stevens-laura-perrudin",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2027-05-12:56520:l-estran:camille-matthieu-et-etienne-saglio-tourmente": {
+      "title": "Camille & Matthieu (et Étienne) Saglio + Tourmente",
+      "startsOn": "2027-05-12",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780769-camille-matthieu-et-etienne-saglio-tourmente",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-estran"
+      ]
+    },
+    "2026-09-19:ploemeur:oceanis-ploemeur:ouverture-de-saison-26-27-en-attendant-la-vague": {
+      "title": "OUVERTURE DE SAISON 26/27 | En attendant la Vague",
+      "startsOn": "2026-09-19",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735130-ouverture-de-saison-26-27-en-attendant-la-vague",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2026-10-16:ploemeur:oceanis-ploemeur:p-r2b": {
+      "title": "P.R2B",
+      "startsOn": "2026-10-16",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735123-p-r2b",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2026-11-26:ploemeur:oceanis-ploemeur:edith-et-moi-yael-rasooly": {
+      "title": "Edith et moi | Yaël Rasooly",
+      "startsOn": "2026-11-26",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/724448-edith-et-moi-yael-rasooly",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2026-12-05:ploemeur:oceanis-ploemeur:bal-magnetique-cie-corps-magnetiques": {
+      "title": "Bal Magnétique | Cie Corps Magnétiques",
+      "startsOn": "2026-12-05",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735137-bal-magnetique-cie-corps-magnetiques",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2026-12-17:ploemeur:oceanis-ploemeur:passeport-alexis-michalik": {
+      "title": "Passeport | Alexis Michalik",
+      "startsOn": "2026-12-17",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735305-passeport-alexis-michalik",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-01-19:ploemeur:oceanis-ploemeur:tria-fata-cie-la-pendue": {
+      "title": "Tria Fata | Cie La Pendue",
+      "startsOn": "2027-01-19",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735326-tria-fata-cie-la-pendue",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-01-22:ploemeur:oceanis-ploemeur:happy-apocalypse-cie-f-o-u-i-c": {
+      "title": "Happy Apocalypse | Cie f.o.u.i.c",
+      "startsOn": "2027-01-22",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/735578-happy-apocalypse-cie-f-o-u-i-c",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-01-28:ploemeur:oceanis-ploemeur:peter-pan-theatre-amer": {
+      "title": "Peter Pan | Théâtre amer",
+      "startsOn": "2027-01-28",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/736075-peter-pan-theatre-amer",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-02-20:ploemeur:oceanis-ploemeur:coquille-diamant-marc-de-blanchard": {
+      "title": "Coquille Diamant | Marc de Blanchard",
+      "startsOn": "2027-02-20",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/736096-coquille-diamant-marc-de-blanchard",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-03-12:ploemeur:oceanis-ploemeur:les-vagues-elise-vigneron-theatre-de-l-entrouvert": {
+      "title": "Les Vagues | Élise Vigneron – Théâtre de l’Entrouvert",
+      "startsOn": "2027-03-12",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/736082-les-vagues-elise-vigneron-theatre-de-lentrouvert",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-04-02:ploemeur:oceanis-ploemeur:boule-de-neige-cie-de-louise": {
+      "title": "Boule de neige | Cie de Louise",
+      "startsOn": "2027-04-02",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/736089-boule-de-neige-cie-de-louise",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2027-05-21:ploemeur:oceanis-ploemeur:electro-deluxe-1ere-partie": {
+      "title": "Electro Deluxe + 1ère partie",
+      "startsOn": "2027-05-21",
+      "venue": "Océanis PLOEMEUR",
+      "city": "PLOEMEUR",
+      "bookingUrl": "https://billetterieoceanis.mapado.com/event/736103-electro-deluxe-1ere-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-oceanis"
+      ]
+    },
+    "2026-09-09:pont-scorff:theatre-le-strapontin:presentation-de-saison": {
+      "title": "PRÉSENTATION DE SAISON",
+      "startsOn": "2026-09-09",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783520-presentation-de-saison",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-09-26:pont-scorff:theatre-le-strapontin:ne-pas-pleurer-devant-un-coucher-de-soleil-la-bande-a-grimaud": {
+      "title": "NE PAS PLEURER DEVANT UN COUCHER DE SOLEIL / La Bande à Grimaud",
+      "startsOn": "2026-09-26",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783527-ne-pas-pleurer-devant-un-coucher-de-soleil-la-bande-a-grimaud",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-10-02:pont-scorff:theatre-le-strapontin:yss-ma-biche-et-mon-lapin-collectif-aie-aie-aie": {
+      "title": "YSS + MA BICHE ET MON LAPIN / collectif AÏE AÏE AÏE",
+      "startsOn": "2026-10-02",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783541-yss-ma-biche-et-mon-lapin-collectif-aie-aie-aie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-10-16:inzinzac-lochrist:theatre-du-blavet:le-probleme-lapin-cie-vertical-detour-frederic-ferrer": {
+      "title": "LE PROBLÈME LAPIN / Cie Vertical Détour - Frédéric Ferrer",
+      "startsOn": "2026-10-16",
+      "venue": "Théâtre du Blavet",
+      "city": "Inzinzac-Lochrist",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783562-le-probleme-lapin-cie-vertical-detour-frederic-ferrer",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-11-08:pont-scorff:theatre-le-strapontin:atelier-adulte-enfant-fabrication-de-doudou-et-dessin-sur-tissu": {
+      "title": "ATELIER ADULTE-ENFANT FABRICATION DE DOUDOU ET DESSIN SUR TISSU",
+      "startsOn": "2026-11-08",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/797835-atelier-adulte-enfant-fabrication-de-doudou-et-dessin-sur-tissu",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-11-08:pont-scorff:theatre-le-strapontin:gros-cocon-bob-theatre-la-bobine": {
+      "title": "GROS COCON / Bob Théâtre - La Bobine",
+      "startsOn": "2026-11-08",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783569-gros-cocon-bob-theatre-la-bobine",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-11-24:pont-scorff:theatre-le-strapontin:chevaleresses-cie-francine-josephine-nolwenn-le-doth": {
+      "title": "CHEVALERESSES / Cie Francine & Joséphine - Nolwenn Le Doth",
+      "startsOn": "2026-11-24",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783576-chevaleresses-cie-francine-josephine-nolwenn-le-doth",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-12-20:pont-scorff:theatre-le-strapontin:cinema-de-noel-le-peuple-loup-tomm-moore-ross-stewart": {
+      "title": "CINÉMA DE NOËL : LE PEUPLE LOUP / Tomm Moore - Ross Stewart",
+      "startsOn": "2026-12-20",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783590-cinema-de-noel-le-peuple-loup-tomm-moore-ross-stewart",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-01-08:pont-scorff:theatre-le-strapontin:post-party-big-up-cie": {
+      "title": "POST PARTY / Big Up Cie",
+      "startsOn": "2027-01-08",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783716-post-party-big-up-cie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-01-14:pont-scorff:theatre-le-strapontin:imaginer-la-pluie-tro-heol-cie": {
+      "title": "IMAGINER LA PLUIE / Tro-héol Cie",
+      "startsOn": "2027-01-14",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783737-imaginer-la-pluie-tro-heol-cie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-02-12:pont-scorff:theatre-le-strapontin:chute-cie-productions-anecdotiques": {
+      "title": "CHUT·E ! / Cie Productions Anecdotiques",
+      "startsOn": "2027-02-12",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783758-chut-e-cie-productions-anecdotiques",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-02-13:pont-scorff:theatre-le-strapontin:atelier-adulte-enfant-theatre-musique": {
+      "title": "ATELIER ADULTE-ENFANT THÉÂTRE - MUSIQUE",
+      "startsOn": "2027-02-13",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/797870-atelier-adulte-enfant-theatre-musique",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-03-09:pont-scorff:theatre-le-strapontin:les-cyclopes-etaient-des-elephants-nains-cie-lumiere-d-aout-alexis-fichet": {
+      "title": "LES CYCLOPES ÉTAIENT DES ÉLÉPHANTS NAINS / Cie Lumière d'août - Alexis Fichet",
+      "startsOn": "2027-03-09",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783793-les-cyclopes-etaient-des-elephants-nains-cie-lumiere-daout-alexis-fichet",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-03-21:56700:centre-socioculturel-jean-ferrat:esquif-a-fleur-d-eau-anais-allais-benbouali": {
+      "title": "ESQUIF (À FLEUR D'EAU) / Anaïs Allais Benbouali",
+      "startsOn": "2027-03-21",
+      "venue": "Centre socioculturel Jean Ferrat",
+      "city": "56700",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783835-esquif-a-fleur-deau-anais-allais-benbouali",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2027-04-15:pont-scorff:theatre-le-strapontin:marees-cie-safar": {
+      "title": "MARÉES / Cie Safar",
+      "startsOn": "2027-04-15",
+      "venue": "Théâtre Le Strapontin",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://lestrapontin.mapado.com/event/783842-marees-cie-safar",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-strapontin"
+      ]
+    },
+    "2026-10-09:queven:centre-culturel-les-arcs:lilly-wood-and-the-prick-1re-partie": {
+      "title": "LILLY WOOD AND THE PRICK + 1re partie",
+      "startsOn": "2026-10-09",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/733856-lilly-wood-and-the-prick-1re-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2026-11-04:queven:centre-culturel-les-arcs:girls-in-hawaii-chaton-laveur-1ere-partie-festival-les-indisciplinees": {
+      "title": "GIRLS IN HAWAII + Chaton Laveur (1ère partie) • Festival \"Les Indisciplinées\"",
+      "startsOn": "2026-11-04",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/733891-girls-in-hawaii-chaton-laveur-1ere-partie-festival-les-indisciplinees",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2026-11-06:queven:centre-culturel-les-arcs:vincent-delerm": {
+      "title": "VINCENT DELERM",
+      "startsOn": "2026-11-06",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/733870-vincent-delerm",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2026-11-20:queven:centre-culturel-les-arcs:chicago-blues-festival-zac-harmon-lady-adrena-kingston-livingston": {
+      "title": "CHICAGO BLUES FESTIVAL • Zac Harmon | Lady Adrena | Kingston Livingston",
+      "startsOn": "2026-11-20",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/733688-chicago-blues-festival-zac-harmon-lady-adrena-kingston-livingston",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-01-15:queven:centre-culturel-les-arcs:melissa-laveaux-1re-partie": {
+      "title": "MÉLISSA LAVEAUX + 1re partie",
+      "startsOn": "2027-01-15",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734031-melissa-laveaux-1re-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-01-24:queven:centre-culturel-les-arcs:manon-bril-300-000-ans": {
+      "title": "MANON BRIL • \"300 000 ans\"",
+      "startsOn": "2027-01-24",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734045-manon-bril-300-000-ans",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-01-29:queven:centre-culturel-les-arcs:pony-pony-run-run-1re-partie": {
+      "title": "PONY PONY RUN RUN + 1re partie",
+      "startsOn": "2027-01-29",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734584-pony-pony-run-run-1re-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-02-20:queven:centre-culturel-les-arcs:flavia-coelho-entre-rio-et-lumiere": {
+      "title": "FLAVIA COELHO • \"Entre Rio et Lumière\"",
+      "startsOn": "2027-02-20",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734059-flavia-coelho-entre-rio-et-lumiere",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-03-19:queven:centre-culturel-les-arcs:camille-1re-partie": {
+      "title": "CAMILLE + 1re partie",
+      "startsOn": "2027-03-19",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734066-camille-1re-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2027-03-26:queven:centre-culturel-les-arcs:fatoumata-diawara-1re-partie": {
+      "title": "FATOUMATA DIAWARA + 1re partie",
+      "startsOn": "2027-03-26",
+      "venue": "Centre Culturel Les Arcs",
+      "city": "Quéven",
+      "bookingUrl": "https://queven-lesarcs.mapado.com/event/734073-fatoumata-diawara-1re-partie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-arcs"
+      ]
+    },
+    "2026-09-11:hennebont:theatre-a-la-coque:ouverture-de-saison": {
+      "title": "Ouverture de saison",
+      "startsOn": "2026-09-11",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/814373-ouverture-de-saison",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-10-02:pont-scorff:theatre-du-strapontin-pont-scorff:ma-biche-et-mon-lapin-yss": {
+      "title": "Ma biche et mon lapin + YSS",
+      "startsOn": "2026-10-02",
+      "venue": "Théâtre du Strapontin - Pont-Scorff",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793698-ma-biche-et-mon-lapin-yss",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-10-16:hennebont:theatre-a-la-coque:peau-d-homme": {
+      "title": "Peau d'homme",
+      "startsOn": "2026-10-16",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/781917-peau-dhomme",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-10-27:hennebont:theatre-a-la-coque:un-rien-colore": {
+      "title": "Un rien coloré",
+      "startsOn": "2026-10-27",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/781931-un-rien-colore",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-11-01:hennebont:theatre-a-la-coque:le-bleu-des-mappemondes": {
+      "title": "Le bleu des mappemondes",
+      "startsOn": "2026-11-01",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/781952-le-bleu-des-mappemondes",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-11-20:hennebont:theatre-a-la-coque:c-est-magnifique": {
+      "title": "C'est magnifique !",
+      "startsOn": "2026-11-20",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782043-cest-magnifique",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-12-04:hennebont:theatre-a-la-coque:cinemario-1": {
+      "title": "Cinémario #1",
+      "startsOn": "2026-12-04",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/791304-cinemario-1",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2026-12-18:hennebont:theatre-a-la-coque:big-seal": {
+      "title": "Big Seal",
+      "startsOn": "2026-12-18",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782092-big-seal",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-08:pont-scorff:theatre-du-strapontin-pont-scorff:post-party": {
+      "title": "Post party",
+      "startsOn": "2027-01-08",
+      "venue": "Théâtre du Strapontin - Pont-Scorff",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793775-post-party",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-14:pont-scorff:theatre-du-strapontin-pont-scorff:imaginer-la-pluie": {
+      "title": "Imaginer la pluie",
+      "startsOn": "2027-01-14",
+      "venue": "Théâtre du Strapontin - Pont-Scorff",
+      "city": "Pont-Scorff",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793880-imaginer-la-pluie",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-15:inzinzac-lochrist:trio-s-theatre-du-blavet:la-manekine": {
+      "title": "La Manékine",
+      "startsOn": "2027-01-15",
+      "venue": "TRIO...S - Théâtre du Blavet",
+      "city": "Inzinzac-Lochrist",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793915-la-manekine",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-22:hennebont:theatre-a-la-coque:puppet-fight-club": {
+      "title": "Puppet fight club",
+      "startsOn": "2027-01-22",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782183-puppet-fight-club",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-23:hennebont:theatre-a-la-coque:terreur": {
+      "title": "Terreur",
+      "startsOn": "2027-01-23",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782211-terreur",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-01-24:guidel:l-estran:le-serment-du-gueridon": {
+      "title": "Le serment du guéridon",
+      "startsOn": "2027-01-24",
+      "venue": "L'Estran",
+      "city": "Guidel",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793936-le-serment-du-gueridon",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-02-02:hennebont:theatre-a-la-coque:terre-etrangere": {
+      "title": "Terre étrangère",
+      "startsOn": "2027-02-02",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782295-terre-etrangere",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-02-05:hennebont:theatre-a-la-coque:cinemario-2": {
+      "title": "Cinémario #2",
+      "startsOn": "2027-02-05",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/791318-cinemario-2",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-03-18:hennebont:theatre-a-la-coque:entranas": {
+      "title": "Entrañas",
+      "startsOn": "2027-03-18",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782330-entranas",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-03-26:hennebont:theatre-a-la-coque:faites-comme-si-je-n-etais-pas-la": {
+      "title": "Faites comme si je n'étais pas là",
+      "startsOn": "2027-03-26",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782358-faites-comme-si-je-netais-pas-la",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    },
+    "2027-04-08:hennebont:theatre-a-la-coque:globe": {
+      "title": "Globe",
+      "startsOn": "2027-04-08",
+      "venue": "Théâtre à la Coque",
+      "city": "HENNEBONT",
+      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782379-globe",
+      "notifiedAt": null,
+      "sourceIds": [
+        "mapado-coque"
+      ]
+    }
+  },
+  "sources": {
+    "mapado-estran": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:1d7ecea7c8410e0d09d7943513444e549fbfd4c23b113554007a7cd95396f8c9"
+    },
+    "mapado-oceanis": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:dade72e81557bc9c4dbc06adba7542aecdf9c639f8a6568c2eaef608055b4607"
+    },
+    "mapado-strapontin": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:862de7d5eb007e40af967b2e9baa8816228845f83783fa1269dfde83e191609c"
+    },
+    "mapado-quai9": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:8fd2d7ab4a9c838426e48f9a00f04322bc8bd7b792ab3a5b2e67484a6f52cc4f"
+    },
+    "mapado-arcs": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:2454c3cb74ecee245ecae0164724290ebc043151439aff109e64ea555a5f1f0b"
+    },
+    "mapado-coque": {
+      "initializedAt": "2026-08-30T06:38:24.369Z",
+      "lastSuccessAt": "2026-08-30T06:38:24.369Z",
+      "lastCheckedAt": "2026-08-30T06:38:24.369Z",
+      "consecutiveFailures": 0,
+      "incidentOpen": false,
+      "lastResultFingerprint": "sha256:b40592984dd5a0313c69a4dea6745b9278dd33e455222209e51dcd0990f14864"
+    }
+  },
   "candidates": {},
   "outbox": {
     "events": {},
