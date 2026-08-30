@@ -86,7 +86,14 @@ test("interrompt la publication après le délai demandé", async () => {
       notification,
       timeoutMs: 5,
       fetchImpl: async (_url, { signal }) => new Promise((_resolve, reject) => {
+        // AbortSignal.timeout() n'empêche pas Node de quitter à lui seul. Une
+        // vraie requête réseau maintient la boucle active ; ce minuteur simule
+        // cette ressource pour que le test reste fiable sous Node 22.
+        const pendingRequest = setTimeout(() => {
+          reject(new Error("La requête simulée aurait dû être interrompue"));
+        }, 1_000);
         signal.addEventListener("abort", () => {
+          clearTimeout(pendingRequest);
           aborted = true;
           reject(signal.reason);
         }, { once: true });
