@@ -76,7 +76,12 @@ async function initializeRemote(root, branch, files) {
 
 test("le workflow monitor sérialise les contrôles planifiés et manuels", async () => {
   const workflow = await loadWorkflow("monitor.yml");
-  assert.deepEqual(workflow.on.schedule, [{ cron: "7,22,37,52 * * * *" }]);
+  assert.deepEqual(workflow.on.schedule, [
+    { cron: "7 * * * *" },
+    { cron: "22 * * * *" },
+    { cron: "37 * * * *" },
+    { cron: "52 * * * *" },
+  ]);
   assert.deepEqual(
     workflow.on.workflow_dispatch.inputs.mode.options,
     ["check", "inspect", "test-notification"],

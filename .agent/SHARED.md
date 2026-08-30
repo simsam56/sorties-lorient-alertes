@@ -7,6 +7,7 @@
 - 2026-08-29 — Couverture hybride : agenda territorial et billetteries officielles des principales salles, avec déduplication.
 - 2026-08-30 — État strict porté en v2 avec outbox événements/santé, car les notifications doivent survivre à la disparition d'une source et aux échecs ntfy sans reset implicite.
 - 2026-08-30 — Identité santé fixée à kind/sourceId/checkedAt, afin que plusieurs cycles non acquittés restent distincts et causalement ordonnés.
+- 2026-08-30 — Les quatre créneaux GitHub sont déclarés séparément, car plusieurs passages de l'expression groupée ont été absents malgré un workflow actif ; cadence inchangée à 15 minutes.
 
 ## Etat
 - 2026-08-29 — [Codex] Conception validée en conversation ; spécification écrite en cours.
