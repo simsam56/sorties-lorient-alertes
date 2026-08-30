@@ -53,6 +53,35 @@ test("découvre seulement les fiches agenda Lorient Événements et ignore feed"
   }]);
 });
 
+test("mappe strictement les trois lieux officiels de l'agenda vers leur commune", () => {
+  const card = (slug, title, venue, date) => `<li><a href="/agenda/${slug}/"><figure class="evenement-card"><figcaption>
+    <h2 class="evenement-card__title">${title}</h2>
+    <p class="evenement-card__location">${venue}</p>
+    <p class="evenement-card__date"><time datetime="${date}">${date}</time></p>
+  </figcaption></figure></a></li>`;
+  const html = `<ul class="archive-evenement__list">
+    ${card("palais", "Au palais", "Palais des Congrès", "2026-10-10")}
+    ${card("parc", "Au parc", "Parc des Expositions", "2026-10-11")}
+    ${card("k2", "Au K2", "Espace événementiel K2", "2026-10-12")}
+  </ul>`;
+
+  assert.deepEqual(parseLorientEventsCandidates(html, lorientEvents).map(({ venue, city, startsOn }) => ({ venue, city, startsOn })), [
+    { venue: "Palais des Congrès", city: "Lorient", startsOn: "2026-10-10" },
+    { venue: "Parc des Expositions", city: "Lanester", startsOn: "2026-10-11" },
+    { venue: "Espace événementiel K2", city: "Lorient", startsOn: "2026-10-12" },
+  ]);
+});
+
+test("refuse un lieu inconnu plutôt que d'inventer sa commune", () => {
+  const html = `<ul class="archive-evenement__list"><li><a href="/agenda/inconnu/"><figure class="evenement-card">
+    <h2 class="evenement-card__title">Événement</h2>
+    <p class="evenement-card__location">Lieu inconnu</p>
+    <p class="evenement-card__date"><time datetime="2026-10-10">10 octobre 2026</time></p>
+  </figure></a></li></ul>`;
+
+  assert.throws(() => parseLorientEventsCandidates(html, lorientEvents), /signature Lorient Événements invalide/);
+});
+
 test("refuse explicitement les signatures territoriales inattendues", () => {
   assert.throws(
     () => parseTourismCandidates("<main>Maintenance</main>", tourism),
@@ -111,7 +140,101 @@ test("écarte une foire professionnelle même avec une billetterie", async () =>
     sourceId: "lorient-events",
   };
 
-  assert.equal(resolveReservation(await fixture("lorient-events-detail.html"), candidate), null);
+  const html = `<main class="single-evenement__content"><div>
+    <div class="content-style"><p>Salon professionnel des métiers.</p></div>
+    <section class="single-evenement__tarifs"><a href="https://tickets.example.test/salon-pro">Billetterie</a></section>
+  </div></main>`;
+  assert.equal(resolveReservation(html, candidate), null);
+});
+
+test("un mot culturel faible dans la description ne réhabilite pas un salon", () => {
+  const candidate = {
+    title: "Salon des familles",
+    startsOn: "2026-10-09",
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    detailUrl: "https://lorient-evenements.bzh/agenda/salon-des-familles/",
+    sourceId: "lorient-events",
+  };
+  const html = `<main class="single-evenement__content"><div>
+    <div class="content-style"><p>Une sortie en famille.</p></div>
+    <section class="single-evenement__tarifs"><a href="https://tickets.example.test/salon-familles">Billetterie</a></section>
+  </div></main>`;
+
+  assert.equal(resolveReservation(html, candidate), null);
+});
+
+test("ignore les catégories culturelles situées hors de la fiche Lorient", () => {
+  const candidate = {
+    title: "Atelier poterie",
+    startsOn: "2026-10-09",
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    detailUrl: "https://lorient-evenements.bzh/agenda/atelier-poterie/",
+    sourceId: "lorient-events",
+  };
+  const html = `<main class="single-evenement__content"><div>
+    <div class="content-style"><p>Initiation à la terre.</p></div>
+    <section class="single-evenement__tarifs"><a href="https://tickets.example.test/atelier">Billetterie</a></section>
+  </div></main><aside class="category">Festival</aside>`;
+
+  assert.equal(resolveReservation(html, candidate), null);
+});
+
+test("conserve un festival dont la description cite le Palais des Congrès", () => {
+  const candidate = {
+    title: "Festival Insolent",
+    startsOn: "2026-10-09",
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    detailUrl: "https://lorient-evenements.bzh/agenda/festival-insolent/",
+    sourceId: "lorient-events",
+  };
+  const html = `<main class="single-evenement__content"><div>
+    <div class="content-style"><p>Festival organisé près du Palais des Congrès.</p></div>
+    <section class="single-evenement__tarifs"><a href="https://tickets.example.test/festival-insolent">Billetterie</a></section>
+  </div></main>`;
+
+  assert.deepEqual(resolveReservation(html, candidate), {
+    title: "Festival Insolent",
+    startsOn: "2026-10-09",
+    startsAt: null,
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    bookingUrl: "https://tickets.example.test/festival-insolent",
+    sourceUrl: "https://lorient-evenements.bzh/agenda/festival-insolent/",
+    sourceId: "lorient-events",
+  });
+});
+
+test("résout une fiche culturelle Lorient uniquement depuis sa section tarifs", async () => {
+  const candidate = parseLorientEventsCandidates(await fixture("lorient-events-list.html"), lorientEvents)[0];
+
+  assert.deepEqual(resolveReservation(await fixture("lorient-events-detail.html"), candidate), {
+    title: "Le grand soir",
+    startsOn: "2026-10-09",
+    startsAt: null,
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    bookingUrl: "https://tickets.example.test/le-grand-soir",
+    sourceUrl: "https://lorient-evenements.bzh/agenda/le-grand-soir/",
+    sourceId: "lorient-events",
+  });
+});
+
+test("ne reprend jamais la billetterie d'un autre événement dans la colonne latérale", () => {
+  const candidate = {
+    title: "Réservations à venir",
+    startsOn: "2026-10-10",
+    venue: "Palais des Congrès",
+    city: "Lorient",
+    detailUrl: "https://lorient-evenements.bzh/agenda/reservations-a-venir/",
+    sourceId: "lorient-events",
+  };
+  const html = `<main class="single-evenement__content"><div><div class="content-style"><p>Spectacle à venir.</p></div></div></main>
+    <aside class="single-evenement__more"><a href="https://tickets.example.test/autre">Billetterie autre spectacle</a></aside>`;
+
+  assert.equal(resolveReservation(html, candidate), null);
 });
 
 test("écarte une activité générique sans catégorie culturelle explicite", () => {

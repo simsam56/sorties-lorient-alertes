@@ -20,6 +20,8 @@ const fixtureRoot = new URL("fixtures/", import.meta.url);
 const topic = "test_topic_secret_1234567890";
 const routesFile = "routes.json";
 const requestsFile = "requests.jsonl";
+const hydrophoneApiUrl = "https://billetterie.hydrophone.fr/api/v2/sessions?next=1&limit=100&offset=0&features%5B%5D=location&features%5B%5D=status&features%5B%5D=settings";
+const hydrophoneToken = "jeton-public-de-test-123456789";
 
 function runCli({ args, fixtureDirectory, now, ntfyTopic = topic }) {
   return new Promise((resolve, reject) => {
@@ -45,10 +47,12 @@ function defaultRoutes() {
   const routes = {};
   for (const source of SOURCES) {
     if (source.adapter === "mapado") routes[source.url] = "mapado.html";
+    else if (source.adapter === "hydrophone") routes[source.url] = "hydrophone-home.html";
     else if (source.adapter === "tourism") routes[source.url] = "tourism-list.html";
     else if (source.adapter === "lorient-events") routes[source.url] = "lorient-events-list.html";
     else routes[source.url] = `${source.adapter}.html`;
   }
+  routes[hydrophoneApiUrl] = "hydrophone-sessions.json";
   routes["https://www.lorientbretagnesudtourisme.fr/fr/fiche/fete-des-lumieres/"] = "tourism-detail.html";
   routes["https://lorient-evenements.bzh/agenda/le-grand-soir/"] = "lorient-events-detail.html";
   return routes;
@@ -58,7 +62,8 @@ async function createFixtureDirectory(prefix) {
   const directory = await mkdtemp(join(tmpdir(), prefix));
   for (const name of [
     "fil.html",
-    "hydrophone.html",
+    "hydrophone-home.html",
+    "hydrophone-sessions.json",
     "lorient-events-detail.html",
     "lorient-events-list.html",
     "mapado.html",
@@ -165,12 +170,19 @@ test("inspect contrôle toutes les sources sans secret, déduplique et ne touche
         : `${source.name} — IGNORÉ (désactivée : ${source.disabledReason})`;
       assert.ok(result.stdout.includes(status), status);
     }
-    assert.match(result.stdout, /Événements canoniques : 1/u);
+    assert.match(result.stdout, /Événements canoniques : 2/u);
     assert.equal(await exists(statePath), false);
     assert.equal(await exists(`${statePath}.tmp`), false);
     const recordedRequests = await requests(directory);
     assert.deepEqual(recordedRequests.filter(({ kind }) => kind === "ntfy"), []);
-    for (const request of recordedRequests.filter(({ kind }) => kind === "source")) {
+    const sourceRequests = recordedRequests.filter(({ kind }) => kind === "source");
+    const hydrophoneApiRequest = sourceRequests.find(({ url }) => url === hydrophoneApiUrl);
+    assert.deepEqual(hydrophoneApiRequest?.headers, {
+      Accept: "application/json",
+      "User-Agent": "sorties-lorient-alertes-live-audit/1.0",
+      Authorization: `Bearer ${hydrophoneToken}`,
+    });
+    for (const request of sourceRequests.filter(({ url }) => url !== hydrophoneApiUrl)) {
       assert.deepEqual(request.headers, {
         Accept: "text/html,application/xhtml+xml",
         "User-Agent": "sorties-lorient-alertes-live-audit/1.0",
@@ -201,7 +213,9 @@ test("check crée une baseline silencieuse puis laisse l'état inchangé octet p
     assert.equal(first.code, 0, first.stderr);
     assert.equal(second.code, 0, second.stderr);
     assert.equal(Object.keys(state.sources).length, SOURCES.filter(({ enabled }) => enabled).length);
-    assert.equal(Object.keys(state.candidates).length, 0);
+    assert.deepEqual(Object.keys(state.candidates), [
+      "https://lorient-evenements.bzh/agenda/le-grand-soir/",
+    ]);
     assert.ok(Object.values(state.seen).every(({ notifiedAt }) => notifiedAt === null));
     assert.equal(await readFile(statePath, "utf8"), initialBytes);
     assert.equal(await exists(`${statePath}.tmp`), false);

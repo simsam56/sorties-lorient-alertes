@@ -27,6 +27,15 @@ Seules les six billetteries Mapado sont actives à l'issue de cet audit. Les aut
 
 Le City ne reçoit pas d'adaptateur direct : aucune billetterie officielle indépendante et stable n'a été identifiée. Sa voie de couverture prévue reste l'agenda territorial. Comme les deux sources territoriales sont désactivées après cet audit, **Le City n'est pas couvert activement à cette date** ; il ne faut pas présenter cette couverture comme opérationnelle avant réactivation prouvée d'un agenda territorial.
 
+## Réaudit prioritaire du 30 août 2026 à 14:29 (Europe/Paris)
+
+À la demande de Simon, Hydrophone et Lorient Bretagne Sud Événements ont été réaudités sur leurs données live puis activés après contrat réel réussi.
+
+- **Hydrophone** : la billetterie officielle expose un jeton public éphémère dans sa page d'accueil et une API `/api/v2/sessions`. Le collecteur récupère ce jeton à chaque passage sans le persister, puis retient uniquement les événements futurs à Hydrophone, publiés `on_sale`, disponibles, non fermés, non annulés et hors pass. Le contrôle live extrait 10 ventes sûres ; une session annulée encore publiée (`CIEL`) est explicitement rejetée.
+- **Lorient Bretagne Sud Événements** : les cartes officielles de l'agenda portent un titre, un `time[datetime]` et l'un des trois lieux connus. Le mapping vérifié est Palais des Congrès → Lorient, Parc des Expositions → Lanester et Espace événementiel K2 → Lorient. Sur chaque fiche, seule la section `Tarifs et réservation` peut fournir la billetterie ; les liens de la colonne « Autres événements à venir » sont ignorés. Le contrôle live extrait 13 spectacles réservables ; les salons et autres manifestations non culturelles explicitement nommés dans le titre restent exclus.
+
+Après ce réaudit, huit sources sont actives et l'inspection sans état produit 104 événements canoniques. Lorient Bretagne Sud Tourisme, Théâtre de Lorient, TRIO…S et le Festival Interceltique restent désactivés.
+
 ## Vérification reproductible
 
 La suite normale vérifie le gate de configuration sans réseau et ignore le contrat live. Le contrat live est explicitement opt-in :

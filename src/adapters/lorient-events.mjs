@@ -1,11 +1,9 @@
 import { load } from "cheerio";
-import { parseFrenchDate } from "../model.mjs";
-
-function placeParts(text) {
-  const match = text.trim().match(/^(.*?)(?:\s*,\s*|\s+[–—-]\s+)([^,]+)$/u);
-  if (!match) return null;
-  return { venue: match[1].trim(), city: match[2].trim() };
-}
+const VENUE_CITIES = new Map([
+  ["Palais des Congrès", "Lorient"],
+  ["Parc des Expositions", "Lanester"],
+  ["Espace événementiel K2", "Lorient"],
+]);
 
 function isAgendaDetail(url) {
   return url.protocol === "https:" &&
@@ -17,24 +15,24 @@ function invalid(source) {
   throw new Error(`${source.name}: signature Lorient Événements invalide`);
 }
 
-function cardFor($, element) {
-  const card = $(element).closest("article, .event-card, .card, .agenda-item");
-  if (card.length) return card;
-
-  const listItem = $(element).closest("li");
-  const hasEventFields = listItem.find(
-    "time, .date, [class*='date'], .location, .place, [class*='location'], [class*='place'], [class*='lieu']",
-  ).length > 0;
-  return hasEventFields ? listItem : null;
+function validIsoDate(value) {
+  if (!/^20\d{2}-\d{2}-\d{2}$/u.test(value ?? "")) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export function parseLorientEventsCandidates(html, source) {
   const $ = load(html);
-  const details = $("a[href]").toArray().map((element) => {
-    const card = cardFor($, element);
-    if (!card) return null;
-    return { card, url: new URL($(element).attr("href"), source.url) };
-  }).filter((detail) => detail && isAgendaDetail(detail.url));
+  const details = $("ul.archive-evenement__list > li > a[href]").toArray().map((element) => {
+    let url;
+    try {
+      url = new URL($(element).attr("href"), source.url);
+    } catch {
+      invalid(source);
+    }
+    const card = $(element).find("figure.evenement-card").first();
+    return card.length && isAgendaDetail(url) ? { card, url } : null;
+  }).filter(Boolean);
 
   if (details.length === 0) {
     throw new Error(`${source.name}: signature Lorient Événements absente`);
@@ -42,16 +40,17 @@ export function parseLorientEventsCandidates(html, source) {
 
   const candidates = new Map();
   for (const { card, url } of details) {
-    const title = card.find("h1, h2, h3, .title, [class*='title']").first().text().trim();
-    const startsOn = parseFrenchDate(card.find("time, .date, [class*='date']").first().text());
-    const place = placeParts(card.find(".location, .place, [class*='location'], [class*='place'], [class*='lieu']").first().text());
-    if (!title || !startsOn || !place?.venue || !place.city || !source.id) invalid(source);
+    const title = card.find(".evenement-card__title").first().text().trim();
+    const startsOn = card.find(".evenement-card__date time[datetime]").first().attr("datetime");
+    const venue = card.find(".evenement-card__location").first().text().trim().replace(/\s+/gu, " ");
+    const city = VENUE_CITIES.get(venue);
+    if (!title || !validIsoDate(startsOn) || !city || !source.id) invalid(source);
 
     candidates.set(url.href, {
       title,
       startsOn,
-      venue: place.venue,
-      city: place.city,
+      venue,
+      city,
       detailUrl: url.href,
       sourceId: source.id,
     });

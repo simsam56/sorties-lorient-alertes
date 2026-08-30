@@ -1,20 +1,24 @@
 # Alertes sorties Lorient
 
-Ce projet assure aujourd'hui une **couverture partielle de six salles officiellement vérifiées** dans Lorient Agglomération. Il ne surveille pas encore toute l'agglomération : les agendas territoriaux et les autres sources inventoriées restent désactivés tant que leur extraction fiable n'est pas démontrée. Il signale sur un sujet [ntfy](https://ntfy.sh/) les nouvelles réservations accessibles, sans compte billetterie et sans automatiser aucune réservation.
+Ce projet assure aujourd'hui une **couverture partielle de huit sources officiellement vérifiées** dans Lorient Agglomération : six salles Mapado, Hydrophone et l'agenda de Lorient Bretagne Sud Événements. Il ne surveille pas encore toute l'agglomération : les autres sources inventoriées restent désactivées tant que leur extraction fiable n'est pas démontrée. Il signale sur un sujet [ntfy](https://ntfy.sh/) les nouvelles réservations accessibles, sans compte billetterie et sans automatiser aucune réservation.
 
 Le dépôt contient le moteur et les adaptateurs. GitHub Actions lance le contrôle toutes les quinze minutes ; l'état durable vit sur une branche `state` séparée.
 
 ## Couverture active et périmètre visé
 
-Le périmètre culturel visé comprend les concerts, festivals, pièces de théâtre, spectacles d'humour, danse, cirque, propositions hybrides et spectacles familiaux possédant une URL de réservation HTTPS. Une manifestation gratuite est incluse si elle demande une réservation. La couverture active reste toutefois limitée aux six salles ci-dessous ; elle ne constitue pas une couverture exhaustive de Lorient Agglomération.
+Le périmètre culturel visé comprend les concerts, festivals, pièces de théâtre, spectacles d'humour, danse, cirque, propositions hybrides et spectacles familiaux possédant une URL de réservation HTTPS. Une manifestation gratuite est incluse si elle demande une réservation. La couverture active reste toutefois limitée aux huit sources ci-dessous ; elle ne constitue pas une couverture exhaustive de Lorient Agglomération.
 
-Sources actives contrôlées toutes les 15 minutes :
+Sources actives :
 
 - L'Estran à Guidel, Océanis à Ploemeur, Le Strapontin à Pont-Scorff, Quai 9 à Lanester, Les Arcs à Quéven et Théâtre à la Coque à Hennebont, via leurs billetteries officielles Mapado.
+- Hydrophone à Lorient, via l'API publique de sa billetterie officielle ; seules les ventes disponibles, non annulées et organisées à Hydrophone sont retenues.
+- Lorient Bretagne Sud Événements, pour les spectacles réservables du Palais des Congrès, du Parc des Expositions et de l'Espace événementiel K2.
 
-L'audit live du 30 août 2026 a laissé dans l'inventaire, mais désactivé, Lorient Bretagne Sud Tourisme, Lorient Bretagne Sud Événements, Théâtre de Lorient, Hydrophone, TRIO…S et le Festival Interceltique. Leurs pages ne permettaient pas de démontrer ensemble la signature et l'extraction d'une réservation officielle ; le motif exact reste visible dans `inspect`. Les preuves HTTP et la décision source par source sont consignées dans [`docs/source-audit.md`](docs/source-audit.md).
+Les six billetteries Mapado et Hydrophone sont relues toutes les 15 minutes. L'agenda Lorient Bretagne Sud Événements est relu toutes les 60 minutes ; ses fiches détaillées sont mises en cache pendant au plus six heures.
 
-Le City n'a pas de source directe stable identifiée. Sa voie prévue reste l'agenda territorial, mais cette couverture n'est pas active tant que les sources territoriales ci-dessus demeurent désactivées.
+Restent dans l'inventaire mais désactivés : Lorient Bretagne Sud Tourisme, Théâtre de Lorient, TRIO…S et le Festival Interceltique. Leur page ne permet pas encore de démontrer ensemble une signature stable et l'extraction sûre d'une réservation officielle ; le motif exact reste visible dans `inspect`. Les preuves HTTP et la décision source par source sont consignées dans [`docs/source-audit.md`](docs/source-audit.md).
+
+Le City n'a pas de source directe stable identifiée et ne figure pas parmi les trois lieux publiés par l'agenda Lorient Bretagne Sud Événements ; il n'est donc pas couvert activement.
 
 Le workflow se réveille toutes les 15 minutes, puis le collecteur ne relit que les sources arrivées à échéance. Une source désactivée dans [`src/sources.mjs`](src/sources.mjs) est ignorée avec sa raison explicite.
 
@@ -139,7 +143,7 @@ La source de vérité est [`src/sources.mjs`](src/sources.mjs). Pour ajouter une
 
 Pour désactiver temporairement une source, conserver son entrée, passer `enabled` à `false` et renseigner `disabledReason`. Cela préserve son identité et son historique ; ne pas retirer son état à la main.
 
-Les URL du **FIL** et d'**Hydrophone** contiennent actuellement une année de programmation. À chaque changement de saison, vérifier leurs pages officielles, mettre à jour les URL dans `src/sources.mjs`, renouveler les fixtures/signatures concernées et exécuter l'inspection avant réactivation. Ne pas deviner l'URL de l'année suivante.
+L'URL du **FIL** contient actuellement une année de programmation. À chaque changement de saison, vérifier sa page officielle, mettre à jour l'URL dans `src/sources.mjs`, renouveler les fixtures/signatures concernées et exécuter l'inspection avant réactivation. Ne pas deviner l'URL de l'année suivante. Hydrophone utilise désormais la racine stable de sa billetterie et récupère son jeton public à chaque contrôle, sans le stocker.
 
 ## Exploitation GitHub
 

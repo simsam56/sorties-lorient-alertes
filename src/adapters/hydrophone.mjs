@@ -1,107 +1,124 @@
 import { load } from "cheerio";
-import { createEvent, parseFrenchDate } from "../model.mjs";
+import { createEvent } from "../model.mjs";
 
-const HYDROPHONE_HOST = "www.hydrophone.fr";
 const TICKETING_HOST = "billetterie.hydrophone.fr";
-const NAVIGATION_FILES = new Set([
-  "agenda.html",
-  "programmation.html",
-  "accessibilite.html",
-  "a-propos.html",
-  "espace-pro.html",
-  "magazine.html",
-  "studios.html",
-  "missions.html",
-  "pratique.html",
-]);
+const API_PATH = "/api/v2";
 
-function invalid(source) {
-  throw new Error(`${source.name}: signature officielle absente`);
+function apiInvalid(source, detail = "signature API officielle absente") {
+  throw new Error(`${source.name}: ${detail}`);
 }
 
-function hasOfficialSource(source) {
+function officialTicketingSource(source) {
   try {
     const url = new URL(source.url);
-    return url.protocol === "https:" && url.hostname === HYDROPHONE_HOST && url.pathname.endsWith(".html");
+    return url.protocol === "https:" && url.hostname === TICKETING_HOST &&
+      url.pathname === "/" && !url.search && !url.hash;
   } catch {
     return false;
   }
 }
 
-function noSaleAnnounced($) {
-  return /aucun (?:concert|spectacle|événement)|aucune (?:vente|programmation)|pas de concert/iu.test($("body").text());
+function parisDate(value) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(value);
+  const field = (type) => parts.find((part) => part.type === type)?.value;
+  return `${field("year")}-${field("month")}-${field("day")}`;
 }
 
-function programmeUrl($, element, source) {
+function officialPublicLink(raw, id) {
   let url;
   try {
-    url = new URL($(element).attr("href"), source.url);
+    url = new URL(raw);
   } catch {
     return null;
   }
-  const filename = url.pathname.split("/").at(-1) ?? "";
-  return url.protocol === "https:" && url.hostname === HYDROPHONE_HOST &&
-    filename.endsWith(".html") && !filename.startsWith("-") &&
-    !NAVIGATION_FILES.has(filename.toLowerCase()) ? url : null;
+  const sessionId = String(id);
+  return url.protocol === "https:" && url.hostname === TICKETING_HOST &&
+    url.port === "" && url.username === "" && url.password === "" && url.hash === "" &&
+    /^\/agenda\/\d+-[^/]+$/u.test(url.pathname) &&
+    url.pathname.startsWith(`/agenda/${sessionId}-`) &&
+    url.searchParams.size === 1 && url.searchParams.get("session") === sessionId ? url.href : null;
 }
 
-function placeParts(text) {
-  const match = text.trim().match(/^(.*?)(?:\s*,\s*|\s+[–—-]\s+)([^,]+)$/u);
-  return match ? { venue: match[1].trim(), city: match[2].trim() } : null;
+function validEventRecord(record) {
+  return Number.isInteger(record?.id) && record.id > 0 &&
+    typeof record.edito?.title === "string" && record.edito.title.trim() !== "" &&
+    Number.isInteger(record.start_date) &&
+    typeof record.location?.title === "string" && typeof record.location?.city === "string" &&
+    typeof record.public_link === "string" &&
+    typeof record.infos_status?.publication === "string" &&
+    typeof record.infos_status?.available === "boolean" &&
+    typeof record.infos_status?.closed === "boolean" &&
+    Array.isArray(record.infos_status?.additionnals) &&
+    record.infos_status.additionnals.every((status) => status && typeof status.key === "string") &&
+    typeof record.settings?.pass?.is_pass === "boolean";
 }
 
-function ticketUrl($, card) {
-  for (const link of card.find("a[href]").toArray()) {
-    let url;
-    try {
-      url = new URL($(link).attr("href"), `https://${HYDROPHONE_HOST}`);
-    } catch {
-      continue;
-    }
-    if (url.protocol === "https:" && url.hostname === TICKETING_HOST && url.pathname !== "/") return url.href;
-  }
-  return null;
-}
-
-function isFuture(startsOn) {
-  return startsOn > new Date().toISOString().slice(0, 10);
-}
-
-export function parseHydrophone(html, source) {
-  if (!hasOfficialSource(source)) invalid(source);
+export function buildHydrophoneSessionsRequest(html, source) {
+  if (!officialTicketingSource(source)) apiInvalid(source);
   const $ = load(html);
-  const details = $("a[href]").toArray().map((element) => ({
-    element,
-    url: programmeUrl($, element, source),
-  })).filter((detail) => detail.url);
-  if (details.length === 0) {
-    if ($("h1, h2").filter((_, heading) => /agenda|programmation/iu.test($(heading).text())).length && noSaleAnnounced($)) return [];
-    invalid(source);
+  const app = $("sonic-tickets-app").first();
+  const token = app.attr("token") ?? "";
+  if (app.attr("serviceurl") !== API_PATH || !/^[A-Za-z0-9._-]{20,4096}$/u.test(token)) apiInvalid(source);
+
+  const url = new URL(`${API_PATH}/sessions`, source.url);
+  url.searchParams.set("next", "1");
+  url.searchParams.set("limit", "100");
+  url.searchParams.set("offset", "0");
+  for (const feature of ["location", "status", "settings"]) url.searchParams.append("features[]", feature);
+  return {
+    url: url.href,
+    headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+  };
+}
+
+export function parseHydrophoneSessions(raw, source, now = new Date()) {
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch {
+    apiInvalid(source, "réponse API invalide");
+  }
+  if (payload?.success !== true || !Array.isArray(payload.data) ||
+      !Number.isInteger(payload.total) || payload.total !== payload.data.length) {
+    apiInvalid(source, "réponse API invalide");
   }
 
-  const events = new Map();
-  for (const { element, url } of details) {
-    const card = $(element).closest("article, .agenda-item, [data-event], .event-card").first();
-    if (!card.length) continue;
-    const title = card.find("h1, h2, h3").first().text().trim();
-    const startsOn = parseFrenchDate(card.text());
-    const place = placeParts(card.find(".place, .venue, .lieu, [class*='place'], [class*='venue'], [class*='lieu']").first().text());
-    const bookingUrl = ticketUrl($, card);
-    const venue = place?.venue ?? source.venue;
-    const city = place?.city ?? source.city;
-    if (!title || !startsOn || !venue || !city || !bookingUrl) continue;
-    const event = createEvent({
+  const today = parisDate(now);
+  const events = [];
+  for (const record of payload.data) {
+    if (!record || record.entity_type !== "event") continue;
+    if (!validEventRecord(record)) apiInvalid(source, "session API invalide");
+    const canceled = Array.isArray(record.infos_status?.additionnals) &&
+      record.infos_status.additionnals.some((status) => status?.key === "canceled");
+    const isHydrophone = record.location?.title?.trim().toUpperCase() === "HYDROPHONE" &&
+      record.location?.city?.trim().toUpperCase() === "LORIENT";
+    const sellable = record.infos_status?.publication === "on_sale" &&
+      record.infos_status?.available === true && record.infos_status?.closed === false;
+    if (!isHydrophone || !sellable || canceled || record.settings?.pass?.is_pass === true) continue;
+
+    const startsAt = Number.isInteger(record.start_date) ? new Date(record.start_date * 1000) : null;
+    const startsOn = startsAt && !Number.isNaN(startsAt.getTime()) ? parisDate(startsAt) : null;
+    const title = typeof record.edito?.title === "string" ? record.edito.title.trim() : "";
+    const bookingUrl = officialPublicLink(record.public_link, record.id);
+    if (!startsOn || !bookingUrl) {
+      apiInvalid(source, "session API invalide");
+    }
+    if (startsOn <= today) continue;
+    events.push(createEvent({
       title,
       startsOn,
       startsAt: null,
-      venue,
-      city,
+      venue: source.venue,
+      city: source.city,
       bookingUrl,
-      sourceUrl: url.href,
+      sourceUrl: source.homeUrl,
       sourceId: source.id,
-    });
-    events.set(`${event.title}\u0000${event.startsOn}\u0000${event.venue}`, event);
+    }));
   }
-  if (events.size === 0) invalid(source);
-  return [...events.values()].filter((event) => isFuture(event.startsOn));
+  return events;
 }

@@ -68,6 +68,39 @@ test("ignore une source désactivée sans la récupérer", async () => {
   assert.equal(called, false);
 });
 
+test("collecte Hydrophone en deux lectures sans exposer son jeton public ailleurs", async () => {
+  const hydrophone = {
+    ...source("hydrophone", "hydrophone"),
+    name: "Hydrophone",
+    url: "https://billetterie.hydrophone.fr/",
+    homeUrl: "https://www.hydrophone.fr/",
+    city: "Lorient",
+    venue: "Hydrophone",
+  };
+  const token = "jeton-public-de-test-123456789";
+  const calls = [];
+  const payload = JSON.stringify({ success: true, total: 0, data: [] });
+
+  const result = await collectDueSources({
+    sources: [hydrophone],
+    fetchText: async (url, options) => {
+      calls.push({ url, options });
+      return calls.length === 1
+        ? `<sonic-tickets-app serviceURL="/api/v2" token="${token}"></sonic-tickets-app>`
+        : payload;
+    },
+    now,
+  });
+
+  assert.equal(result.failures.length, 0);
+  assert.deepEqual(result.successes[0].events, []);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].url, hydrophone.url);
+  assert.equal(calls[0].options.headers, undefined);
+  assert.match(calls[1].url, /^https:\/\/billetterie\.hydrophone\.fr\/api\/v2\/sessions\?/u);
+  assert.deepEqual(calls[1].options.headers, { Accept: "application/json", Authorization: `Bearer ${token}` });
+});
+
 test("réutilise pendant six heures une résolution territoriale réussie et publie les mises à jour en mémoire", async () => {
   const tourism = source("tourisme", "tourism", 60);
   const cachedCandidate = {

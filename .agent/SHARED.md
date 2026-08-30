@@ -1,5 +1,7 @@
 ## En cours
 
+- [Codex] 2026-08-30 14:28 — je touche : activation Hydrophone et agenda Lorient Événements (adaptateurs, sources, tests et déploiement)
+
 ## Decisions
 - 2026-08-29 — Projet GitHub Actions séparé du FCL ; nouveau canal ntfy et contrôle toutes les 15 minutes.
 - 2026-08-29 — Couverture hybride : agenda territorial et billetteries officielles des principales salles, avec déduplication.
@@ -7,6 +9,7 @@
 - 2026-08-30 — Identité santé fixée à kind/sourceId/checkedAt, afin que plusieurs cycles non acquittés restent distincts et causalement ordonnés.
 - 2026-08-30 — Les quatre créneaux GitHub sont déclarés séparément, car plusieurs passages de l'expression groupée ont été absents malgré un workflow actif ; cadence inchangée à 15 minutes.
 - 2026-08-30 — Le déclenchement principal passe par un LaunchAgent macOS toutes les 15 minutes vers `workflow_dispatch`, car le `schedule` GitHub actif a sauté plusieurs créneaux ; collecte, état et secret restent sur GitHub.
+- 2026-08-30 — Hydrophone utilise l'API publique de sa billetterie avec validation fail-close ; l'agenda Lorient Événements est limité à ses trois lieux vérifiés et à la section tarifs, afin d'activer ces deux priorités sans faux lien ni faux positif.
 
 ## Etat
 - 2026-08-29 — [Codex] Conception validée en conversation ; spécification écrite en cours.

@@ -1,6 +1,6 @@
 import { parseMapado } from "./adapters/mapado.mjs";
 import { parseTheatreLorient } from "./adapters/theatre-lorient.mjs";
-import { parseHydrophone } from "./adapters/hydrophone.mjs";
+import { buildHydrophoneSessionsRequest, parseHydrophoneSessions } from "./adapters/hydrophone.mjs";
 import { parseTrios } from "./adapters/trios.mjs";
 import { parseFil } from "./adapters/fil.mjs";
 import { parseTourismCandidates } from "./adapters/tourism.mjs";
@@ -15,7 +15,6 @@ const defaultTimeoutSignalFactory = (milliseconds) => AbortSignal.timeout(millis
 export const DIRECT_ADAPTERS = Object.freeze({
   mapado: parseMapado,
   "theatre-lorient": parseTheatreLorient,
-  hydrophone: parseHydrophone,
   trios: parseTrios,
   fil: parseFil,
 });
@@ -145,6 +144,15 @@ async function collectOneSource({
   runDetail,
   timeoutSignalFactory,
 }) {
+  if (source.adapter === "hydrophone") {
+    const homeHtml = await fetchText(source.url, timeoutOptions(timeoutSignalFactory));
+    const request = buildHydrophoneSessionsRequest(homeHtml, source);
+    const payload = await fetchText(request.url, {
+      ...timeoutOptions(timeoutSignalFactory),
+      headers: request.headers,
+    });
+    return parseHydrophoneSessions(payload, source, new Date(checkedAt));
+  }
   if (candidateParsers[source.adapter]) {
     return collectTerritorialSource({
       source,

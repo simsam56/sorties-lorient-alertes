@@ -35,7 +35,7 @@ function assertCandidate(candidate) {
   }
 }
 
-export function findReservationUrl(html, detailUrl) {
+export function findReservationUrl(html, detailUrl, selector = null) {
   const $ = load(html);
   let detail;
   try {
@@ -43,7 +43,9 @@ export function findReservationUrl(html, detailUrl) {
   } catch {
     throw new Error(`Lien de réservation invalide: URL de détail ${detailUrl}`);
   }
-  for (const element of $("a[href]").toArray()) {
+  const elements = (selector ? $(selector).find("a[href]") : $("a[href]")).toArray()
+    .sort((left, right) => Number(/pmr|handicap/iu.test($(left).text())) - Number(/pmr|handicap/iu.test($(right).text())));
+  for (const element of elements) {
     const label = $(element).text().trim();
     const rawHref = $(element).attr("href");
     let href;
@@ -60,14 +62,28 @@ export function findReservationUrl(html, detailUrl) {
 
 export function resolveReservation(html, candidate) {
   assertCandidate(candidate);
-  const bookingUrl = findReservationUrl(html, candidate.detailUrl);
+  const $ = load(html);
+  const isLorientEvents = candidate.sourceId === "lorient-events";
+  const lorientMain = $("main.single-evenement__content");
+  if (isLorientEvents && lorientMain.length !== 1) {
+    throw new Error("Lorient Bretagne Sud Événements: signature de fiche absente");
+  }
+  const bookingUrl = findReservationUrl(
+    html,
+    candidate.detailUrl,
+    isLorientEvents ? "main.single-evenement__content .single-evenement__tarifs" : null,
+  );
   if (!bookingUrl) return null;
 
-  const $ = load(html);
-  const categories = $(".category, .categorie, [class*='category'], [class*='categorie']").text();
-  const classification = `${candidate.title} ${categories}`;
+  const categorySelector = ".category, .categorie, [class*='category'], [class*='categorie']";
+  const categories = (isLorientEvents ? lorientMain.find(categorySelector) : $(categorySelector)).text();
+  const description = isLorientEvents
+    ? lorientMain.find(":scope > div > .content-style").first().text()
+    : "";
+  const classification = `${candidate.title} ${categories} ${description}`;
   if (!CULTURAL.test(classification)) return null;
-  if (NON_CULTURAL.test(classification) && !CULTURAL.test(categories)) return null;
+  if (NON_CULTURAL.test(candidate.title)) return null;
+  if (!isLorientEvents && NON_CULTURAL.test(classification) && !CULTURAL.test(categories)) return null;
 
   return createEvent({
     title: candidate.title,
