@@ -1,14 +1,12 @@
 ## En cours
 
-- [Codex] 2026-08-29 23:35 — je touche : implementation complete dans la branche codex/implement-events
-- [Codex] 2026-08-30 13:33 — je touche : secours local macOS (ops LaunchAgent, test et README)
-
 ## Decisions
 - 2026-08-29 — Projet GitHub Actions séparé du FCL ; nouveau canal ntfy et contrôle toutes les 15 minutes.
 - 2026-08-29 — Couverture hybride : agenda territorial et billetteries officielles des principales salles, avec déduplication.
 - 2026-08-30 — État strict porté en v2 avec outbox événements/santé, car les notifications doivent survivre à la disparition d'une source et aux échecs ntfy sans reset implicite.
 - 2026-08-30 — Identité santé fixée à kind/sourceId/checkedAt, afin que plusieurs cycles non acquittés restent distincts et causalement ordonnés.
 - 2026-08-30 — Les quatre créneaux GitHub sont déclarés séparément, car plusieurs passages de l'expression groupée ont été absents malgré un workflow actif ; cadence inchangée à 15 minutes.
+- 2026-08-30 — Le déclenchement principal passe par un LaunchAgent macOS toutes les 15 minutes vers `workflow_dispatch`, car le `schedule` GitHub actif a sauté plusieurs créneaux ; collecte, état et secret restent sur GitHub.
 
 ## Etat
 - 2026-08-29 — [Codex] Conception validée en conversation ; spécification écrite en cours.
@@ -41,3 +39,5 @@
 - 2026-08-30 02:07 — [Codex/T11] Audit live livré : 6 Mapado actives, 6 sources désactivées avec preuve et motif, contrat live opt-in ; commit 04e1882, 114 réussites sur 116 tests (2 skips attendus).
 - 2026-08-30 02:26 — [Codex] Correctif final pre-publication livre : etat production requis, identite lieu persistante, Mapado fail-close, HTTP partage et couverture partielle explicite ; commit bc63248, 122 reussites sur 124 tests, live 2/2, inspect 6 actives/6 desactivees/81 canoniques.
 - 2026-08-30 02:37 — [Codex] Final fix round 2 livre : slug Mapado ASCII canonique avec URL exacte et dates francaises validees par calendrier UTC ; commit d80f94e, 125 reussites sur 127 tests, live 2/2, inspect stable a 81 canoniques.
+- 2026-08-30 13:55 — [Codex] Secours macOS livré : LaunchAgent `fr.baliseia.sorties-lorient-alertes` actif toutes les 900 s, commits b5b8c79/51cb855 ; deux déclenchements automatiques réussis, runs 33309496409 et 33310113152.
+- 2026-08-30 13:55 — [Codex] Etat distant validé par `src/state.mjs` après déploiement : 81 événements vus, 6/6 sources saines, outboxes événements/santé vides ; journaux LaunchAgent vides et dernier code local 0.
