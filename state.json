@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "initializedAt": null,
+  "updatedAt": null,
+  "seen": {},
+  "sources": {},
+  "candidates": {},
+  "outbox": {
+    "events": {},
+    "health": {}
+  }
+}
