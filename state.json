@@ -1,7 +1,7 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-09-01T13:18:27.747Z",
+  "updatedAt": "2026-09-01T13:33:21.271Z",
   "seen": {
     "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
@@ -1199,8 +1199,8 @@
     },
     "lorient-events": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-01T12:33:10.523Z",
-      "lastCheckedAt": "2026-09-01T12:33:10.523Z",
+      "lastSuccessAt": "2026-09-01T13:33:21.271Z",
+      "lastCheckedAt": "2026-09-01T13:33:21.271Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:6b0927f2dc006d9c1fca3abe69328b5683c6f7855c1e6a296d53894125683e20"
@@ -1229,7 +1229,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/mania-the-abba-tribute-lorient/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "MANIA, THE ABBA TRIBUTE – LORIENT",
         "startsOn": "2026-09-19",
@@ -1242,15 +1242,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/innovemploi/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/tisseade/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-mineraux-et-fossiles/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/jo-le-sinbad/": {
@@ -1262,15 +1262,15 @@
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/studyrama/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-du-chocolat-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/festival-insolent-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Festival Insolent",
         "startsOn": "2026-10-24",
@@ -1283,15 +1283,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/fete-des-assos-2026-lorient/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/manful-of-hemera-competition-de-crossfit/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/thomas-marty-3/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Thomas Marty",
         "startsOn": "2026-10-31",
@@ -1304,31 +1304,31 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/salon-habitat-vins-et-gastronomie/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/artissim-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/https-hit-lorient-bzh-forum-2026-levenement/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-livre-jeunesse-lorient-26/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/9938/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/illusion/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/claudio-capeo/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Claudio Capéo",
         "startsOn": "2026-12-18",
@@ -1341,7 +1341,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/greg-duth/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Greg Duth",
         "startsOn": "2027-01-09",
@@ -1354,15 +1354,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/ana-godefroy-en-rodage/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/sarah-schwab/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/elie-semoun/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Elie Semoun",
         "startsOn": "2027-01-27",
@@ -1375,35 +1375,35 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/marine/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/alexis-le-rossignol-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/jean-baptiste-guegan/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/yann-guillarme/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/le-cas-pucine/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/fabien-olicard-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/djal-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/blandine-lehout/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Blandine Lehout",
         "startsOn": "2027-03-20",
@@ -1416,7 +1416,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/djamil-le-schlag/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Djamil Le Schlag",
         "startsOn": "2027-03-27",
@@ -1429,7 +1429,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/laurent-gerra-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Laurent Gerra",
         "startsOn": "2027-04-01",
@@ -1442,19 +1442,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/tristan-lopin-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/pv/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/julien-santini/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/edouard-deloignon/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Edouard Deloignon",
         "startsOn": "2027-05-13",
@@ -1467,19 +1467,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/charlie-haid/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/les-annees-80-la-tournee/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/thomas-angelvy-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/la-troupe-du-jamel-comedy-club/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "La troupe du Jamel Comedy Club",
         "startsOn": "2027-06-10",
@@ -1492,7 +1492,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/geremy-credeville-2/": {
-      "checkedAt": "2026-09-01T07:17:16.910Z",
+      "checkedAt": "2026-09-01T13:33:21.271Z",
       "event": {
         "title": "Gérémy Crédeville",
         "startsOn": "2027-09-09",
