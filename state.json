@@ -1,7 +1,7 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-09-03T13:16:33.117Z",
+  "updatedAt": "2026-09-03T13:31:41.073Z",
   "seen": {
     "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
@@ -1168,69 +1168,80 @@
       "sourceIds": [
         "hydrophone"
       ]
+    },
+    "2027-02-06:56520:l-estran:robinson-khoury-mya": {
+      "title": "Robinson Khoury · MŸA",
+      "startsOn": "2027-02-06",
+      "venue": "L'ESTRAN",
+      "city": "56520",
+      "bookingUrl": "https://lestran-guidel.mapado.com/event/780601-robinson-khoury-mya",
+      "notifiedAt": "2026-09-03T13:31:41.073Z",
+      "sourceIds": [
+        "mapado-estran"
+      ]
     }
   },
   "sources": {
     "mapado-estran": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:1d7ecea7c8410e0d09d7943513444e549fbfd4c23b113554007a7cd95396f8c9"
+      "lastResultFingerprint": "sha256:951c0b6857d0aa985b551739560dd5f032927b71fc540e8e4f51e12d0642eb39"
     },
     "mapado-oceanis": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:dade72e81557bc9c4dbc06adba7542aecdf9c639f8a6568c2eaef608055b4607"
     },
     "mapado-strapontin": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:862de7d5eb007e40af967b2e9baa8816228845f83783fa1269dfde83e191609c"
     },
     "mapado-quai9": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:8fd2d7ab4a9c838426e48f9a00f04322bc8bd7b792ab3a5b2e67484a6f52cc4f"
     },
     "mapado-arcs": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:2454c3cb74ecee245ecae0164724290ebc043151439aff109e64ea555a5f1f0b"
     },
     "mapado-coque": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:b40592984dd5a0313c69a4dea6745b9278dd33e455222209e51dcd0990f14864"
     },
     "lorient-events": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-03T12:31:25.129Z",
-      "lastCheckedAt": "2026-09-03T12:31:25.129Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:6b0927f2dc006d9c1fca3abe69328b5683c6f7855c1e6a296d53894125683e20"
     },
     "hydrophone": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-03T13:16:33.117Z",
-      "lastCheckedAt": "2026-09-03T13:16:33.117Z",
+      "lastSuccessAt": "2026-09-03T13:31:41.073Z",
+      "lastCheckedAt": "2026-09-03T13:31:41.073Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:4e500da23ddffa3a8498dd64fe86303fdfd8a24b480dd4a080e4ef383ad8b1da"
