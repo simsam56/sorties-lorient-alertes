@@ -1,7 +1,7 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-09-11T05:50:13.524Z",
+  "updatedAt": "2026-09-11T06:05:10.485Z",
   "seen": {
     "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
@@ -1254,8 +1254,8 @@
     },
     "lorient-events": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-11T05:05:07.332Z",
-      "lastCheckedAt": "2026-09-11T05:05:07.332Z",
+      "lastSuccessAt": "2026-09-11T06:05:10.485Z",
+      "lastCheckedAt": "2026-09-11T06:05:10.485Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:6b0927f2dc006d9c1fca3abe69328b5683c6f7855c1e6a296d53894125683e20"
@@ -1560,15 +1560,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/salon-bonjour-caravaning/": {
-      "checkedAt": "2026-09-11T00:04:18.512Z",
+      "checkedAt": "2026-09-11T06:05:10.485Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/septembre-rouge-une-soiree-de-sensibilisation-aux-cancers-du-sang/": {
-      "checkedAt": "2026-09-11T00:04:18.512Z",
+      "checkedAt": "2026-09-11T06:05:10.485Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/concert-unisson/": {
-      "checkedAt": "2026-09-11T00:04:18.512Z",
+      "checkedAt": "2026-09-11T06:05:10.485Z",
       "event": null
     }
   },
