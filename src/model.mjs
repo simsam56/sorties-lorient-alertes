@@ -11,6 +11,15 @@ const VENUE_ALIASES = new Map([
   ["grand-theatre", "theatre-de-lorient"],
   ["grand-theatre-de-lorient", "theatre-de-lorient"],
   ["salle-keragan", "oceanis"],
+  ["oceanis-ploemeur", "oceanis"],
+  ["theatre-le-strapontin", "le-strapontin"],
+  ["theatre-du-strapontin", "le-strapontin"],
+  ["theatre-du-strapontin-pont-scorff", "le-strapontin"],
+]);
+
+const CITY_ALIASES = new Map([
+  ["56520", "guidel"],
+  ["56700", "hennebont"],
 ]);
 
 export function normalizeText(value) {
@@ -59,10 +68,15 @@ export function createEvent(input) {
   return Object.freeze(event);
 }
 
+export function canonicalCityId(city) {
+  const normalized = normalizeText(city);
+  return CITY_ALIASES.get(normalized) ?? CITY_ALIASES.get(city) ?? normalized;
+}
+
 export function canonicalEventId(event) {
   return [
     event.startsOn,
-    normalizeText(event.city),
+    canonicalCityId(event.city),
     canonicalVenueId(event.venue),
     normalizeText(event.title),
   ].join(":");
