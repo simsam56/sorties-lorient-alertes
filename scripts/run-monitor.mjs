@@ -205,7 +205,6 @@ async function check(args, environment) {
   const statePath = requestedStatePath(args);
   if (!statePath) throw new Error("Option --state obligatoire en mode check");
 
-  // Cette validation précède volontairement toute création de client réseau.
   const loaded = await loadState(statePath, { requireExisting: requiresExistingState(args) });
   const now = executionDate(environment);
   const fetchImpl = await networkFetch(environment);
@@ -219,7 +218,6 @@ async function check(args, environment) {
     now,
   });
 
-  // L'outbox et les transitions de santé sont durables avant le premier envoi.
   if (!loaded.exists || !isDeepStrictEqual(planned.state, loaded.state)) {
     await writeJsonAtomically(statePath, planned.state);
   }
@@ -244,7 +242,8 @@ async function check(args, environment) {
   for (const failure of published.failures) {
     console.error(`Notification « ${failure.title} » — ERREUR — ${failure.message}`);
   }
-  return collection.failures.length > 0 || published.failures.length > 0 ? 1 : 0;
+  const allDueFailed = successes.length === 0 && collection.failures.length > 0;
+  return allDueFailed || published.failures.length > 0 ? 1 : 0;
 }
 
 async function testNotification(environment) {
