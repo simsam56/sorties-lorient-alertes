@@ -242,8 +242,7 @@ async function check(args, environment) {
   for (const failure of published.failures) {
     console.error(`Notification « ${failure.title} » — ERREUR — ${failure.message}`);
   }
-  const allDueFailed = successes.length === 0 && collection.failures.length > 0;
-  return allDueFailed || published.failures.length > 0 ? 1 : 0;
+  return collection.failures.length > 0 || published.failures.length > 0 ? 1 : 0;
 }
 
 async function testNotification(environment) {
