@@ -43,8 +43,11 @@ export function parseLorientEventsCandidates(html, source) {
     const title = card.find(".evenement-card__title").first().text().trim();
     const startsOn = card.find(".evenement-card__date time[datetime]").first().attr("datetime");
     const venue = card.find(".evenement-card__location").first().text().trim().replace(/\s+/gu, " ");
+    // Une fiche sans lieu (cas réel : Les Rives du Numérique) ne doit pas
+    // invalider tout l'agenda. Un lieu renseigné mais inconnu reste bloquant.
+    if (!title || !validIsoDate(startsOn) || !venue) continue;
     const city = VENUE_CITIES.get(venue);
-    if (!title || !validIsoDate(startsOn) || !city || !source.id) invalid(source);
+    if (!city || !source.id) invalid(source);
 
     candidates.set(url.href, {
       title,
@@ -55,5 +58,6 @@ export function parseLorientEventsCandidates(html, source) {
       sourceId: source.id,
     });
   }
+  if (candidates.size === 0) invalid(source);
   return [...candidates.values()];
 }

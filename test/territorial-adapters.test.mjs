@@ -82,6 +82,24 @@ test("refuse un lieu inconnu plutôt que d'inventer sa commune", () => {
   assert.throws(() => parseLorientEventsCandidates(html, lorientEvents), /signature Lorient Événements invalide/);
 });
 
+test("ignore une carte sans lieu plutôt que de faire échouer l'agenda entier", () => {
+  const html = `<ul class="archive-evenement__list">
+    <li><a href="/agenda/les-rives-du-numerique/"><figure class="evenement-card">
+      <h2 class="evenement-card__title">Les Rives du Numérique</h2>
+      <p class="evenement-card__date"><time datetime="2026-10-15">15 octobre 2026</time></p>
+    </figure></a></li>
+    <li><a href="/agenda/le-grand-soir/"><figure class="evenement-card">
+      <h2 class="evenement-card__title">Le grand soir</h2>
+      <p class="evenement-card__location">Palais des Congrès</p>
+      <p class="evenement-card__date"><time datetime="2026-10-09">9 octobre 2026</time></p>
+    </figure></a></li>
+  </ul>`;
+
+  assert.deepEqual(parseLorientEventsCandidates(html, lorientEvents).map(({ title, venue }) => ({ title, venue })), [
+    { title: "Le grand soir", venue: "Palais des Congrès" },
+  ]);
+});
+
 test("refuse explicitement les signatures territoriales inattendues", () => {
   assert.throws(
     () => parseTourismCandidates("<main>Maintenance</main>", tourism),
