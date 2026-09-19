@@ -21,6 +21,38 @@ test("normalise un événement sans perdre son lien officiel", () => {
   assert.match(canonicalEventId(event), /^2026-10-15:lorient:theatre-de-lorient:/);
 });
 
+test("stabilise l'identité canonique pour les codes postaux et communes aliasées", () => {
+  const identityAt = (city) => canonicalEventId(createEvent({
+    title: "Présentation de saison + concert Harold López-Nussa",
+    startsOn: "2026-09-08",
+    startsAt: null,
+    venue: "L'Estran",
+    city,
+    bookingUrl: "https://lestran-guidel.mapado.com/event/presentation",
+    sourceUrl: "https://lestran-guidel.mapado.com/",
+    sourceId: "mapado-estran",
+  }));
+
+  assert.equal(
+    identityAt("56520"),
+    "2026-09-08:guidel:l-estran:presentation-de-saison-concert-harold-lopez-nussa",
+  );
+  assert.equal(identityAt("56520"), identityAt("Guidel"));
+  assert.equal(
+    canonicalEventId(createEvent({
+      title: "Concert",
+      startsOn: "2026-10-15",
+      startsAt: null,
+      venue: "Théâtre à la Coque",
+      city: "56700",
+      bookingUrl: "https://theatrealacoque-cnma.mapado.com/event/concert",
+      sourceUrl: "https://theatrealacoque-cnma.mapado.com/",
+      sourceId: "mapado-coque",
+    })),
+    "2026-10-15:hennebont:theatre-a-la-coque:concert",
+  );
+});
+
 test("stabilise l'identité canonique pour tous les alias de salles connus", () => {
   const identityAt = (venue) => canonicalEventId(createEvent({
     title: "Concert témoin",

@@ -7,6 +7,7 @@ import { deduplicateEvents } from "../src/dedupe.mjs";
 import { fetchSourceText, sendNtfy } from "../src/network.mjs";
 import { buildEventNotifications, buildHealthNotifications } from "../src/notifications.mjs";
 import { SOURCES, getSource } from "../src/sources.mjs";
+import { migrateCanonicalEventKeys } from "../src/canonical-keys.mjs";
 import { writeJsonAtomically } from "../src/state-file.mjs";
 import {
   acknowledgeHealthNotifications,
@@ -109,7 +110,10 @@ async function loadState(path, { requireExisting = false } = {}) {
   } catch {
     throw new Error("État invalide: JSON illisible");
   }
-  return { state: validateState(parsed), exists: true };
+  const prepared = parsed?.seen && parsed?.outbox?.events
+    ? migrateCanonicalEventKeys(parsed)
+    : parsed;
+  return { state: validateState(prepared), exists: true };
 }
 
 async function collect({ state, now, fetchImpl }) {
