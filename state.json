@@ -1,9 +1,9 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-09-12T08:07:04.386Z",
+  "updatedAt": "2026-09-19T18:58:51.636Z",
   "seen": {
-    "2026-09-08:56520:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
+    "2026-09-08:guidel:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
       "startsOn": "2026-09-08",
       "venue": "L'ESTRAN",
@@ -14,7 +14,7 @@
         "mapado-estran"
       ]
     },
-    "2026-10-02:56520:l-estran:dolines-marek-kastelnik": {
+    "2026-10-02:guidel:l-estran:dolines-marek-kastelnik": {
       "title": "Dolines • Marek Kastelnik",
       "startsOn": "2026-10-02",
       "venue": "L'ESTRAN",
@@ -25,7 +25,7 @@
         "mapado-estran"
       ]
     },
-    "2026-10-16:56520:l-estran:interzone-les-debussy-s": {
+    "2026-10-16:guidel:l-estran:interzone-les-debussy-s": {
       "title": "Interzone & les Debussy(s)",
       "startsOn": "2026-10-16",
       "venue": "L'ESTRAN",
@@ -36,7 +36,7 @@
         "mapado-estran"
       ]
     },
-    "2026-10-24:56520:l-estran:bonbon-fraktal-quintet": {
+    "2026-10-24:guidel:l-estran:bonbon-fraktal-quintet": {
       "title": "Bonbon Fraktal Quintet",
       "startsOn": "2026-10-24",
       "venue": "L'ESTRAN",
@@ -47,7 +47,7 @@
         "mapado-estran"
       ]
     },
-    "2026-10-24:56520:l-estran:la-drave": {
+    "2026-10-24:guidel:l-estran:la-drave": {
       "title": "La Drave",
       "startsOn": "2026-10-24",
       "venue": "L'ESTRAN",
@@ -58,7 +58,7 @@
         "mapado-estran"
       ]
     },
-    "2026-11-13:56520:l-estran:coup-de-torchon": {
+    "2026-11-13:guidel:l-estran:coup-de-torchon": {
       "title": "Coup de Torchon",
       "startsOn": "2026-11-13",
       "venue": "L'ESTRAN",
@@ -69,7 +69,7 @@
         "mapado-estran"
       ]
     },
-    "2026-12-05:56520:l-estran:daoud": {
+    "2026-12-05:guidel:l-estran:daoud": {
       "title": "daoud",
       "startsOn": "2026-12-05",
       "venue": "L'ESTRAN",
@@ -80,7 +80,7 @@
         "mapado-estran"
       ]
     },
-    "2026-12-12:56520:l-estran:lydia-shelley-piers-faccini": {
+    "2026-12-12:guidel:l-estran:lydia-shelley-piers-faccini": {
       "title": "Lydia Shelley & Piers Faccini",
       "startsOn": "2026-12-12",
       "venue": "L'ESTRAN",
@@ -91,7 +91,7 @@
         "mapado-estran"
       ]
     },
-    "2026-12-19:56520:l-estran:le-la-couleur": {
+    "2026-12-19:guidel:l-estran:le-la-couleur": {
       "title": "le la couleur",
       "startsOn": "2026-12-19",
       "venue": "L'ESTRAN",
@@ -102,7 +102,7 @@
         "mapado-estran"
       ]
     },
-    "2027-01-16:56520:l-estran:antonio-lizana": {
+    "2027-01-16:guidel:l-estran:antonio-lizana": {
       "title": "Antonio Lizana",
       "startsOn": "2027-01-16",
       "venue": "L'ESTRAN",
@@ -113,7 +113,7 @@
         "mapado-estran"
       ]
     },
-    "2027-01-24:56520:l-estran:le-serment-du-gueridon": {
+    "2027-01-24:guidel:l-estran:le-serment-du-gueridon": {
       "title": "Le serment du guéridon",
       "startsOn": "2027-01-24",
       "venue": "L'ESTRAN",
@@ -121,10 +121,11 @@
       "bookingUrl": "https://lestran-guidel.mapado.com/event/780566-le-serment-du-gueridon",
       "notifiedAt": null,
       "sourceIds": [
+        "mapado-coque",
         "mapado-estran"
       ]
     },
-    "2027-01-30:56520:l-estran:festival-surf-skate-culture-edition-9": {
+    "2027-01-30:guidel:l-estran:festival-surf-skate-culture-edition-9": {
       "title": "Festival Surf & Skate Culture édition #9",
       "startsOn": "2027-01-30",
       "venue": "L'ESTRAN",
@@ -135,7 +136,7 @@
         "mapado-estran"
       ]
     },
-    "2027-02-05:56520:l-estran:robinson-khoury-mya": {
+    "2027-02-05:guidel:l-estran:robinson-khoury-mya": {
       "title": "Robinson Khoury · MŸA",
       "startsOn": "2027-02-05",
       "venue": "L'ESTRAN",
@@ -157,7 +158,7 @@
         "mapado-estran"
       ]
     },
-    "2027-02-18:56520:l-estran:gaspar-claus-cells": {
+    "2027-02-18:guidel:l-estran:gaspar-claus-cells": {
       "title": "Gaspar Claus • Cells",
       "startsOn": "2027-02-18",
       "venue": "L'ESTRAN",
@@ -168,7 +169,7 @@
         "mapado-estran"
       ]
     },
-    "2027-03-07:56520:l-estran:caloe": {
+    "2027-03-07:guidel:l-estran:caloe": {
       "title": "Caloé",
       "startsOn": "2027-03-07",
       "venue": "L'ESTRAN",
@@ -179,7 +180,7 @@
         "mapado-estran"
       ]
     },
-    "2027-03-13:56520:l-estran:lagon-nwar": {
+    "2027-03-13:guidel:l-estran:lagon-nwar": {
       "title": "Lagon Nwar",
       "startsOn": "2027-03-13",
       "venue": "L'ESTRAN",
@@ -190,7 +191,7 @@
         "mapado-estran"
       ]
     },
-    "2027-03-14:56520:l-estran:furcy-le-risque-de-la-liberte": {
+    "2027-03-14:guidel:l-estran:furcy-le-risque-de-la-liberte": {
       "title": "Furcy, le risque de la liberté",
       "startsOn": "2027-03-14",
       "venue": "L'ESTRAN",
@@ -201,7 +202,7 @@
         "mapado-estran"
       ]
     },
-    "2027-03-14:56520:l-estran:furcy-ne-libre-film": {
+    "2027-03-14:guidel:l-estran:furcy-ne-libre-film": {
       "title": "Furcy, né libre (film)",
       "startsOn": "2027-03-14",
       "venue": "L'ESTRAN",
@@ -212,7 +213,7 @@
         "mapado-estran"
       ]
     },
-    "2027-03-19:56520:l-estran:du-cote-de-schumann": {
+    "2027-03-19:guidel:l-estran:du-cote-de-schumann": {
       "title": "Du côté de Schumann",
       "startsOn": "2027-03-19",
       "venue": "L'ESTRAN",
@@ -223,7 +224,7 @@
         "mapado-estran"
       ]
     },
-    "2027-04-03:56520:l-estran:laura-perrudin-kratos": {
+    "2027-04-03:guidel:l-estran:laura-perrudin-kratos": {
       "title": "Laura Perrudin • Kratos",
       "startsOn": "2027-04-03",
       "venue": "L'ESTRAN",
@@ -234,7 +235,7 @@
         "mapado-estran"
       ]
     },
-    "2027-04-10:56520:l-estran:celia-kameni-gorgones": {
+    "2027-04-10:guidel:l-estran:celia-kameni-gorgones": {
       "title": "Célia Kameni • Gorgones",
       "startsOn": "2027-04-10",
       "venue": "L'ESTRAN",
@@ -245,7 +246,7 @@
         "mapado-estran"
       ]
     },
-    "2027-04-17:56520:l-estran:le-petit-festival-des-livres-en-musique": {
+    "2027-04-17:guidel:l-estran:le-petit-festival-des-livres-en-musique": {
       "title": "Le petit festival des livres en musique",
       "startsOn": "2027-04-17",
       "venue": "L'ESTRAN",
@@ -256,7 +257,7 @@
         "mapado-estran"
       ]
     },
-    "2027-05-04:56520:l-estran:becca-stevens-laura-perrudin": {
+    "2027-05-04:guidel:l-estran:becca-stevens-laura-perrudin": {
       "title": "Becca Stevens & Laura Perrudin",
       "startsOn": "2027-05-04",
       "venue": "L'ESTRAN",
@@ -267,7 +268,7 @@
         "mapado-estran"
       ]
     },
-    "2027-05-12:56520:l-estran:camille-matthieu-et-etienne-saglio-tourmente": {
+    "2027-05-12:guidel:l-estran:camille-matthieu-et-etienne-saglio-tourmente": {
       "title": "Camille & Matthieu (et Étienne) Saglio + Tourmente",
       "startsOn": "2027-05-12",
       "venue": "L'ESTRAN",
@@ -278,7 +279,7 @@
         "mapado-estran"
       ]
     },
-    "2026-09-19:ploemeur:oceanis-ploemeur:ouverture-de-saison-26-27-en-attendant-la-vague": {
+    "2026-09-19:ploemeur:oceanis:ouverture-de-saison-26-27-en-attendant-la-vague": {
       "title": "OUVERTURE DE SAISON 26/27 | En attendant la Vague",
       "startsOn": "2026-09-19",
       "venue": "Océanis PLOEMEUR",
@@ -289,7 +290,7 @@
         "mapado-oceanis"
       ]
     },
-    "2026-10-16:ploemeur:oceanis-ploemeur:p-r2b": {
+    "2026-10-16:ploemeur:oceanis:p-r2b": {
       "title": "P.R2B",
       "startsOn": "2026-10-16",
       "venue": "Océanis PLOEMEUR",
@@ -300,7 +301,7 @@
         "mapado-oceanis"
       ]
     },
-    "2026-11-26:ploemeur:oceanis-ploemeur:edith-et-moi-yael-rasooly": {
+    "2026-11-26:ploemeur:oceanis:edith-et-moi-yael-rasooly": {
       "title": "Edith et moi | Yaël Rasooly",
       "startsOn": "2026-11-26",
       "venue": "Océanis PLOEMEUR",
@@ -311,7 +312,7 @@
         "mapado-oceanis"
       ]
     },
-    "2026-12-05:ploemeur:oceanis-ploemeur:bal-magnetique-cie-corps-magnetiques": {
+    "2026-12-05:ploemeur:oceanis:bal-magnetique-cie-corps-magnetiques": {
       "title": "Bal Magnétique | Cie Corps Magnétiques",
       "startsOn": "2026-12-05",
       "venue": "Océanis PLOEMEUR",
@@ -322,7 +323,7 @@
         "mapado-oceanis"
       ]
     },
-    "2026-12-17:ploemeur:oceanis-ploemeur:passeport-alexis-michalik": {
+    "2026-12-17:ploemeur:oceanis:passeport-alexis-michalik": {
       "title": "Passeport | Alexis Michalik",
       "startsOn": "2026-12-17",
       "venue": "Océanis PLOEMEUR",
@@ -333,7 +334,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-01-19:ploemeur:oceanis-ploemeur:tria-fata-cie-la-pendue": {
+    "2027-01-19:ploemeur:oceanis:tria-fata-cie-la-pendue": {
       "title": "Tria Fata | Cie La Pendue",
       "startsOn": "2027-01-19",
       "venue": "Océanis PLOEMEUR",
@@ -344,7 +345,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-01-22:ploemeur:oceanis-ploemeur:happy-apocalypse-cie-f-o-u-i-c": {
+    "2027-01-22:ploemeur:oceanis:happy-apocalypse-cie-f-o-u-i-c": {
       "title": "Happy Apocalypse | Cie f.o.u.i.c",
       "startsOn": "2027-01-22",
       "venue": "Océanis PLOEMEUR",
@@ -355,7 +356,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-01-28:ploemeur:oceanis-ploemeur:peter-pan-theatre-amer": {
+    "2027-01-28:ploemeur:oceanis:peter-pan-theatre-amer": {
       "title": "Peter Pan | Théâtre amer",
       "startsOn": "2027-01-28",
       "venue": "Océanis PLOEMEUR",
@@ -366,7 +367,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-02-20:ploemeur:oceanis-ploemeur:coquille-diamant-marc-de-blanchard": {
+    "2027-02-20:ploemeur:oceanis:coquille-diamant-marc-de-blanchard": {
       "title": "Coquille Diamant | Marc de Blanchard",
       "startsOn": "2027-02-20",
       "venue": "Océanis PLOEMEUR",
@@ -377,7 +378,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-03-12:ploemeur:oceanis-ploemeur:les-vagues-elise-vigneron-theatre-de-l-entrouvert": {
+    "2027-03-12:ploemeur:oceanis:les-vagues-elise-vigneron-theatre-de-l-entrouvert": {
       "title": "Les Vagues | Élise Vigneron – Théâtre de l’Entrouvert",
       "startsOn": "2027-03-12",
       "venue": "Océanis PLOEMEUR",
@@ -388,7 +389,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-04-02:ploemeur:oceanis-ploemeur:boule-de-neige-cie-de-louise": {
+    "2027-04-02:ploemeur:oceanis:boule-de-neige-cie-de-louise": {
       "title": "Boule de neige | Cie de Louise",
       "startsOn": "2027-04-02",
       "venue": "Océanis PLOEMEUR",
@@ -399,7 +400,7 @@
         "mapado-oceanis"
       ]
     },
-    "2027-05-21:ploemeur:oceanis-ploemeur:electro-deluxe-1ere-partie": {
+    "2027-05-21:ploemeur:oceanis:electro-deluxe-1ere-partie": {
       "title": "Electro Deluxe + 1ère partie",
       "startsOn": "2027-05-21",
       "venue": "Océanis PLOEMEUR",
@@ -410,7 +411,7 @@
         "mapado-oceanis"
       ]
     },
-    "2026-09-09:pont-scorff:theatre-le-strapontin:presentation-de-saison": {
+    "2026-09-09:pont-scorff:le-strapontin:presentation-de-saison": {
       "title": "PRÉSENTATION DE SAISON",
       "startsOn": "2026-09-09",
       "venue": "Théâtre Le Strapontin",
@@ -421,7 +422,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-09-26:pont-scorff:theatre-le-strapontin:ne-pas-pleurer-devant-un-coucher-de-soleil-la-bande-a-grimaud": {
+    "2026-09-26:pont-scorff:le-strapontin:ne-pas-pleurer-devant-un-coucher-de-soleil-la-bande-a-grimaud": {
       "title": "NE PAS PLEURER DEVANT UN COUCHER DE SOLEIL / La Bande à Grimaud",
       "startsOn": "2026-09-26",
       "venue": "Théâtre Le Strapontin",
@@ -432,7 +433,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-10-02:pont-scorff:theatre-le-strapontin:yss-ma-biche-et-mon-lapin-collectif-aie-aie-aie": {
+    "2026-10-02:pont-scorff:le-strapontin:yss-ma-biche-et-mon-lapin-collectif-aie-aie-aie": {
       "title": "YSS + MA BICHE ET MON LAPIN / collectif AÏE AÏE AÏE",
       "startsOn": "2026-10-02",
       "venue": "Théâtre Le Strapontin",
@@ -454,7 +455,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-11-08:pont-scorff:theatre-le-strapontin:atelier-adulte-enfant-fabrication-de-doudou-et-dessin-sur-tissu": {
+    "2026-11-08:pont-scorff:le-strapontin:atelier-adulte-enfant-fabrication-de-doudou-et-dessin-sur-tissu": {
       "title": "ATELIER ADULTE-ENFANT FABRICATION DE DOUDOU ET DESSIN SUR TISSU",
       "startsOn": "2026-11-08",
       "venue": "Théâtre Le Strapontin",
@@ -465,7 +466,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-11-08:pont-scorff:theatre-le-strapontin:gros-cocon-bob-theatre-la-bobine": {
+    "2026-11-08:pont-scorff:le-strapontin:gros-cocon-bob-theatre-la-bobine": {
       "title": "GROS COCON / Bob Théâtre - La Bobine",
       "startsOn": "2026-11-08",
       "venue": "Théâtre Le Strapontin",
@@ -476,7 +477,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-11-24:pont-scorff:theatre-le-strapontin:chevaleresses-cie-francine-josephine-nolwenn-le-doth": {
+    "2026-11-24:pont-scorff:le-strapontin:chevaleresses-cie-francine-josephine-nolwenn-le-doth": {
       "title": "CHEVALERESSES / Cie Francine & Joséphine - Nolwenn Le Doth",
       "startsOn": "2026-11-24",
       "venue": "Théâtre Le Strapontin",
@@ -487,7 +488,7 @@
         "mapado-strapontin"
       ]
     },
-    "2026-12-20:pont-scorff:theatre-le-strapontin:cinema-de-noel-le-peuple-loup-tomm-moore-ross-stewart": {
+    "2026-12-20:pont-scorff:le-strapontin:cinema-de-noel-le-peuple-loup-tomm-moore-ross-stewart": {
       "title": "CINÉMA DE NOËL : LE PEUPLE LOUP / Tomm Moore - Ross Stewart",
       "startsOn": "2026-12-20",
       "venue": "Théâtre Le Strapontin",
@@ -498,7 +499,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-01-08:pont-scorff:theatre-le-strapontin:post-party-big-up-cie": {
+    "2027-01-08:pont-scorff:le-strapontin:post-party-big-up-cie": {
       "title": "POST PARTY / Big Up Cie",
       "startsOn": "2027-01-08",
       "venue": "Théâtre Le Strapontin",
@@ -509,7 +510,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-01-14:pont-scorff:theatre-le-strapontin:imaginer-la-pluie-tro-heol-cie": {
+    "2027-01-14:pont-scorff:le-strapontin:imaginer-la-pluie-tro-heol-cie": {
       "title": "IMAGINER LA PLUIE / Tro-héol Cie",
       "startsOn": "2027-01-14",
       "venue": "Théâtre Le Strapontin",
@@ -520,7 +521,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-02-12:pont-scorff:theatre-le-strapontin:chute-cie-productions-anecdotiques": {
+    "2027-02-12:pont-scorff:le-strapontin:chute-cie-productions-anecdotiques": {
       "title": "CHUT·E ! / Cie Productions Anecdotiques",
       "startsOn": "2027-02-12",
       "venue": "Théâtre Le Strapontin",
@@ -531,7 +532,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-02-13:pont-scorff:theatre-le-strapontin:atelier-adulte-enfant-theatre-musique": {
+    "2027-02-13:pont-scorff:le-strapontin:atelier-adulte-enfant-theatre-musique": {
       "title": "ATELIER ADULTE-ENFANT THÉÂTRE - MUSIQUE",
       "startsOn": "2027-02-13",
       "venue": "Théâtre Le Strapontin",
@@ -542,7 +543,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-03-09:pont-scorff:theatre-le-strapontin:les-cyclopes-etaient-des-elephants-nains-cie-lumiere-d-aout-alexis-fichet": {
+    "2027-03-09:pont-scorff:le-strapontin:les-cyclopes-etaient-des-elephants-nains-cie-lumiere-d-aout-alexis-fichet": {
       "title": "LES CYCLOPES ÉTAIENT DES ÉLÉPHANTS NAINS / Cie Lumière d'août - Alexis Fichet",
       "startsOn": "2027-03-09",
       "venue": "Théâtre Le Strapontin",
@@ -553,7 +554,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-03-21:56700:centre-socioculturel-jean-ferrat:esquif-a-fleur-d-eau-anais-allais-benbouali": {
+    "2027-03-21:hennebont:centre-socioculturel-jean-ferrat:esquif-a-fleur-d-eau-anais-allais-benbouali": {
       "title": "ESQUIF (À FLEUR D'EAU) / Anaïs Allais Benbouali",
       "startsOn": "2027-03-21",
       "venue": "Centre socioculturel Jean Ferrat",
@@ -564,7 +565,7 @@
         "mapado-strapontin"
       ]
     },
-    "2027-04-15:pont-scorff:theatre-le-strapontin:marees-cie-safar": {
+    "2027-04-15:pont-scorff:le-strapontin:marees-cie-safar": {
       "title": "MARÉES / Cie Safar",
       "startsOn": "2027-04-15",
       "venue": "Théâtre Le Strapontin",
@@ -696,7 +697,7 @@
         "mapado-coque"
       ]
     },
-    "2026-10-02:pont-scorff:theatre-du-strapontin-pont-scorff:ma-biche-et-mon-lapin-yss": {
+    "2026-10-02:pont-scorff:le-strapontin:ma-biche-et-mon-lapin-yss": {
       "title": "Ma biche et mon lapin + YSS",
       "startsOn": "2026-10-02",
       "venue": "Théâtre du Strapontin - Pont-Scorff",
@@ -704,7 +705,8 @@
       "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793698-ma-biche-et-mon-lapin-yss",
       "notifiedAt": null,
       "sourceIds": [
-        "mapado-coque"
+        "mapado-coque",
+        "mapado-strapontin"
       ]
     },
     "2026-10-16:hennebont:theatre-a-la-coque:peau-d-homme": {
@@ -773,7 +775,7 @@
         "mapado-coque"
       ]
     },
-    "2027-01-08:pont-scorff:theatre-du-strapontin-pont-scorff:post-party": {
+    "2027-01-08:pont-scorff:le-strapontin:post-party": {
       "title": "Post party",
       "startsOn": "2027-01-08",
       "venue": "Théâtre du Strapontin - Pont-Scorff",
@@ -781,10 +783,11 @@
       "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793775-post-party",
       "notifiedAt": null,
       "sourceIds": [
-        "mapado-coque"
+        "mapado-coque",
+        "mapado-strapontin"
       ]
     },
-    "2027-01-14:pont-scorff:theatre-du-strapontin-pont-scorff:imaginer-la-pluie": {
+    "2027-01-14:pont-scorff:le-strapontin:imaginer-la-pluie": {
       "title": "Imaginer la pluie",
       "startsOn": "2027-01-14",
       "venue": "Théâtre du Strapontin - Pont-Scorff",
@@ -792,7 +795,8 @@
       "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793880-imaginer-la-pluie",
       "notifiedAt": null,
       "sourceIds": [
-        "mapado-coque"
+        "mapado-coque",
+        "mapado-strapontin"
       ]
     },
     "2027-01-15:inzinzac-lochrist:trio-s-theatre-du-blavet:la-manekine": {
@@ -823,17 +827,6 @@
       "venue": "Théâtre à la Coque",
       "city": "HENNEBONT",
       "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/782211-terreur",
-      "notifiedAt": null,
-      "sourceIds": [
-        "mapado-coque"
-      ]
-    },
-    "2027-01-24:guidel:l-estran:le-serment-du-gueridon": {
-      "title": "Le serment du guéridon",
-      "startsOn": "2027-01-24",
-      "venue": "L'Estran",
-      "city": "Guidel",
-      "bookingUrl": "https://theatrealacoque-cnma.mapado.com/event/793936-le-serment-du-gueridon",
       "notifiedAt": null,
       "sourceIds": [
         "mapado-coque"
@@ -1169,7 +1162,7 @@
         "hydrophone"
       ]
     },
-    "2027-02-06:56520:l-estran:robinson-khoury-mya": {
+    "2027-02-06:guidel:l-estran:robinson-khoury-mya": {
       "title": "Robinson Khoury · MŸA",
       "startsOn": "2027-02-06",
       "venue": "L'ESTRAN",
@@ -1213,7 +1206,7 @@
         "lorient-events"
       ]
     },
-    "2026-12-18:56520:l-estran:le-la-couleur": {
+    "2026-12-18:guidel:l-estran:le-la-couleur": {
       "title": "le la couleur",
       "startsOn": "2026-12-18",
       "venue": "L'ESTRAN",
@@ -1311,72 +1304,149 @@
       "sourceIds": [
         "mapado-quai9"
       ]
+    },
+    "2026-10-15:lanester:quai-9:static-shot-a-folia-ccn-ballet-de-lorraine": {
+      "title": "\"STATIC SHOT / A FOLIA\" CCN - Ballet de Lorraine",
+      "startsOn": "2026-10-15",
+      "venue": "Quai 9",
+      "city": "LANESTER",
+      "bookingUrl": "https://billetterie-quai9.mapado.com/event/714830-static-shot-a-folia-ccn-ballet-de-lorraine",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "mapado-quai9"
+      ]
+    },
+    "2026-10-29:lanester:quai-9:20-000-lieues-sous-les-mers-compagnie-point-fixe": {
+      "title": "\"20 000 lieues sous les mers\" Compagnie Point Fixe",
+      "startsOn": "2026-10-29",
+      "venue": "Quai 9",
+      "city": "LANESTER",
+      "bookingUrl": "https://billetterie-quai9.mapado.com/event/714844-20-000-lieues-sous-les-mers-compagnie-point-fixe",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "mapado-quai9"
+      ]
+    },
+    "2026-11-10:lanester:quai-9:soulevement-ballet-preljocaj": {
+      "title": "\"SOULÈVEMENT\" Ballet Preljocaj",
+      "startsOn": "2026-11-10",
+      "venue": "Quai 9",
+      "city": "LANESTER",
+      "bookingUrl": "https://billetterie-quai9.mapado.com/event/714893-soulevement-ballet-preljocaj",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "mapado-quai9"
+      ]
+    },
+    "2026-11-28:lanester:parc-des-expositions:fete-de-l-huma-bretagne": {
+      "title": "Fête de l’Huma Bretagne",
+      "startsOn": "2026-11-28",
+      "venue": "Parc des Expositions",
+      "city": "Lanester",
+      "bookingUrl": "https://linktr.ee/fete.humabzh?utm_source=chatgpt.com",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "lorient-events"
+      ]
+    },
+    "2026-11-28:lorient:hydrophone:alf-orel-de-yurie-hu-et-izza-nguyen": {
+      "title": "Alf & Orel de Yurie Hu et Izza Nguyen",
+      "startsOn": "2026-11-28",
+      "venue": "Hydrophone",
+      "city": "Lorient",
+      "bookingUrl": "https://billetterie.hydrophone.fr/agenda/616-Alf-Orel-de-Yurie-Hu-et-Izza-Nguyen?session=616",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "hydrophone"
+      ]
+    },
+    "2027-01-26:lanester:quai-9:ten-thousand-hours-gravity-other-myths": {
+      "title": "\"TEN THOUSAND HOURS\" Gravity Other Myths",
+      "startsOn": "2027-01-26",
+      "venue": "Quai 9",
+      "city": "LANESTER",
+      "bookingUrl": "https://billetterie-quai9.mapado.com/event/715047-ten-thousand-hours-gravity-other-myths",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "mapado-quai9"
+      ]
+    },
+    "2027-04-13:lanester:quai-9:in-the-brain-hofesh-shechter": {
+      "title": "\"IN THE BRAIN\" Hofesh Shechter",
+      "startsOn": "2027-04-13",
+      "venue": "Quai 9",
+      "city": "LANESTER",
+      "bookingUrl": "https://billetterie-quai9.mapado.com/event/716314-in-the-brain-hofesh-shechter",
+      "notifiedAt": "2026-09-19T18:58:51.636Z",
+      "sourceIds": [
+        "mapado-quai9"
+      ]
     }
   },
   "sources": {
     "mapado-estran": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:8d056b3f0f0d6592657be9c5f5d84018890cf7ee73aa662e10f1d77f5f9d7914"
+      "lastResultFingerprint": "sha256:c5c587867073f9b83065fa01dbd6863f70c4c6f85e0ae87cfe00870d51dc83db"
     },
     "mapado-oceanis": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:dade72e81557bc9c4dbc06adba7542aecdf9c639f8a6568c2eaef608055b4607"
+      "lastResultFingerprint": "sha256:50d90794dedd258a72909fe0c3ea58f00b055972637a52ac3c55409cb6be43b4"
     },
     "mapado-strapontin": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:1ba09cab67eacfe861b05de7a339a4139172e27c6466be66a45aeb83aa4a2999"
+      "lastResultFingerprint": "sha256:0cf266e3f5d4be96a4a3b4ec76c27d87ac3302cce99783779804273054cbeaff"
     },
     "mapado-quai9": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:cf792f44b89f2be4f69b999228540b152c2b7aab0e36ede406034fbd6a013e91"
+      "lastResultFingerprint": "sha256:92ab607b5cc2a9a1426460fac66f35f508b546ea309c49d36206668396364c35"
     },
     "mapado-arcs": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
       "lastResultFingerprint": "sha256:390382617ff48455a78b5943b03d527fa61dae581268e737f048c0710de43e6d"
     },
     "mapado-coque": {
       "initializedAt": "2026-08-30T06:38:24.369Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:37c1755cf28cedd0771abe68256243b1a1fd31ef1dbb602c9cdd1d657ca349ac"
+      "lastResultFingerprint": "sha256:4f11dc11d41c582ecf59d35fd702b49d2f90b6af480361ee175c3c5d022a7333"
     },
     "lorient-events": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:5b6f84cfae7396b059cafff6b4a796c5abd988076e1e41a5034a2ce08a6a0bec"
+      "lastResultFingerprint": "sha256:ea85f4d9da848b7984ad438a9f09f13478c1eb4499d42a4f6c6977025c347b1b"
     },
     "hydrophone": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
-      "lastSuccessAt": "2026-09-12T08:07:04.386Z",
-      "lastCheckedAt": "2026-09-12T08:07:04.386Z",
+      "lastSuccessAt": "2026-09-19T18:58:51.636Z",
+      "lastCheckedAt": "2026-09-19T18:58:51.636Z",
       "consecutiveFailures": 0,
       "incidentOpen": false,
-      "lastResultFingerprint": "sha256:4e500da23ddffa3a8498dd64fe86303fdfd8a24b480dd4a080e4ef383ad8b1da"
+      "lastResultFingerprint": "sha256:bf5df173dded8841c7bb8bf77c3414e9c88336edb689422a248edf699898abf4"
     }
   },
   "candidates": {
@@ -1394,7 +1464,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/mania-the-abba-tribute-lorient/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "MANIA, THE ABBA TRIBUTE – LORIENT",
         "startsOn": "2026-09-19",
@@ -1407,15 +1477,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/innovemploi/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/tisseade/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-mineraux-et-fossiles/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/jo-le-sinbad/": {
@@ -1427,15 +1497,15 @@
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/studyrama/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-du-chocolat-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/festival-insolent-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Festival Insolent",
         "startsOn": "2026-10-24",
@@ -1456,7 +1526,7 @@
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/thomas-marty-3/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Thomas Marty",
         "startsOn": "2026-10-31",
@@ -1469,31 +1539,31 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/salon-habitat-vins-et-gastronomie/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/artissim-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/https-hit-lorient-bzh-forum-2026-levenement/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/salon-livre-jeunesse-lorient-26/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/9938/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/illusion/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/claudio-capeo/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Claudio Capéo",
         "startsOn": "2026-12-18",
@@ -1506,7 +1576,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/greg-duth/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Greg Duth",
         "startsOn": "2027-01-09",
@@ -1519,15 +1589,15 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/ana-godefroy-en-rodage/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/sarah-schwab/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/elie-semoun/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Elie Semoun",
         "startsOn": "2027-01-27",
@@ -1540,19 +1610,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/marine/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/alexis-le-rossignol-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/jean-baptiste-guegan/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/yann-guillarme/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "YANN GUILLARME",
         "startsOn": "2027-04-15",
@@ -1565,19 +1635,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/le-cas-pucine/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/fabien-olicard-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/djal-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/blandine-lehout/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Blandine Lehout",
         "startsOn": "2027-03-20",
@@ -1590,7 +1660,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/djamil-le-schlag/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Djamil Le Schlag",
         "startsOn": "2027-03-27",
@@ -1603,7 +1673,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/laurent-gerra-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Laurent Gerra",
         "startsOn": "2027-04-01",
@@ -1616,19 +1686,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/tristan-lopin-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/pv/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/julien-santini/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/edouard-deloignon/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Edouard Deloignon",
         "startsOn": "2027-05-13",
@@ -1641,19 +1711,19 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/charlie-haid/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/les-annees-80-la-tournee/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/thomas-angelvy-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/la-troupe-du-jamel-comedy-club/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "La troupe du Jamel Comedy Club",
         "startsOn": "2027-06-10",
@@ -1666,7 +1736,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/geremy-credeville-2/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": {
         "title": "Gérémy Crédeville",
         "startsOn": "2027-09-09",
@@ -1679,7 +1749,7 @@
       }
     },
     "https://lorient-evenements.bzh/agenda/salon-bonjour-caravaning/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/septembre-rouge-une-soiree-de-sensibilisation-aux-cancers-du-sang/": {
@@ -1687,8 +1757,21 @@
       "event": null
     },
     "https://lorient-evenements.bzh/agenda/concert-unisson/": {
-      "checkedAt": "2026-09-12T08:07:04.386Z",
+      "checkedAt": "2026-09-19T18:58:51.636Z",
       "event": null
+    },
+    "https://lorient-evenements.bzh/agenda/fete-de-lhuma-bretagne/": {
+      "checkedAt": "2026-09-19T18:58:51.636Z",
+      "event": {
+        "title": "Fête de l’Huma Bretagne",
+        "startsOn": "2026-11-28",
+        "startsAt": null,
+        "venue": "Parc des Expositions",
+        "city": "Lanester",
+        "bookingUrl": "https://linktr.ee/fete.humabzh?utm_source=chatgpt.com",
+        "sourceUrl": "https://lorient-evenements.bzh/agenda/fete-de-lhuma-bretagne/",
+        "sourceId": "lorient-events"
+      }
     }
   },
   "outbox": {
