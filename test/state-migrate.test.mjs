@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { createEvent } from "../src/model.mjs";
 import { getSource } from "../src/sources.mjs";
+import { migrateCanonicalEventKeys } from "../src/canonical-keys.mjs";
 import { emptyState, planTransition, validateState } from "../src/state.mjs";
 
 const hydrophone = getSource("hydrophone");
@@ -60,7 +61,7 @@ test("réécrit un identifiant historique fondé sur un code postal sans le reje
   const stale = structuredClone(baselineState());
   stale.seen[staleId] = estranSeen();
 
-  const migrated = validateState(stale);
+  const migrated = validateState(migrateCanonicalEventKeys(stale));
   assert.equal(migrated.seen[staleId], undefined);
   assert.deepEqual(migrated.seen[canonicalId], estranSeen());
   assert.equal(stale.seen[staleId].city, "56520");
@@ -75,7 +76,7 @@ test("fusionne une clé historique et sa forme canonique déjà présente", () =
     sourceIds: ["lorient-events"],
   });
 
-  const migrated = validateState(stale);
+  const migrated = validateState(migrateCanonicalEventKeys(stale));
   assert.equal(migrated.seen[staleId], undefined);
   assert.equal(migrated.seen[canonicalId].notifiedAt, "2026-08-30T10:00:00.000Z");
   assert.deepEqual(migrated.seen[canonicalId].sourceIds, ["lorient-events", "mapado-estran"]);
@@ -97,7 +98,7 @@ test("retire de l'outbox une nouveauté déjà connue sous une clé historique",
     sourceUrls: ["https://lestran-guidel.mapado.com/"],
   };
 
-  const migrated = validateState(stale);
+  const migrated = validateState(migrateCanonicalEventKeys(stale));
   assert.equal(migrated.outbox.events[canonicalId], undefined);
   assert.ok(migrated.seen[canonicalId]);
 });
@@ -106,7 +107,7 @@ test("un événement déjà vu sous un code postal n'est pas rejoué comme une n
   const laterAt = "2026-08-30T11:00:00.000Z";
   const stale = structuredClone(baselineState());
   stale.seen[staleId] = estranSeen();
-  const migrated = validateState(stale);
+  const migrated = validateState(migrateCanonicalEventKeys(stale));
   const current = event({
     title: "Présentation de saison + concert Harold López-Nussa",
     startsOn: "2026-09-08",
