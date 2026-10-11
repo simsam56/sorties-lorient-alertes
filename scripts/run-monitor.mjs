@@ -246,7 +246,9 @@ async function check(args, environment) {
   for (const failure of published.failures) {
     console.error(`Notification « ${failure.title} » — ERREUR — ${failure.message}`);
   }
-  return collection.failures.length > 0 || published.failures.length > 0 ? 1 : 0;
+  // Les erreurs de sources (ex. 404 intermittents) sont déjà remontées via les health notifications NTFY.
+  // On ne fait échouer le job que si la publication NTFY elle-même a échoué, pour éviter les mails GitHub inutiles.
+  return published.failures.length > 0 ? 1 : 0;
 }
 
 async function testNotification(environment) {
