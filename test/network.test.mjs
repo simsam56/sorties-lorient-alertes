@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { sendNtfy } from "../src/network.mjs";
+import { sendNtfy, fetchSourceText } from "../src/network.mjs";
 
 const validTopic = "a".repeat(24);
 const notification = {
@@ -103,4 +103,50 @@ test("interrompt la publication après le délai demandé", async () => {
     /Publication ntfy impossible/u,
   );
   assert.equal(aborted, true);
+});
+
+test("fetchSourceText réussit au premier essai", async () => {
+  const html = "<html>ok</html>";
+  const text = await fetchSourceText("https://example.test/", {}, async () => ({
+    ok: true,
+    status: 200,
+    text: async () => html,
+  }));
+  assert.equal(text, html);
+});
+
+test("fetchSourceText retente sur 404 puis réussit", async () => {
+  let calls = 0;
+  const html = "<html>ok</html>";
+  const text = await fetchSourceText("https://example.test/", { baseDelayMs: 1 }, async () => {
+    calls++;
+    if (calls < 3) return { ok: false, status: 404 };
+    return { ok: true, status: 200, text: async () => html };
+  });
+  assert.equal(calls, 3);
+  assert.equal(text, html);
+});
+
+test("fetchSourceText échoue définitivement après 3 tentatives sur 404", async () => {
+  let calls = 0;
+  await assert.rejects(
+    fetchSourceText("https://example.test/", { baseDelayMs: 1 }, async () => {
+      calls++;
+      return { ok: false, status: 404 };
+    }),
+    /Lecture de source refusée \(HTTP 404\)/u,
+  );
+  assert.equal(calls, 3);
+});
+
+test("fetchSourceText ne retente pas un 403", async () => {
+  let calls = 0;
+  await assert.rejects(
+    fetchSourceText("https://example.test/", { baseDelayMs: 1 }, async () => {
+      calls++;
+      return { ok: false, status: 403 };
+    }),
+    /Lecture de source refusée \(HTTP 403\)/u,
+  );
+  assert.equal(calls, 1);
 });
