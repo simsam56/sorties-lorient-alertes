@@ -1,7 +1,7 @@
 {
   "version": 2,
   "initializedAt": "2026-08-30T06:38:24.369Z",
-  "updatedAt": "2026-11-10T17:57:09.350Z",
+  "updatedAt": "2026-11-10T18:09:07.597Z",
   "seen": {
     "2026-09-08:guidel:l-estran:presentation-de-saison-concert-harold-lopez-nussa": {
       "title": "Présentation de saison + concert Harold López-Nussa",
@@ -1490,8 +1490,8 @@
     "lorient-events": {
       "initializedAt": "2026-08-30T12:55:34.971Z",
       "lastSuccessAt": "2026-10-09T13:49:41.424Z",
-      "lastCheckedAt": "2026-11-10T16:58:36.067Z",
-      "consecutiveFailures": 293,
+      "lastCheckedAt": "2026-11-10T18:09:07.597Z",
+      "consecutiveFailures": 294,
       "incidentOpen": true,
       "lastResultFingerprint": "sha256:bb33397dff8ab2afd20adeb415e0b33537df302f117ed26133ec082055ef080b"
     },
